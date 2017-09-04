@@ -1,0 +1,18 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+
+int main (int argc, char* argv[argc+1] ) {
+  
+  switch (argc) {
+  case 2:
+    if (*argv[1] == 'A') {
+	puts("No beginning A's are allowed");
+      } else {
+	printf("No A's, good job! Your string was: %s\n", argv[1]);
+      }
+      break;
+  default:
+    puts("Wrong number of agruments, main takes exactly one string.");
+  }
+}

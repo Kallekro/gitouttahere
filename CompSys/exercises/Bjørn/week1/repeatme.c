@@ -1,0 +1,18 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+int main (int argc, char* argv[argc+1])
+{
+  //printf("%d", argc);
+  switch (argc)
+    {
+    case 2:
+      printf("Printing the number once: %s\n",argv[1]);
+      printf("Printing the number once again: %s\n", argv[1]);
+      break;
+    default:
+      puts("Wrong number of agruments, main takes exactly one string.");
+    }
+  
+  return EXIT_SUCCESS;
+}

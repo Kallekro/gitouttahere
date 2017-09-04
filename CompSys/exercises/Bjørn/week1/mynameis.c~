@@ -1,0 +1,7 @@
+#include<stdio.h>
+#include<string.h>
+
+int main() {
+  char* myname[5]= {"LOOOL"};
+  printf("%s\n", *myname[0]);
+}
