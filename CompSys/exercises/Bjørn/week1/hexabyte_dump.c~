@@ -1,0 +1,55 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<errno.h>
+#include<string.h>
+
+FILE* file_exists(char*);
+
+
+int main (int argc, char* argv[])
+{  
+  FILE* file;  
+  if (argc != 2) {
+    fprintf(stderr, "Usage: the function takes exactly one arguments\n");
+    return EXIT_FAILURE;
+  }
+
+  file = file_exists(argv[1]);    
+  
+  if (file != NULL)
+    {
+      long offset = ftell(file);      
+      int curr_16_byte[17];
+      
+      while (!feof(file)) {
+	
+	fread(&curr_16_byte, 1, 16, file);
+	offset = ftell(file);      
+	printf("%08lx  ", offset);
+	
+	for (int byte=0; byte < 17; byte++)
+	  {
+	    if(byte==8) {printf(" ");}
+	    printf("%02x ", curr_16_byte[byte]);	    
+	  }
+	
+	printf("\n");	 
+      }
+      
+      //printf("%s", curr_16_byte);
+      fclose(file);      
+      return EXIT_SUCCESS;      
+    }
+  else
+    {
+      fprintf(stderr, "ERROR: %s\n", strerror(errno));
+      return EXIT_FAILURE;
+    }  
+}
+
+FILE* file_exists (char* file_name) {
+  FILE* f = fopen(file_name, "r");
+  return f;
+}
+
+
