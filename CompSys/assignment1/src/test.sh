@@ -76,7 +76,7 @@ echo -n > test_files/empty3.input
 
 
 # Testing the file binary
-cp file.exe test_files/sourcebin.input
+cp file.o test_files/sourcebin.input
 
 echo "Running the tests.."
 exitcode=0
@@ -84,7 +84,7 @@ for f in test_files/*.input
 do
   echo ">>> Testing ${f}.."
   file    "${f}" | sed 's/ASCII text.*/ASCII text/' > "${f}.expected"
-  file.exe  "${f}" > "${f}.actual"
+  file.o  "${f}" > "${f}.actual"
 
   if ! diff -u "${f}.expected" "${f}.actual"
   then
