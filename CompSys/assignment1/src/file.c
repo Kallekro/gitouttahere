@@ -50,7 +50,7 @@ int main (int argc, char* argv[]) {
     // Read through file to end of file.
     while(!feof(somefile)) {    
       fread(&byte, 1, 1, somefile);
-      // Break while loop and set filetype to data if the the any byte is not ASCII
+      // Break while loop and set filetype to data if the byte is not ASCII
       if (!isASCII (byte)) {
         filetype = DATA;
         break;        
@@ -58,7 +58,7 @@ int main (int argc, char* argv[]) {
     }
   }
   // print the appropriate message
-  printf("%s: %s\nLOL\n", argv[1], file_type_strings[filetype]);    
+  printf("%s: %s\n", argv[1], file_type_strings[filetype]);    
   exit(EXIT_SUCCESS);
 }
 
