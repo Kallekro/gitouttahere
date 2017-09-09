@@ -3,6 +3,22 @@
 #include<string.h>
 #include<errno.h>
 
+enum file_type {
+  ASCII,
+  DATA,  
+  EMPTY,
+};
+
+const char* const file_type_strings[] = {
+  "ASCII text",
+  "data",
+  "empty",
+};  
+
+int isASCII(char byte);
+
+int getFileSize(FILE* file, unsigned long* size);
+  
 int main (int argc, char* argv[]) {    
   // Check correct number of arguments      
   if (argc != 2) {
@@ -17,38 +33,49 @@ int main (int argc, char* argv[]) {
     exit(EXIT_FAILURE);
   }
 
-  // declaring  to hold each byte read
-  unsigned int byte;
-  // setting the cursor to the last byte in the file
-  fseek(somefile, 0L, SEEK_END);
-  // reading the cursors offset, ie.
-  unsigned long sizeof_file = ftell(somefile);  
-  // setting cursor to the first byte of the file
-  fseek(somefile, 0L, SEEK_SET);
+  // We start by assuming the file is ASCII
+  enum file_type filetype = ASCII;
 
-  // if the file is 0 bytes big
-  if (!sizeof_file) {
-    printf("%s: empty\n", argv[1]);
-    exit(EXIT_SUCCESS);
+  // Get the file size
+  unsigned long filesize;
+  getFileSize(somefile, &filesize);
+
+  // if filesize is 0, file is empty 
+  if (!filesize) {
+    filetype = EMPTY;
   }
-  
-  // Read through file to end of file.
-  while(!feof(somefile)) {    
-    fread(&byte, 1, 1, somefile);
-    // Stop if the the current byte is not ascii
-    if(  !((7 <= byte &&  byte <= 13)
-	  || (27 == byte)
-	  || (32 <= byte && byte <= 126))) {
-      
-      printf("%s: data\n", argv[1]);                  
-      exit(EXIT_SUCCESS);
-    }    
+  else { 
+    // declaring char to hold each byte read
+    char byte;
+    // Read through file to end of file.
+    while(!feof(somefile)) {    
+      fread(&byte, 1, 1, somefile);
+      // Break while loop and set filetype to data if the the any byte is not ASCII
+      if (!isASCII (byte)) {
+        filetype = DATA;
+        break;        
+      }    
+    }
   }
-  
-  // If no, non-ascii value encounterd, the file is an ascii file
-  printf("%s: ASCII text\n", argv[1]);    
+  // print the appropriate message
+  printf("%s: %s\nLOL\n", argv[1], file_type_strings[filetype]);    
   exit(EXIT_SUCCESS);
 }
 
+int isASCII (char byte) {
+  // returns 1 if byte is in ascii range, 0 if not
+  return (    (7 <= byte && byte <= 13)
+          ||  (27 == byte)
+          ||  (32 <= byte && byte <= 126)); 
+}
 
-
+int getFileSize (FILE* file, unsigned long* size) {
+  // Get size of file and store in passed by reference size variable
+  // setting the cursor to the last byte in the file
+  fseek(file, 0L, SEEK_END);
+  // reading the cursors byte offset from beginning of file, ie. file size
+  *size = ftell(file);  
+  // setting cursor to the first byte of the file
+  fseek(file, 0L, SEEK_SET);
+  return 0;
+}

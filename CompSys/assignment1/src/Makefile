@@ -9,6 +9,6 @@ file: file.c Makefile
 
 clean:
 	rm -f *.o
-	rm -f file
+	rm -f file.exe
 
 .PHONY: clean
