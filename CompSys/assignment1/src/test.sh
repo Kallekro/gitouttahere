@@ -34,7 +34,9 @@ printf "Hello,\x00World!\n" > test_files/data.input
 for testfile_i in {2..127}
 do
     hex=$(printf "%x" $testfile_i)
-    if [ $testfile_i -lt 7 ] || [ $testfile_i -gt 13 ] && [ $testfile_i -lt 27 ] || [ $testfile_i -gt 27 ] && [ $testfile_i -lt 32 ] || [ $testfile_i -gt 126 ];
+    if [ $testfile_i -lt 7 ] || ([ $testfile_i -gt 13 ] && [ $testfile_i -lt 27 ]) ||
+	                        ([ $testfile_i -gt 27 ] && [ $testfile_i -lt 32 ]) ||
+	                        [ $testfile_i -gt 126 ];
     then
 	printf "\x${hex}\n" > test_files/data${testfile_i}.input
     else
