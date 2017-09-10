@@ -12,14 +12,16 @@ rm -f test_files/*
 # Tests for ascii files
 echo "Generating test files.."
 printf "Hello, World!\n" > test_files/ascii.input
-printf "Hello, World!" > test_files/ascii2.input
+printf "Hello, World!" > test_files/ascii1.input
 
 # various escape sequences
 printf "\n\t\b\f\v\n" > test_files/ascii3.input
 
-# very small file (1 char)
+# very small ascii file (1 char)
 printf "h" > test_files/ascii4.input
-
+#very small non-ascii file
+printf "\x01" > test_files/data1.input
+# very long file
 # big file no line endings
 printf "%999999s" "longfileman" > test_files/ascii5.input
 
@@ -29,42 +31,15 @@ printf "\n%999999s\n" "longfileman" > test_files/ascii6.input
 # Tests data file cases.
 printf "Hello,\x00World!\n" > test_files/data.input
 
-# Tests with non-ascii bytes before, after and in between the ascii set.
-for data_i in {1..6}
+for testfile_i in {2..127}
 do
-    hex=$(printf "%x" $data_i)
-    printf "\x${hex}" > test_files/data${data_i}.input    
-done
-
-for data_i in {14..26}
-do
-    hex=$(printf "%x" $data_i)
-    printf "\x${hex}" > test_files/data${data_i}.input    
-done
-
-for data_i in {28..31}
-do
-    hex=$(printf "%x" $data_i)
-    printf "\x${hex}" > test_files/data${data_i}.input    
-done
-
-printf "\x7F" > test_files/data127.input
-
-
-# Tests for all ascii-bytes, ie. in the ascii set. 
-
-for ascii_i in {7..13}
-do
-    hex=$(printf "%x" $ascii_i)
-    printf "\x${hex}\n" > test_files/ascii${ascii_i}.input
-done
-
-printf "\x1B\n" > test_files/ascii27.input
-
-for ascii_i in {32..126}
-do
-    hex=$(printf "%x" $ascii_i)
-    printf "\x${hex}\n" > test_files/ascii${ascii_i}.input
+    hex=$(printf "%x" $testfile_i)
+    if [ $testfile_i -lt 7 ] || [ $testfile_i -gt 13 ] && [ $testfile_i -lt 27 ] || [ $testfile_i -gt 27 ] && [ $testfile_i -lt 32 ] || [ $testfile_i -gt 126 ];
+    then
+	printf "\x${hex}\n" > test_files/data${testfile_i}.input
+    else
+	printf "\x${hex}\n" > test_files/ascii${testfile_i}.input           
+    fi
 done
 
 # some unicode bytes
@@ -101,7 +76,5 @@ do
 done
 
 printf "Total number of files tested: " & ls test_files/ | egrep input$ | wc -l
-
-
 
 exit $exitcode

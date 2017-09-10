@@ -15,21 +15,28 @@ const char* const file_type_strings[] = {
   "empty",
 };  
 
+const char* file_name; 
+
 int isASCII(char byte);
 
-int getFileSize(FILE* file, unsigned long* size);
-  
+int getFileSize(FILE* file, long* size);
+
+int printError();
+
 int main (int argc, char* argv[]) {    
   // Check correct number of arguments      
   if (argc != 2) {
     fprintf(stderr, "usage: %s path\n", argv[0]);
     exit(EXIT_FAILURE);
   }
+  
+  file_name = argv[1];
+  
   // Open file
-  FILE* somefile = fopen(argv[1], "r");
+  FILE* somefile = fopen(file_name, "r");
   if (!somefile) {
     // If file opening failed      
-    fprintf(stderr, "%s: could not determine (%s)\n", argv[1], strerror(errno));
+    printError();
     exit(EXIT_FAILURE);
   }
 
@@ -37,8 +44,11 @@ int main (int argc, char* argv[]) {
   enum file_type filetype = ASCII;
 
   // Get the file size
-  unsigned long filesize;
-  getFileSize(somefile, &filesize);
+  long filesize;
+  if (getFileSize(somefile, &filesize) != 0){
+    printError();
+    exit(EXIT_FAILURE);
+  }  
 
   // if filesize is 0, file is empty 
   if (!filesize) {
@@ -47,9 +57,17 @@ int main (int argc, char* argv[]) {
   else { 
     // declaring char to hold each byte read
     char byte;
-    // Read through file to end of file.
+    // Read to end of file.
     while(!feof(somefile)) {    
+
+      // read 1 byte
       fread(&byte, 1, 1, somefile);
+      
+      if (ferror(somefile) != 0) {
+	printError();
+	exit(EXIT_FAILURE);
+      }
+      
       // Break while loop and set filetype to data if the byte is not ASCII
       if (!isASCII (byte)) {
         filetype = DATA;
@@ -58,7 +76,7 @@ int main (int argc, char* argv[]) {
     }
   }
   // print the appropriate message
-  printf("%s: %s\n", argv[1], file_type_strings[filetype]);    
+  printf("%s: %s\n", file_name, file_type_strings[filetype]);    
   exit(EXIT_SUCCESS);
 }
 
@@ -69,13 +87,22 @@ int isASCII (char byte) {
           ||  (32 <= byte && byte <= 126)); 
 }
 
-int getFileSize (FILE* file, unsigned long* size) {
+int getFileSize (FILE* file, long* size) {
   // Get size of file and store in passed by reference size variable
   // setting the cursor to the last byte in the file
-  fseek(file, 0L, SEEK_END);
+  if (fseek(file, 0L, SEEK_END) != 0) return 1;
+
   // reading the cursors byte offset from beginning of file, ie. file size
-  *size = ftell(file);  
+  *size = ftell(file);
+  if (*size == -1) return 1;
+    
   // setting cursor to the first byte of the file
-  fseek(file, 0L, SEEK_SET);
+  if (fseek(file, 0L, SEEK_SET) != 0) return 1;
+
+  return 0;
+}
+
+int printError() {
+  fprintf(stderr, "%s: could not determine (%s)\n", file_name, strerror(errno));
   return 0;
 }
