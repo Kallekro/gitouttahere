@@ -1,0 +1,234 @@
+test_files/ascii100.input:  ASCII text
+test_files/ascii101.input:  ASCII text
+test_files/ascii102.input:  ASCII text
+test_files/ascii103.input:  ASCII text
+test_files/ascii104.input:  ASCII text
+test_files/ascii105.input:  ASCII text
+test_files/ascii106.input:  ASCII text
+test_files/ascii107.input:  ASCII text
+test_files/ascii108.input:  ASCII text
+test_files/ascii109.input:  ASCII text
+test_files/ascii10.input:   ASCII text
+test_files/ascii110.input:  ASCII text
+test_files/ascii111.input:  ASCII text
+test_files/ascii112.input:  ASCII text
+test_files/ascii113.input:  ASCII text
+test_files/ascii114.input:  ASCII text
+test_files/ascii115.input:  ASCII text
+test_files/ascii116.input:  ASCII text
+test_files/ascii117.input:  ASCII text
+test_files/ascii118.input:  ASCII text
+test_files/ascii119.input:  ASCII text
+test_files/ascii11.input:   ASCII text
+test_files/ascii120.input:  ASCII text
+test_files/ascii121.input:  ASCII text
+test_files/ascii122.input:  ASCII text
+test_files/ascii123.input:  ASCII text
+test_files/ascii124.input:  ASCII text
+test_files/ascii125.input:  ASCII text
+test_files/ascii126.input:  ASCII text
+test_files/ascii12.input:   ASCII text
+test_files/ascii13.input:   ASCII text
+test_files/ascii1.input:    ASCII text
+test_files/ascii27.input:   ASCII text
+test_files/ascii32.input:   ASCII text
+test_files/ascii33.input:   ASCII text
+test_files/ascii34.input:   ASCII text
+test_files/ascii35.input:   ASCII text
+test_files/ascii36.input:   ASCII text
+test_files/ascii37.input:   ASCII text
+test_files/ascii38.input:   Sendmail frozen configuration 
+test_files/ascii39.input:   ASCII text
+test_files/ascii3.input:    ASCII text
+test_files/ascii40.input:   ASCII text
+test_files/ascii41.input:   ASCII text
+test_files/ascii42.input:   ASCII text
+test_files/ascii43.input:   ASCII text
+test_files/ascii44.input:   ASCII text
+test_files/ascii45.input:   ASCII text
+test_files/ascii46.input:   ASCII text
+test_files/ascii47.input:   ASCII text
+test_files/ascii48.input:   ASCII text
+test_files/ascii49.input:   ASCII text
+test_files/ascii4.input:    very short file (no magic)
+test_files/ascii50.input:   ASCII text
+test_files/ascii51.input:   ASCII text
+test_files/ascii52.input:   ASCII text
+test_files/ascii53.input:   ASCII text
+test_files/ascii54.input:   ASCII text
+test_files/ascii55.input:   ASCII text
+test_files/ascii56.input:   ASCII text
+test_files/ascii57.input:   ASCII text
+test_files/ascii58.input:   ASCII text
+test_files/ascii59.input:   ASCII text
+test_files/ascii5.input:    ASCII text
+test_files/ascii60.input:   ASCII text
+test_files/ascii61.input:   ASCII text
+test_files/ascii62.input:   ASCII text
+test_files/ascii63.input:   ASCII text
+test_files/ascii64.input:   ASCII text
+test_files/ascii65.input:   ASCII text
+test_files/ascii66.input:   ASCII text
+test_files/ascii67.input:   ASCII text
+test_files/ascii68.input:   ASCII text
+test_files/ascii69.input:   ASCII text
+test_files/ascii6.input:    ASCII text
+test_files/ascii70.input:   ASCII text
+test_files/ascii71.input:   ASCII text
+test_files/ascii72.input:   ASCII text
+test_files/ascii73.input:   ASCII text
+test_files/ascii74.input:   ASCII text
+test_files/ascii75.input:   ASCII text
+test_files/ascii76.input:   ASCII text
+test_files/ascii77.input:   ASCII text
+test_files/ascii78.input:   ASCII text
+test_files/ascii79.input:   ASCII text
+test_files/ascii7.input:    ASCII text
+test_files/ascii80.input:   ASCII text
+test_files/ascii81.input:   ASCII text
+test_files/ascii82.input:   ASCII text
+test_files/ascii83.input:   ASCII text
+test_files/ascii84.input:   ASCII text
+test_files/ascii85.input:   ASCII text
+test_files/ascii86.input:   ASCII text
+test_files/ascii87.input:   ASCII text
+test_files/ascii88.input:   ASCII text
+test_files/ascii89.input:   ASCII text
+test_files/ascii8.input:    ASCII text
+test_files/ascii90.input:   ASCII text
+test_files/ascii91.input:   ASCII text
+test_files/ascii92.input:   ASCII text
+test_files/ascii93.input:   ASCII text
+test_files/ascii94.input:   ASCII text
+test_files/ascii95.input:   ASCII text
+test_files/ascii96.input:   ASCII text
+test_files/ascii97.input:   ASCII text
+test_files/ascii98.input:   ASCII text
+test_files/ascii99.input:   ASCII text
+test_files/ascii9.input:    ASCII text
+test_files/ascii.input:     ASCII text
+test_files/data127.input:   data
+test_files/data14.input:    data
+test_files/data15.input:    data
+test_files/data16.input:    data
+test_files/data17.input:    data
+test_files/data18.input:    data
+test_files/data19.input:    data
+test_files/data1.input:     very short file (no magic)
+test_files/data20.input:    data
+test_files/data21.input:    data
+test_files/data22.input:    data
+test_files/data23.input:    data
+test_files/data24.input:    data
+test_files/data25.input:    data
+test_files/data26.input:    data
+test_files/data28.input:    data
+test_files/data29.input:    data
+test_files/data2.input:     data
+test_files/data30.input:    data
+test_files/data31.input:    data
+test_files/data3.input:     data
+test_files/data4.input:     data
+test_files/data5.input:     data
+test_files/data6.input:     data
+test_files/data.input:      data
+test_files/empty2.input:    empty
+test_files/empty3.input:    empty
+test_files/empty.input:     empty
+test_files/iso160.input:    ISO-8859 text
+test_files/iso161.input:    ISO-8859 text
+test_files/iso162.input:    ISO-8859 text
+test_files/iso163.input:    ISO-8859 text
+test_files/iso164.input:    ISO-8859 text
+test_files/iso165.input:    ISO-8859 text
+test_files/iso166.input:    ISO-8859 text
+test_files/iso167.input:    ISO-8859 text
+test_files/iso168.input:    ISO-8859 text
+test_files/iso169.input:    ISO-8859 text
+test_files/iso170.input:    ISO-8859 text
+test_files/iso171.input:    ISO-8859 text
+test_files/iso172.input:    ISO-8859 text
+test_files/iso173.input:    ISO-8859 text
+test_files/iso174.input:    ISO-8859 text
+test_files/iso175.input:    ISO-8859 text
+test_files/iso176.input:    ISO-8859 text
+test_files/iso177.input:    ISO-8859 text
+test_files/iso178.input:    ISO-8859 text
+test_files/iso179.input:    ISO-8859 text
+test_files/iso180.input:    ISO-8859 text
+test_files/iso181.input:    ISO-8859 text
+test_files/iso182.input:    ISO-8859 text
+test_files/iso183.input:    ISO-8859 text
+test_files/iso184.input:    COM executable for DOS
+test_files/iso185.input:    ISO-8859 text
+test_files/iso186.input:    ISO-8859 text
+test_files/iso187.input:    ISO-8859 text
+test_files/iso188.input:    ISO-8859 text
+test_files/iso189.input:    ISO-8859 text
+test_files/iso190.input:    ISO-8859 text
+test_files/iso191.input:    ISO-8859 text
+test_files/iso192.input:    ISO-8859 text
+test_files/iso193.input:    ISO-8859 text
+test_files/iso194.input:    ISO-8859 text
+test_files/iso195.input:    ISO-8859 text
+test_files/iso196.input:    ISO-8859 text
+test_files/iso197.input:    ISO-8859 text
+test_files/iso198.input:    ISO-8859 text
+test_files/iso199.input:    ISO-8859 text
+test_files/iso200.input:    ISO-8859 text
+test_files/iso201.input:    ISO-8859 text
+test_files/iso202.input:    ISO-8859 text
+test_files/iso203.input:    ISO-8859 text
+test_files/iso204.input:    ISO-8859 text
+test_files/iso205.input:    ISO-8859 text
+test_files/iso206.input:    ISO-8859 text
+test_files/iso207.input:    ISO-8859 text
+test_files/iso208.input:    ISO-8859 text
+test_files/iso209.input:    ISO-8859 text
+test_files/iso210.input:    ISO-8859 text
+test_files/iso211.input:    ISO-8859 text
+test_files/iso212.input:    ISO-8859 text
+test_files/iso213.input:    ISO-8859 text
+test_files/iso214.input:    ISO-8859 text
+test_files/iso215.input:    ISO-8859 text
+test_files/iso216.input:    ISO-8859 text
+test_files/iso217.input:    ISO-8859 text
+test_files/iso218.input:    ISO-8859 text
+test_files/iso219.input:    ISO-8859 text
+test_files/iso220.input:    ISO-8859 text
+test_files/iso221.input:    ISO-8859 text
+test_files/iso222.input:    ISO-8859 text
+test_files/iso223.input:    ISO-8859 text
+test_files/iso224.input:    ISO-8859 text
+test_files/iso225.input:    ISO-8859 text
+test_files/iso226.input:    ISO-8859 text
+test_files/iso227.input:    ISO-8859 text
+test_files/iso228.input:    ISO-8859 text
+test_files/iso229.input:    ISO-8859 text
+test_files/iso230.input:    ISO-8859 text
+test_files/iso231.input:    ISO-8859 text
+test_files/iso232.input:    ISO-8859 text
+test_files/iso233.input:    DOS executable (COM)
+test_files/iso234.input:    ISO-8859 text
+test_files/iso235.input:    ISO-8859 text
+test_files/iso236.input:    ISO-8859 text
+test_files/iso237.input:    ISO-8859 text
+test_files/iso238.input:    ISO-8859 text
+test_files/iso239.input:    ISO-8859 text
+test_files/iso240.input:    SysEx File - AKG
+test_files/iso241.input:    ISO-8859 text
+test_files/iso242.input:    ISO-8859 text
+test_files/iso243.input:    ISO-8859 text
+test_files/iso244.input:    ISO-8859 text
+test_files/iso245.input:    ISO-8859 text
+test_files/iso246.input:    ISO-8859 text
+test_files/iso247.input:    ISO-8859 text
+test_files/iso248.input:    ISO-8859 text
+test_files/iso249.input:    ISO-8859 text
+test_files/iso250.input:    ISO-8859 text
+test_files/iso251.input:    ISO-8859 text
+test_files/iso252.input:    ISO-8859 text
+test_files/iso253.input:    ISO-8859 text
+test_files/iso254.input:    ISO-8859 text
+test_files/iso255.input:    ISO-8859 text
+test_files/sourcebin.input: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=66490e30b9e9a630bbbdd81737fbd6e272e3e378, not stripped
