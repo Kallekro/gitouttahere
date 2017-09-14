@@ -37,7 +37,7 @@ test_files/ascii34.input:   ASCII text
 test_files/ascii35.input:   ASCII text
 test_files/ascii36.input:   ASCII text
 test_files/ascii37.input:   ASCII text
-test_files/ascii38.input:   Sendmail frozen configuration 
+test_files/ascii38.input:   ASCII text
 test_files/ascii39.input:   ASCII text
 test_files/ascii3.input:    ASCII text
 test_files/ascii40.input:   ASCII text
@@ -131,7 +131,12 @@ test_files/data3.input:     data
 test_files/data4.input:     data
 test_files/data5.input:     data
 test_files/data6.input:     data
+test_files/dataÆ.input:     UTF-8 Unicode text
+test_files/dataÅ.input:     UTF-8 Unicode text
+test_files/dataÈ.input:     UTF-8 Unicode text
 test_files/data.input:      data
+test_files/dataÔ.input:     UTF-8 Unicode text
+test_files/dataØ.input:     UTF-8 Unicode text
 test_files/empty2.input:    empty
 test_files/empty3.input:    empty
 test_files/empty.input:     empty
@@ -159,7 +164,7 @@ test_files/iso180.input:    ISO-8859 text
 test_files/iso181.input:    ISO-8859 text
 test_files/iso182.input:    ISO-8859 text
 test_files/iso183.input:    ISO-8859 text
-test_files/iso184.input:    COM executable for DOS
+test_files/iso184.input:    ISO-8859 text
 test_files/iso185.input:    ISO-8859 text
 test_files/iso186.input:    ISO-8859 text
 test_files/iso187.input:    ISO-8859 text
@@ -208,7 +213,7 @@ test_files/iso229.input:    ISO-8859 text
 test_files/iso230.input:    ISO-8859 text
 test_files/iso231.input:    ISO-8859 text
 test_files/iso232.input:    ISO-8859 text
-test_files/iso233.input:    DOS executable (COM)
+test_files/iso233.input:    ISO-8859 text
 test_files/iso234.input:    ISO-8859 text
 test_files/iso235.input:    ISO-8859 text
 test_files/iso236.input:    ISO-8859 text
@@ -231,4 +236,4 @@ test_files/iso252.input:    ISO-8859 text
 test_files/iso253.input:    ISO-8859 text
 test_files/iso254.input:    ISO-8859 text
 test_files/iso255.input:    ISO-8859 text
-test_files/sourcebin.input: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=66490e30b9e9a630bbbdd81737fbd6e272e3e378, not stripped
+test_files/sourcebin.input: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=4dbf557c59cf2e7f304b71dcb49a2dbf52772e47, not stripped

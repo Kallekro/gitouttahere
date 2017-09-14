@@ -49,6 +49,10 @@ do
     fi
 done
 
+
+
+
+
 # some unicode bytes
 #for non_ascii in Æ Ø Å Ô È
 #do
