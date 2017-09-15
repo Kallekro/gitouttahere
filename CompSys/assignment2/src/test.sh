@@ -5,14 +5,11 @@ set -e
 
 make
 
-
 echo "Generating a test_files directory.."
 mkdir -p test_files
 rm -f test_files/*
 
-
 echo "Generating test files.."
-
 
 # Tests for ascii files
 echo "Generating test files.."
@@ -49,16 +46,6 @@ do
     fi
 done
 
-
-
-
-
-# some unicode bytes
-#for non_ascii in Æ Ø Å Ô È
-#do
-#    printf "${non_ascii}\n" > test_files/data${non_ascii}.input
-#done
-
 # Tests for empty files
 printf "" > test_files/empty.input
 # alternate creation of empty file
@@ -69,15 +56,35 @@ echo -n > test_files/empty3.input
 # Testing the file binary
 cp ./file test_files/sourcebin.input
 
-
-## ISO test
-
+## Testing for bytes in the ISO-8859 range. No unicode.
 for testfile_i in {160..255}
 do
     hex=$(printf "%x" $testfile_i)
     printf "\x${hex}\n" > test_files/iso${testfile_i}.input           
 done
 
+## Testing for unicode files.
+
+## Testing subrange for 2 bytes-encoded unicode characters. Should not be ISO.
+for testfile_i in {128..300}
+do
+    hex=$(printf "%x" $testfile_i)
+    printf "\u${hex}\n" > test_files/utf8_2b_${testfile_i}.input
+done
+
+## Testing subrange for 3 bytes-encoded unicode characters.
+for testfile_i in {2048..2200}
+do
+    hex=$(printf "%x" $testfile_i)
+    printf "\u${hex}\n" > test_files/utf8_3b_${testfile_i}.input
+done
+
+## Testing subrange for 4 bytes-encoded unicode characters.
+for testfile_i in {65536..65700}
+do
+    hex=$(printf "%x" $testfile_i)
+    printf "\u${hex}\n" > test_files/utf8_4b_${testfile_i}.input
+done
 
 echo "Running the tests.."
 exitcode=0
@@ -93,5 +100,7 @@ then
 else
   echo ">>> Success :-)"
 fi
+
+printf "Total number of files tested: " & ls test_files/ | egrep input$ | wc -l
 
 exit $exitcode

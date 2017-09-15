@@ -5,6 +5,12 @@
 #include<stdbool.h>
 #include<limits.h>
 
+// Macros to check how many bytes the utf8 symbols contains.
+#define UTF8_CONT(byte) (((byte) & (1u << 7)) && !((byte) & (1u << 6)))
+#define UTF8_2B(byte) (((byte) & (3u << 6)) == (3u<<6) && !((byte) & (1u << 5)))
+#define UTF8_3B(byte) (((byte) & (7u << 5)) == (7u<<5) && !((byte) & (1u << 4)))
+#define UTF8_4B(byte) (((byte) & (15u << 4)) == (15u<<4) && !((byte) & (1u << 3)))
+
 enum file_type {
   ASCII,
   DATA,  
@@ -25,7 +31,6 @@ const char* const file_type_strings[] = {
   "Little-endian UTF-16 text"
 };  
 
-const char* file_name; 
 
 int findFileType(char*, unsigned int);
 
@@ -35,7 +40,7 @@ int isASCII(unsigned char);
 
 int getFileSize(FILE*, long*);
 
-int printError();
+int printError(char*);
 
 int main (int argc, char* argv[]) {    
   // Check correct number of arguments      
@@ -60,12 +65,12 @@ int main (int argc, char* argv[]) {
 }
 
 int findFileType(char* file_name, unsigned int max_path_len) {
-  // Finds the type of file at path file_name and prints it to stdout
-
+  // Finds the type of file at path file_name and prints it to stdout  
+  
   FILE* somefile = fopen(file_name, "r");
   if (!somefile) {
     // If file opening failed      
-    printError();
+    printError(file_name);
     exit(EXIT_FAILURE);
   }
   // We start by assuming the file is ASCII
@@ -74,7 +79,7 @@ int findFileType(char* file_name, unsigned int max_path_len) {
   // Get the file size
   long filesize;
   if (getFileSize(somefile, &filesize) != 0){
-    printError();
+    printError(file_name);
     exit(EXIT_FAILURE);
   }  
 
@@ -94,7 +99,7 @@ int findFileType(char* file_name, unsigned int max_path_len) {
       fread(&byte, 1, 1, somefile);
       // Handle any error fread might have thrown
       if (ferror(somefile) != 0) {
-	      printError();
+	      printError(file_name);
 	      exit(EXIT_FAILURE);
       }
 
@@ -107,7 +112,7 @@ int findFileType(char* file_name, unsigned int max_path_len) {
       }
       else {
         // Check if byte is continued unicode byte
-        if ((byte & 10u << 6)) {
+        if (UTF8_CONT(byte)) {
           // Decrement amount of bytes to check
           check_utf8_bytes--;
           // If reached zero bytes to check, we read a unicode character and we set the filetype to unicode
@@ -124,7 +129,7 @@ int findFileType(char* file_name, unsigned int max_path_len) {
           // Therefore set the filetype to be alt_filetype which will have been set if we reached an exotic byte while searching for unicode continue bytes
           // However don't overwrite UTF8 with ISO8859 since it is contained
           // alt_filetype will also never be ASCII
-	        if ((filetype != UTF8 && alt_filetype == ISO8859) || alt_filetype == DATA) {
+	  if ((filetype != UTF8 && alt_filetype == ISO8859) || alt_filetype == DATA) {
             filetype = alt_filetype;
           }
         }
@@ -156,19 +161,23 @@ int findFileType(char* file_name, unsigned int max_path_len) {
       }
     }
   }
+
+    if (check_utf8_bytes != 0) {
+      filetype = alt_filetype;
+    }
   
   printf("%s:%*s%s\n", file_name, (int)(max_path_len - strlen(file_name)) + 1, " ", file_type_strings[filetype]);
   return 0;
 }
 
 int isStartOfUnicode (unsigned char byte) {
-  if ((byte & 110u << 5)) {
+  if (UTF8_2B(byte)) {
     return 1;
   }
-  else if ((byte & 1110u << 4)) {
+  else if (UTF8_3B(byte)) {
     return 2;
   }
-  else if ((byte & 11110u << 3)) {
+  else if (UTF8_4B(byte)) {
     return 3;
   }
   return 0;
@@ -197,7 +206,8 @@ int getFileSize (FILE* file, long* size) {
   return 0;
 }
 
-int printError() {
-  fprintf(stderr, "%s: could not determine (%s)\n", file_name, strerror(errno));
+int printError(char* file_name) {
+  fprintf(stderr, "%s: could not determine (%s)\n", file_name , strerror(errno));
   return 0;
 }
+
