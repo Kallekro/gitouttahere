@@ -102,10 +102,9 @@ int findFileType(char* file_name, unsigned int max_path_len) {
 	      printError(file_name);
 	      exit(EXIT_FAILURE);
       }
-
       // break loop if stream reached end of file 
-      if (feof(somefile)) break;      
-	
+      if (feof(somefile)) break;
+      
       // If not currently checking for unicode continue bytes, check if start byte
       if (check_utf8_bytes == 0) {
         check_utf8_bytes = isStartOfUnicode(byte);
@@ -162,9 +161,9 @@ int findFileType(char* file_name, unsigned int max_path_len) {
     }
   }
 
-    if (check_utf8_bytes != 0) {
-      filetype = alt_filetype;
-    }
+  if (check_utf8_bytes != 0) {
+    filetype = alt_filetype;
+  }
   
   printf("%s:%*s%s\n", file_name, (int)(max_path_len - strlen(file_name)) + 1, " ", file_type_strings[filetype]);
   return 0;
@@ -210,4 +209,5 @@ int printError(char* file_name) {
   fprintf(stderr, "%s: could not determine (%s)\n", file_name , strerror(errno));
   return 0;
 }
+
 
