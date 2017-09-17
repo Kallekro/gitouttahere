@@ -74,19 +74,20 @@ int findFileType(char* file_name, unsigned int max_path_len) {
   if (!somefile) {
     // If file opening failed      
     printError(file_name);
-    exit(EXIT_FAILURE);
+    return 1;
   }
-  // We start by assuming the file is ASCII
-  enum file_type filetype = ASCII;
 
   // Get the file size
   long filesize;
   if (getFileSize(somefile, &filesize) != 0){
     printError(file_name);
-    exit(EXIT_FAILURE);
+    return 1;
   }  
 
+  // We start by assuming the file is ASCII
+  enum file_type filetype = ASCII;
   enum file_type alt_filetype = ASCII;
+  
   int check_utf8_bytes = 0;
 
   // if filesize is 0, file is empty 
@@ -105,7 +106,7 @@ int findFileType(char* file_name, unsigned int max_path_len) {
       // Handle any error fread might have thrown
       if (ferror(somefile) != 0) {
 	      printError(file_name);
-	      exit(EXIT_FAILURE);
+        return 1;
       }
       // break loop if stream reached end of file 
       if (feof(somefile)) break;
@@ -150,7 +151,7 @@ int findFileType(char* file_name, unsigned int max_path_len) {
           // Therefore set the filetype to be alt_filetype which will have been set if we reached an exotic byte while searching for unicode continue bytes
           // However don't overwrite UTF8 with ISO8859 since it is contained
           // alt_filetype will also never be ASCII	  
-	  filetype = changeFileType(filetype, alt_filetype);
+	        filetype = changeFileType(filetype, alt_filetype);
         }
       }
       
@@ -177,10 +178,10 @@ int findFileType(char* file_name, unsigned int max_path_len) {
         }			
       }
     }
-  }
-  // if we're checking for cont bytes and the loop breaks, we use the alt-filetype as the filetype.
-  if (check_utf8_bytes != 0) {
-    filetype = changeFileType(filetype, alt_filetype);
+    // if we're checking for cont bytes and the loop breaks, we use the alt-filetype as the filetype.
+    if (check_utf8_bytes != 0) {
+      filetype = changeFileType(filetype, alt_filetype);
+    }
   }
   // close the file and handle possible errors
   if(fclose(somefile) != 0) {
