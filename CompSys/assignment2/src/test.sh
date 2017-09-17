@@ -10,7 +10,6 @@ mkdir -p test_files
 rm -f test_files/*
 
 echo "Generating test files.."
-
 # Tests for ascii files
 echo "Generating test files.."
 printf "Hello, World!\n" > test_files/ascii.input
@@ -87,29 +86,21 @@ done
 
 ## Little endian and big endian tests
 # some unicode tests.
-test_cases=(10 255 120 30 2500 5)
+test_cases=(300 500  2500 66000)
 for test_case in "${test_cases[@]}"
 do
     hex=$(printf "%x" $test_case)
-    printf "\xFF\xFE\u${hex}\n" > test_files/little_endian${test_case}_unicode.input    
-    printf "\xFE\xFF\u\{hex}\n" > test_files/big_endian${test_case}_unicode.input 
+    echo -e "\xFF\xFE\u${hex}\n" > test_files/little_endian${test_case}_unicode.input    
+    echo -e "\xFE\xFF\u\{hex}\n" > test_files/big_endian${test_case}_unicode.input 
 done
 
 ## som ascii, data and iso tests
-for test_case in {1..128}
+for test_case in {1..255}
 do
     hex=$(printf "%x" $test_case)
-    printf "\xFF\xFE\u${hex}\n" > test_files/little_endian${test_case}_asc_dat_iso.input    
+    echo -e "\xFF\xFE\u${hex}\n" > test_files/little_endian${test_case}_asc_dat_iso.input
+    echo -e "\xFE\xFF\u\{hex}\n" > test_files/big_endian${test_case}_asc_dat_iso.input   
 done
-
-printf "\xFF\xFE blue?" > test_files/little_endian_ascii.input
-printf "\xFF\xFE \0" > test_files/little_endian_data.input
-printf "\xFF\xFE \xFD" > test_files/little_endian_iso.input
-
-## Big endian tests
-printf "\xFE\xFF" > test_files/big_endian.input
-printf "\xFE\xFF\x00\x0a" > test_files/big_endian_data.input
-
 
 
 echo "Running the tests.."
@@ -126,10 +117,28 @@ then
 else
   echo ">>> Success :-)"
 fi
-
 printf "Total number of files tested: " & ls test_files/ | egrep input$ | wc -l
 
 
+printf "Testing the the programs API.\n"
+## Program should handle multiple arguments, with just empty files
+touch argfile1 argfile2 argfile3
+./file argfile1 argfile2 argfile3 
+res=$(echo $?)
+printf "Multiple arguments: ${res}\n"
+
+## Program should exit with exitcode 1 if no arguments where passed, and print usage message.
+res=$(./file &> /dev/null || echo $?) 
+printf "No arguments exitcode: ${res}\n"
+
+## Program should exit with code 1 if the files dont exists.
+
+res=$(./file idontexists &> /dev/null || echo $?) 
+printf "non existent files arguments: ${res}\n"
+
+## If the file is a directory(also a file)  it should fail.
+res=$(./file test_files/ &> /dev/null || echo $?) 
+printf "Open a directory arguments: ${res}\n"
 
 
 exit $exitcode
