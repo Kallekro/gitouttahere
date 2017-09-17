@@ -63,8 +63,7 @@ do
     printf "\x${hex}\n" > test_files/iso${testfile_i}.input           
 done
 
-## Testing for unicode files.
-
+## Testing for unicode.
 ## Testing subrange for 2 bytes-encoded unicode characters. Should not be ISO.
 for testfile_i in {128..300}
 do
@@ -86,6 +85,33 @@ do
     printf "\u${hex}\n" > test_files/utf8_4b_${testfile_i}.input
 done
 
+## Little endian and big endian tests
+# some unicode tests.
+test_cases=(10 255 120 30 2500 5)
+for test_case in "${test_cases[@]}"
+do
+    hex=$(printf "%x" $test_case)
+    printf "\xFF\xFE\u${hex}\n" > test_files/little_endian${test_case}_unicode.input    
+    printf "\xFE\xFF\u\{hex}\n" > test_files/big_endian${test_case}_unicode.input 
+done
+
+## som ascii, data and iso tests
+for test_case in {1..128}
+do
+    hex=$(printf "%x" $test_case)
+    printf "\xFF\xFE\u${hex}\n" > test_files/little_endian${test_case}_asc_dat_iso.input    
+done
+
+printf "\xFF\xFE blue?" > test_files/little_endian_ascii.input
+printf "\xFF\xFE \0" > test_files/little_endian_data.input
+printf "\xFF\xFE \xFD" > test_files/little_endian_iso.input
+
+## Big endian tests
+printf "\xFE\xFF" > test_files/big_endian.input
+printf "\xFE\xFF\x00\x0a" > test_files/big_endian_data.input
+
+
+
 echo "Running the tests.."
 exitcode=0
 f=test_files/*.input
@@ -102,5 +128,8 @@ else
 fi
 
 printf "Total number of files tested: " & ls test_files/ | egrep input$ | wc -l
+
+
+
 
 exit $exitcode

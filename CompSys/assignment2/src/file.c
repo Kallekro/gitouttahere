@@ -12,27 +12,29 @@
 #define UTF8_4B(byte) (((byte) & (15u << 4)) == (15u<<4) && !((byte) & (1u << 3)))
 
 enum file_type {
-  ASCII,
-  DATA,  
-  EMPTY,
+  ASCII,  
   ISO8859,
   UTF8,
+  DATA,
   BIGUTF16,
-  LITTLEUTF16
+  LITTLEUTF16,
+  EMPTY,
 };
 
 const char* const file_type_strings[] = {
-  "ASCII text",
-  "data",
-  "empty",
+  "ASCII text",    
   "ISO-8859 text",
   "UTF-8 Unicode text",
-  "Big-endian UTF-16 text",
-  "Little-endian UTF-16 text"
+  "data",
+  "Big-endian UTF-16 Unicode text",
+  "Little-endian UTF-16 Unicode text",   
+  "empty",
 };  
 
 
 int findFileType(char*, unsigned int);
+
+enum file_type changeFileType(enum file_type, enum file_type);
 
 int isStartOfUnicode(unsigned char);
 
@@ -41,6 +43,7 @@ int isASCII(unsigned char);
 int getFileSize(FILE*, long*);
 
 int printError(char*);
+
 
 int main (int argc, char* argv[]) {    
   // Check correct number of arguments      
@@ -93,6 +96,8 @@ int findFileType(char* file_name, unsigned int max_path_len) {
   else { 
     // declaring char to hold each byte read
     unsigned char byte;
+    unsigned char first_two_bytes[2];
+    int byte_counter = 0;
     // Read to end of file.
     while(1) {          
       // read 1 byte
@@ -105,6 +110,23 @@ int findFileType(char* file_name, unsigned int max_path_len) {
       // break loop if stream reached end of file 
       if (feof(somefile)) break;
       
+      if (byte_counter < 2) {
+	first_two_bytes[byte_counter++] = byte;	
+      }
+
+      if (byte_counter == 2) {
+	if (first_two_bytes[0] == 255 && first_two_bytes[1] == 254) { 
+	  filetype = LITTLEUTF16;
+	  break;
+	}
+	else if (first_two_bytes[0] == 254 && first_two_bytes[1] == 255) {
+	  filetype = BIGUTF16;
+	  break;
+	}
+	byte_counter++;
+      }
+      
+      
       // If not currently checking for unicode continue bytes, check if start byte
       if (check_utf8_bytes == 0) {
         check_utf8_bytes = isStartOfUnicode(byte);
@@ -116,7 +138,7 @@ int findFileType(char* file_name, unsigned int max_path_len) {
           check_utf8_bytes--;
           // If reached zero bytes to check, we read a unicode character and we set the filetype to unicode
           if (check_utf8_bytes == 0) {
-            filetype = UTF8;
+            filetype = changeFileType(filetype, UTF8);
             // Since we know the identity of the current byte we continue to next loop iteration
             continue;
           }
@@ -127,10 +149,8 @@ int findFileType(char* file_name, unsigned int max_path_len) {
           // Since the byte was not unicode, some of the previous read bytes might have been exotic bytes
           // Therefore set the filetype to be alt_filetype which will have been set if we reached an exotic byte while searching for unicode continue bytes
           // However don't overwrite UTF8 with ISO8859 since it is contained
-          // alt_filetype will also never be ASCII
-	  if ((filetype != UTF8 && alt_filetype == ISO8859) || alt_filetype == DATA) {
-            filetype = alt_filetype;
-          }
+          // alt_filetype will also never be ASCII	  
+	  filetype = changeFileType(filetype, alt_filetype);
         }
       }
       
@@ -142,11 +162,9 @@ int findFileType(char* file_name, unsigned int max_path_len) {
             alt_filetype = ISO8859;
           }
           else { 
-            // Don't overwrite UTF8 with ISO8859 because it is contained
-	          if (filetype != UTF8) {
-	    	      filetype = ISO8859;	 
-            } 
-	        }
+            // Don't overwrite UTF8 with ISO8859 because it is contained	    
+	    filetype = changeFileType(filetype, ISO8859);	             
+	  }
         }
         else {
           // Same as before, only set alt_filetype if checking for continue bytes
@@ -160,14 +178,23 @@ int findFileType(char* file_name, unsigned int max_path_len) {
       }
     }
   }
-
+  // if we're checking for cont bytes and the loop breaks, we use the alt-filetype as the filetype.
   if (check_utf8_bytes != 0) {
-    filetype = alt_filetype;
+    filetype = changeFileType(filetype, alt_filetype);
+  }
+  // close the file and handle possible errors
+  if(fclose(somefile) != 0) {
+    printError(file_name);
   }
   
   printf("%s:%*s%s\n", file_name, (int)(max_path_len - strlen(file_name)) + 1, " ", file_type_strings[filetype]);
   return 0;
 }
+
+enum file_type changeFileType (enum file_type ft_curr, enum file_type ft_new) {
+  return (ft_curr > ft_new) ? ft_curr : ft_new;
+}
+
 
 int isStartOfUnicode (unsigned char byte) {
   if (UTF8_2B(byte)) {
