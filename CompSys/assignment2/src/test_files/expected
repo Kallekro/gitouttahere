@@ -37,7 +37,7 @@ test_files/ascii34.input:                      ASCII text
 test_files/ascii35.input:                      ASCII text
 test_files/ascii36.input:                      ASCII text
 test_files/ascii37.input:                      ASCII text
-test_files/ascii38.input:                      Sendmail frozen configuration 
+test_files/ascii38.input:                      ASCII text
 test_files/ascii39.input:                      ASCII text
 test_files/ascii3.input:                       ASCII text
 test_files/ascii40.input:                      ASCII text
@@ -418,7 +418,7 @@ test_files/iso180.input:                       ISO-8859 text
 test_files/iso181.input:                       ISO-8859 text
 test_files/iso182.input:                       ISO-8859 text
 test_files/iso183.input:                       ISO-8859 text
-test_files/iso184.input:                       COM executable for DOS
+test_files/iso184.input:                       ISO-8859 text
 test_files/iso185.input:                       ISO-8859 text
 test_files/iso186.input:                       ISO-8859 text
 test_files/iso187.input:                       ISO-8859 text
@@ -467,7 +467,7 @@ test_files/iso229.input:                       ISO-8859 text
 test_files/iso230.input:                       ISO-8859 text
 test_files/iso231.input:                       ISO-8859 text
 test_files/iso232.input:                       ISO-8859 text
-test_files/iso233.input:                       DOS executable (COM)
+test_files/iso233.input:                       ISO-8859 text
 test_files/iso234.input:                       ISO-8859 text
 test_files/iso235.input:                       ISO-8859 text
 test_files/iso236.input:                       ISO-8859 text

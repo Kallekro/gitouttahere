@@ -31,8 +31,9 @@ const char* const file_type_strings[] = {
   "empty",
 };  
 
+unsigned int max_path_length = 0;
 
-int findFileType(char*, unsigned int);
+int findFileType(char*);
 
 enum file_type changeFileType(enum file_type, enum file_type);
 
@@ -44,7 +45,6 @@ int getFileSize(FILE*, long*);
 
 int printError(char*);
 
-
 int main (int argc, char* argv[]) {    
   // Check correct number of arguments      
   if (argc < 2) {
@@ -53,21 +53,20 @@ int main (int argc, char* argv[]) {
   }
 
   // Get the longest path length to use when printing
-  unsigned int max_path_len=0;  
   for (int i=1; i<argc;i++) {
-    if (strlen(argv[i]) > max_path_len)
-      max_path_len = strlen(argv[i]); 
+    if (strlen(argv[i]) > max_path_length)
+      max_path_length = strlen(argv[i]); 
   }
   
   // Print the type of each file argument
   for (int i=1; i<argc;i++) {
-    findFileType(argv[i], max_path_len);     
+    findFileType(argv[i]);     
   }
   
   exit(EXIT_SUCCESS);
 }
 
-int findFileType(char* file_name, unsigned int max_path_len) {
+int findFileType(char* file_name) {
   // Finds the type of file at path file_name and prints it to stdout  
   
   FILE* somefile = fopen(file_name, "r");
@@ -188,7 +187,7 @@ int findFileType(char* file_name, unsigned int max_path_len) {
     printError(file_name);
   }
   
-  printf("%s:%*s%s\n", file_name, (int)(max_path_len - strlen(file_name)) + 1, " ", file_type_strings[filetype]);
+  printf("%s:%*s%s\n", file_name, (int)(max_path_length - strlen(file_name)) + 1, " ", file_type_strings[filetype]);
   return 0;
 }
 
@@ -234,7 +233,7 @@ int getFileSize (FILE* file, long* size) {
 }
 
 int printError(char* file_name) {
-  fprintf(stderr, "%s: could not determine (%s)\n", file_name , strerror(errno));
+  fprintf(stderr, "%s:%*scannot determine (%s)\n", file_name, (int) (max_path_length - strlen(file_name)) + 1, " ", strerror(errno));
   return 0;
 }
 
