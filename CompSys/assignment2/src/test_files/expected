@@ -749,7 +749,7 @@ test_files/little_endian97_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
 test_files/little_endian98_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
 test_files/little_endian99_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
 test_files/little_endian9_asc_dat_iso.input:   Little-endian UTF-16 Unicode text, with no line terminators
-test_files/sourcebin.input:                    ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=7677290e4595ae5aa7278178bb331836d28f7ea2, not stripped
+test_files/sourcebin.input:                    ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=314b232e836c253aa77e669dd90c59fdbd7f4117, not stripped
 test_files/utf8_2b_128.input:                  UTF-8 Unicode text
 test_files/utf8_2b_129.input:                  UTF-8 Unicode text
 test_files/utf8_2b_130.input:                  UTF-8 Unicode text
