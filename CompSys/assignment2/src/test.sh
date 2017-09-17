@@ -122,23 +122,27 @@ printf "Total number of files tested: " & ls test_files/ | egrep input$ | wc -l
 
 printf "Testing the the programs API.\n"
 ## Program should handle multiple arguments, with just empty files
-touch argfile1 argfile2 argfile3
-./file argfile1 argfile2 argfile3 
+
+touch test_files/argfile1 test_files/argfile2 test_files/argfile3
+./file test_files/argfile1 test_files/argfile2 test_files/argfile3 
 res=$(echo $?)
 printf "Multiple arguments: ${res}\n"
 
 ## Program should exit with exitcode 1 if no arguments where passed, and print usage message.
-res=$(./file &> /dev/null || echo $?) 
+res=$(./file || echo $?) 
 printf "No arguments exitcode: ${res}\n"
 
-## Program should exit with code 1 if the files dont exists.
+## Program should exit with code 0 if the files dont exists.
+res=$(./file idontexists || echo $?) 
+printf "non existent files exitcode: ${res}\n"
 
-res=$(./file idontexists &> /dev/null || echo $?) 
-printf "non existent files arguments: ${res}\n"
+## If the file is a directory(also a file) it should exit code 0
+res=$(./file test_files/ || echo $?) 
+printf "Open a directory arguments exitcode: ${res}\n"
 
-## If the file is a directory(also a file)  it should fail.
-res=$(./file test_files/ &> /dev/null || echo $?) 
-printf "Open a directory arguments: ${res}\n"
-
+## If some of the argument is valid, it should print the filetype
+## And display the error message for the invalid arguments, and exit succesfull
+res=$(./file dontexists test_files/ test_files/argfile1)
+printf "Some valid and invalid arguments exitcode: ${res}\n"
 
 exit $exitcode
