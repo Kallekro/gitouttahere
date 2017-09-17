@@ -1241,3 +1241,6 @@ test_files/utf8_4b_65697.input:                UTF-8 Unicode text
 test_files/utf8_4b_65698.input:                UTF-8 Unicode text
 test_files/utf8_4b_65699.input:                UTF-8 Unicode text
 test_files/utf8_4b_65700.input:                UTF-8 Unicode text
+test_files/utf8_no_continue_1.input:           ISO-8859 text
+test_files/utf8_no_continue_2.input:           ISO-8859 text
+test_files/utf8_no_continue_3.input:           ISO-8859 text

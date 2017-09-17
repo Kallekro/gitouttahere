@@ -94,11 +94,12 @@ for test_case in {1..255}
 do
     hex=$(printf "%x" $test_case)
     ## An attempt to make a newline so that file() can detect line terminators.
-    new_line=$(printf "\x00\x0a")    
+    #new_line_little=$(printf "\x00\x0A")    
+    #new_line_big=$(printf "\x0A\x00")    
     bom_little=$(printf "\xFF\xFE")
     bom_big=$(printf "\xFE\xFF")
-    echo "${bom_little}\u${hex}${new_line}" > test_files/little_endian${test_case}_asc_dat_iso.input    
-    echo "${bom_big}\u${hex}${new_line}" > test_files/big_endian${test_case}_asc_dat_iso.input
+    echo "${bom_little}\u${hex}\n" > test_files/little_endian${test_case}_asc_dat_iso.input    
+    echo "${bom_big}\u${hex}\n" > test_files/big_endian${test_case}_asc_dat_iso.input
 done
 
 ## Little endian and big endian tests

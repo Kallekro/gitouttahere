@@ -749,7 +749,7 @@ test_files/little_endian97_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
 test_files/little_endian98_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
 test_files/little_endian99_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
 test_files/little_endian9_asc_dat_iso.input:   Little-endian UTF-16 Unicode text, with no line terminators
-test_files/sourcebin.input:                    ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=ed17c8c57e6afff3f3ba487eaeefe4efba36185b, not stripped
+test_files/sourcebin.input:                    ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=92d931db698e0765bf8f76f69c4fe298d1b6d9e0, not stripped
 test_files/utf8_2b_128.input:                  UTF-8 Unicode text
 test_files/utf8_2b_129.input:                  UTF-8 Unicode text
 test_files/utf8_2b_130.input:                  UTF-8 Unicode text
@@ -1241,3 +1241,6 @@ test_files/utf8_4b_65697.input:                UTF-8 Unicode text
 test_files/utf8_4b_65698.input:                UTF-8 Unicode text
 test_files/utf8_4b_65699.input:                UTF-8 Unicode text
 test_files/utf8_4b_65700.input:                UTF-8 Unicode text
+test_files/utf8_no_continue_1.input:           ISO-8859 text
+test_files/utf8_no_continue_2.input:           ISO-8859 text
+test_files/utf8_no_continue_3.input:           ISO-8859 text
