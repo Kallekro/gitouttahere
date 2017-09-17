@@ -1,0 +1,1105 @@
+make: 'file' is up to date.
+Generating a test_files directory..
+Generating test files..
+Generating test files..
+Running the tests..
+>>> Testing test_files/*.input..
+--- test_files/expected	2017-09-17 21:35:14.444992501 +0200
++++ test_files/actual	2017-09-17 21:35:14.528988198 +0200
+@@ -50,7 +50,7 @@
+ test_files/ascii47.input:                      ASCII text
+ test_files/ascii48.input:                      ASCII text
+ test_files/ascii49.input:                      ASCII text
+-test_files/ascii4.input:                       very short file (no magic)
++test_files/ascii4.input:                       ASCII text
+ test_files/ascii50.input:                      ASCII text
+ test_files/ascii51.input:                      ASCII text
+ test_files/ascii52.input:                      ASCII text
+@@ -107,265 +107,265 @@
+ test_files/ascii99.input:                      ASCII text
+ test_files/ascii9.input:                       ASCII text
+ test_files/ascii.input:                        ASCII text
+-test_files/big_endian100_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian101_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian102_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian103_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian104_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian105_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian106_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian107_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian108_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian109_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian10_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian110_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian111_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian112_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian113_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian114_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian115_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian116_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian117_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian118_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian119_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian11_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian120_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian121_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian122_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian123_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian124_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian125_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian126_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian127_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian128_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian129_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian12_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian130_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian131_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian132_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian133_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian134_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian135_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian136_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian137_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian138_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian139_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian13_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian140_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian141_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian142_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian143_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian144_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian145_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian146_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian147_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian148_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian149_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian14_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian150_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian151_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian152_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian153_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian154_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian155_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian156_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian157_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian158_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian159_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian15_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian160_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian161_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian162_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian163_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian164_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian165_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian166_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian167_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian168_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian169_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian16_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian170_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian171_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian172_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian173_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian174_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian175_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian176_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian177_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian178_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian179_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian17_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian180_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian181_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian182_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian183_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian184_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian185_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian186_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian187_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian188_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian189_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian18_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian190_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian191_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian192_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian193_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian194_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian195_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian196_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian197_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian198_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian199_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian19_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian1_asc_dat_iso.input:      Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian200_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian201_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian202_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian203_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian204_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian205_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian206_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian207_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian208_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian209_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian20_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian210_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian211_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian212_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian213_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian214_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian215_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian216_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian217_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian218_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian219_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian21_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian220_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian221_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian222_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian223_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian224_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian225_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian226_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian227_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian228_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian229_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian22_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian230_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian231_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian232_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian233_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian234_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian235_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian236_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian237_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian238_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian239_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian23_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian240_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian241_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian242_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian243_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian244_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian245_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian246_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian247_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian248_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian249_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian24_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian2500_unicode.input:       Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian250_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian251_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian252_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian253_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian254_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian255_asc_dat_iso.input:    Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian25_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian26_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian27_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian28_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian29_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian2_asc_dat_iso.input:      Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian300_unicode.input:        Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian30_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian31_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian32_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian33_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian34_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian35_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian36_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian37_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian38_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian39_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian3_asc_dat_iso.input:      Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian40_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian41_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian42_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian43_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian44_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian45_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian46_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian47_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian48_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian49_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian4_asc_dat_iso.input:      Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian500_unicode.input:        Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian50_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian51_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian52_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian53_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian54_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian55_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian56_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian57_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian58_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian59_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian5_asc_dat_iso.input:      Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian60_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian61_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian62_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian63_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian64_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian65_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian66000_unicode.input:      Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian66_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian67_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian68_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian69_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian6_asc_dat_iso.input:      Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian70_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian71_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian72_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian73_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian74_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian75_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian76_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian77_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian78_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian79_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian7_asc_dat_iso.input:      Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian80_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian81_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian82_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian83_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian84_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian85_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian86_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian87_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian88_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian89_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian8_asc_dat_iso.input:      Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian90_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian91_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian92_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian93_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian94_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian95_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian96_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian97_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian98_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian99_asc_dat_iso.input:     Big-endian UTF-16 Unicode text, with no line terminators
+-test_files/big_endian9_asc_dat_iso.input:      Big-endian UTF-16 Unicode text, with no line terminators
++test_files/big_endian100_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian101_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian102_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian103_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian104_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian105_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian106_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian107_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian108_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian109_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian10_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian110_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian111_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian112_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian113_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian114_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian115_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian116_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian117_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian118_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian119_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian11_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian120_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian121_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian122_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian123_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian124_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian125_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian126_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian127_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian128_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian129_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian12_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian130_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian131_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian132_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian133_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian134_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian135_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian136_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian137_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian138_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian139_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian13_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian140_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian141_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian142_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian143_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian144_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian145_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian146_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian147_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian148_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian149_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian14_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian150_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian151_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian152_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian153_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian154_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian155_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian156_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian157_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian158_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian159_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian15_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian160_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian161_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian162_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian163_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian164_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian165_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian166_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian167_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian168_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian169_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian16_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian170_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian171_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian172_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian173_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian174_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian175_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian176_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian177_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian178_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian179_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian17_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian180_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian181_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian182_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian183_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian184_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian185_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian186_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian187_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian188_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian189_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian18_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian190_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian191_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian192_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian193_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian194_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian195_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian196_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian197_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian198_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian199_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian19_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian1_asc_dat_iso.input:      Big-endian UTF-16 Unicode text
++test_files/big_endian200_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian201_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian202_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian203_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian204_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian205_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian206_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian207_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian208_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian209_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian20_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian210_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian211_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian212_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian213_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian214_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian215_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian216_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian217_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian218_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian219_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian21_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian220_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian221_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian222_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian223_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian224_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian225_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian226_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian227_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian228_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian229_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian22_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian230_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian231_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian232_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian233_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian234_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian235_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian236_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian237_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian238_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian239_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian23_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian240_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian241_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian242_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian243_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian244_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian245_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian246_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian247_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian248_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian249_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian24_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian2500_unicode.input:       Big-endian UTF-16 Unicode text
++test_files/big_endian250_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian251_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian252_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian253_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian254_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian255_asc_dat_iso.input:    Big-endian UTF-16 Unicode text
++test_files/big_endian25_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian26_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian27_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian28_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian29_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian2_asc_dat_iso.input:      Big-endian UTF-16 Unicode text
++test_files/big_endian300_unicode.input:        Big-endian UTF-16 Unicode text
++test_files/big_endian30_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian31_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian32_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian33_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian34_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian35_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian36_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian37_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian38_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian39_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian3_asc_dat_iso.input:      Big-endian UTF-16 Unicode text
++test_files/big_endian40_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian41_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian42_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian43_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian44_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian45_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian46_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian47_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian48_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian49_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian4_asc_dat_iso.input:      Big-endian UTF-16 Unicode text
++test_files/big_endian500_unicode.input:        Big-endian UTF-16 Unicode text
++test_files/big_endian50_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian51_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian52_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian53_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian54_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian55_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian56_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian57_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian58_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian59_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian5_asc_dat_iso.input:      Big-endian UTF-16 Unicode text
++test_files/big_endian60_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian61_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian62_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian63_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian64_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian65_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian66000_unicode.input:      Big-endian UTF-16 Unicode text
++test_files/big_endian66_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian67_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian68_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian69_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian6_asc_dat_iso.input:      Big-endian UTF-16 Unicode text
++test_files/big_endian70_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian71_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian72_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian73_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian74_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian75_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian76_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian77_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian78_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian79_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian7_asc_dat_iso.input:      Big-endian UTF-16 Unicode text
++test_files/big_endian80_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian81_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian82_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian83_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian84_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian85_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian86_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian87_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian88_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian89_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian8_asc_dat_iso.input:      Big-endian UTF-16 Unicode text
++test_files/big_endian90_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian91_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian92_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian93_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian94_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian95_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian96_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian97_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian98_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian99_asc_dat_iso.input:     Big-endian UTF-16 Unicode text
++test_files/big_endian9_asc_dat_iso.input:      Big-endian UTF-16 Unicode text
+ test_files/data127.input:                      data
+ test_files/data14.input:                       data
+ test_files/data15.input:                       data
+@@ -373,7 +373,7 @@
+ test_files/data17.input:                       data
+ test_files/data18.input:                       data
+ test_files/data19.input:                       data
+-test_files/data1.input:                        very short file (no magic)
++test_files/data1.input:                        data
+ test_files/data20.input:                       data
+ test_files/data21.input:                       data
+ test_files/data22.input:                       data
+@@ -474,7 +474,7 @@
+ test_files/iso237.input:                       ISO-8859 text
+ test_files/iso238.input:                       ISO-8859 text
+ test_files/iso239.input:                       ISO-8859 text
+-test_files/iso240.input:                       SysEx File - AKG
++test_files/iso240.input:                       ISO-8859 text
+ test_files/iso241.input:                       ISO-8859 text
+ test_files/iso242.input:                       ISO-8859 text
+ test_files/iso243.input:                       ISO-8859 text
+@@ -490,272 +490,272 @@
+ test_files/iso253.input:                       ISO-8859 text
+ test_files/iso254.input:                       ISO-8859 text
+ test_files/iso255.input:                       ISO-8859 text
+-test_files/little_endian100_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian101_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian102_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian103_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian104_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian105_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian106_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian107_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian108_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian109_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian10_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian110_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian111_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian112_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian113_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian114_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian115_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian116_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian117_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian118_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian119_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian11_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian120_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian121_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian122_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian123_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian124_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian125_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian126_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian127_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian128_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian129_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian12_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian130_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian131_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian132_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian133_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian134_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian135_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian136_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian137_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian138_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian139_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian13_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian140_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian141_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian142_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian143_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian144_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian145_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian146_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian147_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian148_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian149_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian14_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian150_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian151_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian152_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian153_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian154_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian155_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian156_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian157_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian158_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian159_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian15_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian160_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian161_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian162_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian163_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian164_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian165_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian166_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian167_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian168_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian169_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian16_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian170_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian171_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian172_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian173_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian174_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian175_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian176_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian177_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian178_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian179_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian17_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian180_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian181_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian182_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian183_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian184_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian185_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian186_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian187_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian188_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian189_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian18_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian190_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian191_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian192_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian193_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian194_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian195_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian196_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian197_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian198_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian199_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian19_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian1_asc_dat_iso.input:   Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian200_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian201_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian202_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian203_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian204_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian205_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian206_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian207_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian208_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian209_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian20_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian210_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian211_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian212_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian213_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian214_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian215_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian216_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian217_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian218_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian219_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian21_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian220_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian221_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian222_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian223_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian224_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian225_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian226_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian227_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian228_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian229_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian22_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian230_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian231_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian232_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian233_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian234_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian235_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian236_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian237_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian238_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian239_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian23_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian240_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian241_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian242_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian243_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian244_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian245_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian246_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian247_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian248_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian249_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian24_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian2500_unicode.input:    Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian250_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian251_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian252_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian253_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian254_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian255_asc_dat_iso.input: Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian25_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian26_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian27_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian28_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian29_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian2_asc_dat_iso.input:   Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian300_unicode.input:     Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian30_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian31_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian32_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian33_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian34_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian35_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian36_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian37_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian38_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian39_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian3_asc_dat_iso.input:   Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian40_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian41_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian42_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian43_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian44_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian45_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian46_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian47_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian48_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian49_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian4_asc_dat_iso.input:   Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian500_unicode.input:     Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian50_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian51_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian52_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian53_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian54_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian55_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian56_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian57_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian58_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian59_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian5_asc_dat_iso.input:   Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian60_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian61_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian62_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian63_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian64_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian65_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian66000_unicode.input:   Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian66_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian67_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian68_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian69_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian6_asc_dat_iso.input:   Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian70_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian71_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian72_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian73_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian74_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian75_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian76_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian77_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian78_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian79_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian7_asc_dat_iso.input:   Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian80_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian81_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian82_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian83_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian84_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian85_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian86_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian87_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian88_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian89_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian8_asc_dat_iso.input:   Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian90_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian91_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian92_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian93_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian94_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian95_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian96_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian97_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian98_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian99_asc_dat_iso.input:  Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/little_endian9_asc_dat_iso.input:   Little-endian UTF-16 Unicode text, with no line terminators
+-test_files/sourcebin.input:                    ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=ed17c8c57e6afff3f3ba487eaeefe4efba36185b, not stripped
++test_files/little_endian100_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian101_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian102_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian103_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian104_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian105_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian106_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian107_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian108_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian109_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian10_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian110_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian111_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian112_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian113_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian114_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian115_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian116_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian117_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian118_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian119_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian11_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian120_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian121_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian122_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian123_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian124_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian125_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian126_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian127_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian128_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian129_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian12_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian130_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian131_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian132_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian133_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian134_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian135_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian136_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian137_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian138_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian139_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian13_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian140_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian141_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian142_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian143_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian144_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian145_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian146_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian147_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian148_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian149_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian14_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian150_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian151_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian152_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian153_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian154_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian155_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian156_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian157_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian158_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian159_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian15_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian160_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian161_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian162_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian163_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian164_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian165_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian166_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian167_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian168_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian169_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian16_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian170_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian171_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian172_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian173_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian174_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian175_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian176_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian177_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian178_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian179_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian17_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian180_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian181_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian182_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian183_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian184_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian185_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian186_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian187_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian188_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian189_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian18_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian190_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian191_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian192_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian193_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian194_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian195_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian196_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian197_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian198_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian199_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian19_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian1_asc_dat_iso.input:   Little-endian UTF-16 Unicode text
++test_files/little_endian200_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian201_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian202_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian203_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian204_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian205_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian206_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian207_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian208_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian209_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian20_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian210_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian211_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian212_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian213_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian214_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian215_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian216_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian217_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian218_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian219_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian21_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian220_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian221_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian222_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian223_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian224_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian225_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian226_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian227_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian228_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian229_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian22_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian230_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian231_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian232_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian233_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian234_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian235_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian236_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian237_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian238_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian239_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian23_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian240_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian241_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian242_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian243_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian244_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian245_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian246_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian247_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian248_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian249_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian24_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian2500_unicode.input:    Little-endian UTF-16 Unicode text
++test_files/little_endian250_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian251_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian252_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian253_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian254_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian255_asc_dat_iso.input: Little-endian UTF-16 Unicode text
++test_files/little_endian25_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian26_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian27_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian28_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian29_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian2_asc_dat_iso.input:   Little-endian UTF-16 Unicode text
++test_files/little_endian300_unicode.input:     Little-endian UTF-16 Unicode text
++test_files/little_endian30_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian31_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian32_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian33_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian34_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian35_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian36_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian37_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian38_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian39_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian3_asc_dat_iso.input:   Little-endian UTF-16 Unicode text
++test_files/little_endian40_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian41_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian42_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian43_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian44_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian45_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian46_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian47_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian48_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian49_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian4_asc_dat_iso.input:   Little-endian UTF-16 Unicode text
++test_files/little_endian500_unicode.input:     Little-endian UTF-16 Unicode text
++test_files/little_endian50_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian51_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian52_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian53_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian54_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian55_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian56_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian57_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian58_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian59_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian5_asc_dat_iso.input:   Little-endian UTF-16 Unicode text
++test_files/little_endian60_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian61_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian62_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian63_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian64_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian65_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian66000_unicode.input:   Little-endian UTF-16 Unicode text
++test_files/little_endian66_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian67_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian68_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian69_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian6_asc_dat_iso.input:   Little-endian UTF-16 Unicode text
++test_files/little_endian70_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian71_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian72_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian73_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian74_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian75_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian76_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian77_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian78_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian79_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian7_asc_dat_iso.input:   Little-endian UTF-16 Unicode text
++test_files/little_endian80_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian81_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian82_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian83_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian84_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian85_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian86_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian87_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian88_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian89_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian8_asc_dat_iso.input:   Little-endian UTF-16 Unicode text
++test_files/little_endian90_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian91_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian92_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian93_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian94_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian95_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian96_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian97_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian98_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian99_asc_dat_iso.input:  Little-endian UTF-16 Unicode text
++test_files/little_endian9_asc_dat_iso.input:   Little-endian UTF-16 Unicode text
++test_files/sourcebin.input:                    data
+ test_files/utf8_2b_128.input:                  UTF-8 Unicode text
+ test_files/utf8_2b_129.input:                  UTF-8 Unicode text
+ test_files/utf8_2b_130.input:                  UTF-8 Unicode text
+ test_files/utf8_2b_131.input:                  UTF-8 Unicode text
+ test_files/utf8_2b_132.input:                  UTF-8 Unicode text
+-test_files/utf8_2b_133.input:                  UTF-8 Unicode text, with LF, NEL line terminators
++test_files/utf8_2b_133.input:                  UTF-8 Unicode text
+ test_files/utf8_2b_134.input:                  UTF-8 Unicode text
+ test_files/utf8_2b_135.input:                  UTF-8 Unicode text
+ test_files/utf8_2b_136.input:                  UTF-8 Unicode text
+>>> Failed :-(
+Total number of files tested: 1243
+Testing the the programs API.
+test_files/argfile1: empty
+test_files/argfile2: empty
+test_files/argfile3: empty
+Multiple arguments: 0
+No arguments exitcode: 1
+non existent files exitcode: 
+Open a directory arguments exitcode: 
+Some valid and invalid arguments exitcode: test_files/argfile1: empty
