@@ -14,6 +14,8 @@
 // Macro for changing filetype
 #define CHANGE_FILETYPE(ft_curr, ft_new) ((ft_curr > ft_new) ? ft_curr : ft_new)
 
+// Enumerator for file types. The order is important when overwriting file types! 
+// Explained in report
 enum file_type {
   ASCII,  
   ISO8859,
@@ -24,6 +26,7 @@ enum file_type {
   EMPTY,
 };
 
+// String array corresponding to the enum for printing
 const char* const file_type_strings[] = {
   "ASCII text",    
   "ISO-8859 text",

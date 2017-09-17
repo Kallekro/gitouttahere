@@ -84,22 +84,33 @@ do
     printf "\u${hex}\n" > test_files/utf8_4b_${testfile_i}.input
 done
 
-## Little endian and big endian tests
-# some unicode tests.
-test_cases=(300 500  2500 66000)
-for test_case in "${test_cases[@]}"
-do
-    hex=$(printf "%x" $test_case)
-    echo -e "\xFF\xFE\u${hex}\n" > test_files/little_endian${test_case}_unicode.input    
-    echo -e "\xFE\xFF\u\{hex}\n" > test_files/big_endian${test_case}_unicode.input 
-done
+## Testing with start-bytes, but not all continue bytes.
+printf "\xD5\xFF\n" > test_files/utf8_no_continue_1.input
+printf "\xEA\xAA\xFF\n" > test_files/utf8_no_continue_2.input
+printf "\F2\xAA\xAA\xFF\n" > test_files/utf8_no_continue_3.input
 
 ## som ascii, data and iso tests
 for test_case in {1..255}
 do
     hex=$(printf "%x" $test_case)
-    echo -e "\xFF\xFE\u${hex}\n" > test_files/little_endian${test_case}_asc_dat_iso.input
-    echo -e "\xFE\xFF\u\{hex}\n" > test_files/big_endian${test_case}_asc_dat_iso.input   
+    ## An attempt to make a newline so that file() can detect line terminators.
+    new_line=$(printf "\x00\x0a")    
+    bom_little=$(printf "\xFF\xFE")
+    bom_big=$(printf "\xFE\xFF")
+    echo "${bom_little}\u${hex}${new_line}" > test_files/little_endian${test_case}_asc_dat_iso.input    
+    echo "${bom_big}\u${hex}${new_line}" > test_files/big_endian${test_case}_asc_dat_iso.input
+done
+
+## Little endian and big endian tests
+# some unicode tests.
+test_cases=(300 500 2500 66000)
+for test_case in "${test_cases[@]}"
+do
+    hex=$(printf "%x" $test_case)
+    bom_little=$(printf "\xFF\xFE")
+    bom_big=$(printf "\xFE\xFF")
+    echo "${bom_little}\u${hex}" > test_files/little_endian${test_case}_unicode.input    
+    echo "${bom_big}\u${hex}" > test_files/big_endian${test_case}_unicode.input 
 done
 
 
@@ -124,25 +135,33 @@ printf "Testing the the programs API.\n"
 ## Program should handle multiple arguments, with just empty files
 
 touch test_files/argfile1 test_files/argfile2 test_files/argfile3
+printf "Testing for multiple arguments:\n"
 ./file test_files/argfile1 test_files/argfile2 test_files/argfile3 
 res=$(echo $?)
-printf "Multiple arguments: ${res}\n"
+printf "Exitcode: ${res}\n"
 
 ## Program should exit with exitcode 1 if no arguments where passed, and print usage message.
+printf "Testing for no arguments:\n" 
 res=$(./file || echo $?) 
-printf "No arguments exitcode: ${res}\n"
+printf "exitcode: ${res}\n"
 
 ## Program should exit with code 0 if the files dont exists.
-res=$(./file idontexists || echo $?) 
-printf "non existent files exitcode: ${res}\n"
+printf "Testing with file that doesn't exists.\n"
+./file idontexists
+res=$(echo $?) 
+printf "exitcode: ${res}\n"
 
-## If the file is a directory(also a file) it should exit code 0
-res=$(./file test_files/ || echo $?) 
-printf "Open a directory arguments exitcode: ${res}\n"
+printf "Testing with file that is a directory.\n"
+## If the file is a directory it should exit code 0
+./file test_files/
+res=$(echo $?) 
+printf "exitcode: ${res}\n"
 
 ## If some of the argument is valid, it should print the filetype
 ## And display the error message for the invalid arguments, and exit succesfull
-res=$(./file dontexists test_files/ test_files/argfile1)
-printf "Some valid and invalid arguments exitcode: ${res}\n"
+printf "Testing some valid and invalid arguments.\n"
+./file dontexists test_files/ test_files/argfile1
+res=$(echo $?)
+printf "exitcode: ${res}\n"
 
 exit $exitcode
