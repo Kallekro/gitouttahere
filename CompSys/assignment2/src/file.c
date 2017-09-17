@@ -34,10 +34,8 @@ const char* const file_type_strings[] = {
   "empty",
 };  
 
-unsigned int max_path_length = 0;
 
 int findFileType(char*);
-
 
 int isStartOfUnicode(unsigned char);
 
@@ -46,6 +44,9 @@ int isASCII(unsigned char);
 int getFileSize(FILE*, long*);
 
 int printError(char*);
+
+// Global variable max path length is set in main and used in printError and findFileType
+unsigned int max_path_length = 0;
 
 int main (int argc, char* argv[]) {    
   // Check correct number of arguments      
@@ -112,10 +113,12 @@ int findFileType(char* file_name) {
       // break loop if stream reached end of file 
       if (feof(somefile)) break;
       
+      // Store the first two bytes in an array
       if (byte_counter < 2) {
 	first_two_bytes[byte_counter++] = byte;	
       }
 
+      // When two bytes have been read check if they are UTF-16 BOM's
       if (byte_counter == 2) {
 	if (first_two_bytes[0] == 255 && first_two_bytes[1] == 254) { 
 	  filetype = LITTLEUTF16;
@@ -161,7 +164,7 @@ int findFileType(char* file_name) {
         if (byte >= 160) {
           // If checking for continue bytes only set alt_filetype, not overwriting filetype
           if (check_utf8_bytes != 0) {
-            alt_filetype = ISO8859;
+            alt_filetype = CHANGE_FILETYPE(alt_filetype, ISO8859);
           }
           else { 
             // Don't overwrite UTF8 with ISO8859 because it is contained	    
@@ -170,7 +173,9 @@ int findFileType(char* file_name) {
         }
         else {
           // Same as before, only set alt_filetype if checking for continue bytes
-          if (check_utf8_bytes != 0) alt_filetype = DATA;
+          if (check_utf8_bytes != 0) { 
+            alt_filetype = CHANGE_FILETYPE(alt_filetype, DATA);
+          }  
           else {
             filetype = DATA;
             // We can safely break here, because the data byte cannot be part of a unicode character at this point
