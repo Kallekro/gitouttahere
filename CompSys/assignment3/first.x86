@@ -1,0 +1,6 @@
+main:
+  movq $10, %rax
+  movq $5, %rbx
+  addq %rbx, %rax
+  movq %rax, (%rax)
+  hlt

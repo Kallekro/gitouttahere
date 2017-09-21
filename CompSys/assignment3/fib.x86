@@ -1,0 +1,13 @@
+  movq $1, %rax
+  movq $1, %rbx
+  movq $20, %rdx
+  movq $1, %r8
+loop:
+  addq %rbx, %rax
+  movq %rbx, %r9
+  movq %rax, %rbx
+  subq %r9, %rbx
+  subq %r8, %rdx
+  jne loop
+  movq %rax, (%rax)  
+  hlt 
