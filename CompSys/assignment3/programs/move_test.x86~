@@ -1,0 +1,7 @@
+
+start:    
+    movq %rax, %rbx
+    
+
+
+    

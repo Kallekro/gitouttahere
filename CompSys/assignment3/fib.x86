@@ -9,5 +9,5 @@ loop:
   subq %r9, %rbx
   subq %r8, %rdx
   jne loop
-  movq %rax, (%rax)  
+  movq %rax, (%rsi)  
   hlt 

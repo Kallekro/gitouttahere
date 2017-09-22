@@ -1,0 +1,140 @@
+.pos 0x0
+start:
+    movq data_size, %rsp  // set stack pointer
+    movq $8, %r15
+    subq %r15, %rsp
+    call main
+    hll
+            
+main:
+    movq data, %rdi
+    movq data_size, %rsi
+    call heapsort
+    ret
+    
+// void sift_down(quad a[], quad start, quad end) {
+//    quad root = start;
+//    while ((root<<1) <= end) {
+//	quad lchild = root<<1;
+//	quad swap = root;
+//	if (a[swap] < a[lchild])
+//	    swap = lchild;
+//	quad rchild = lchild+1;
+//	if (rchild <= end)
+//	    if (a[swap] < a[rchild])
+//		swap = rchild;
+//	if (swap == root)
+//	    break;
+//	quad t = a[root];
+//	a[root] = a[swap];
+//	a[swap] = t;
+//	root = swap;
+//    }
+//}
+
+// sift_down(a, start, end):
+// %rdi = a, %r9 = start/root, %r10 = end, %r11 = lchild, %r12 = rchild, %r13 = swap
+// all indices are direct pointers to eliminate address calculations
+// %rdx/rcx loaded results
+// %rdi,%r10 preserved.
+sift_down:
+    jmp sift_down_l1_entry    // while (root<<1 <= end) {
+sift_down_l1_reentry:
+    movq %r9, %r13            //     swap = root
+    movq (%r13), %rdx         //     if (a[swap] < a[lchild])
+    movq (%r11), %rcx
+    cmpq %rdx, %rcx
+    cmovg %r11, %r13          //         swap = lchild
+    movq %r11, %r12           //     rchild = lchild+1
+    movq $8, %r15
+    addq %r15, %r12
+    cmpq %r12, %r10           //     if (rchild <= end)
+    jl sift_down_fi
+    movq (%r13), %rdx         //         if (a[swap] < a[rchild])
+    movq (%r12), %rcx
+    cmpq %rdx, %rcx
+    cmovg %r12, %r13          //             swap = rchild
+sift_down_fi:
+    cmpq %r13,%r9             //     if (swap == root) break
+    je sift_down_l1_exit
+    movq (%r9),%rcx           //     swap(root,swap)
+    movq (%r13),%rdx
+    movq %rcx,(%r13)
+    movq %rdx,(%r9)
+    movq %r13,%r9             //     root = swap
+sift_down_l1_entry:
+    movq %r9, %r11            //     lchild = root<<1;
+    subq %rdi, %r11
+    addq %r11, %r11
+    addq %rdi, %r11
+    cmpq %r11, %r10	          // } while ...
+    jge sift_down_l1_reentry
+sift_down_l1_exit:
+    ret
+
+//void heapsort(quad a[], quad count) {
+//
+//    quad end = count - 1;
+//    quad start = end >> 1; // parent
+//    while (start >= 0) {
+//	sift_down(a, start, end);
+//	start--;
+//    }
+//    while (end) {
+//	// swap a[0],a[end]
+//	quad t = a[0];
+//	a[0] = a[end];
+//	a[end] = t;
+//	end = end - 1;
+//	sift_down(a, 0, end);
+//    }
+//}
+
+// %rdi = a, %rsi = count
+// %r8 = start (scaled, direct pointer)
+// %r10 = end (scaled, direct pointer)
+// %rbp = constant 1
+heapsort:
+    movq $1, %rbp
+    movq %rsi, %r10          // end = count-1
+    movq $1, %r15
+    subq %r15, %r10
+    movq %r10, %r8           // start = end>>1
+    shrq %rbp, %r8
+    addq %r10, %r10          // convert end to pointer
+    addq %r10, %r10
+    addq %r10, %r10
+    addq %rdi, %r10
+    addq %r8, %r8            // convert start to pointer
+    addq %r8, %r8
+    addq %r8, %r8
+    addq %rdi, %r8
+    jmp heapsort_l1_entry    // while (start >= 0) {
+heapsort_l1_reentry:
+    movq %r8, %r9
+    call sift_down
+    movq $8, %r15
+    subq %r15, %r8   
+heapsort_l1_entry:
+    cmpq %r8, %rdi
+    jle heapsort_l1_reentry   // }
+    jmp heapsort_l2_entry    // while (end) {
+heapsort_l2_reentry:
+    movq (%rdi), %rdx
+    movq (%r10), %rcx
+    movq %rdx, (%r10)
+    movq %rcx, (%rdi)
+    movq $8, %r15
+    subq %r15, %r10
+    movq %rdi, %r9
+    call sift_down
+heapsort_l2_entry:
+    cmpq %r10,%rdi
+    jne heapsort_l2_reentry  // }
+    ret
+
+.pos 0x200
+data_size:
+    .quad 100
+data:
+    .rand 1234 10 10
