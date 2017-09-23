@@ -1,0 +1,55 @@
+
+X86 subset encoding
+
+halt            0x00
+nop             0x10
+movq %a,%b      0x20 ab
+cmovcc %a,%b    0x2v ab                         v!=0, see encoding of cc into v below
+movq $i,%b      0x30 0b ii ii ii ii
+movq %a,i(%b)   0x40 ab ii ii ii ii
+movq i(%b),%a   0x50 ab ii ii ii ii
+OPq %a,%b       0x6z ab                         see encoding of OP into z below
+jcc t           0x7c ii ii ii ii                see encoding of cc into c below
+call t          0x80 ii ii ii ii
+ret             0x90
+pushq %a        0xA0 a0
+popq %a         0xB0 a0
+
+Immediates for jcc and call are PC relative.
+'i' is little endian (least significant byte first in instruction stream).
+
+Encoding of v (for use in conditional move)
+also encoding of cc (for use in conditional branch)
+
+0 = always (jmp or movq)
+1 = less or equal (jle, cmovle)
+2 = less (jl, cmovl)
+3 = equal (je, cmove)
+4 = not equal (jne, cmovne)
+5 = greater or equal (jge, cmovge)
+6 = greater (jg, cmovg)
+
+Encoding of z (operation in OPq)
+0 = addq
+1 = subq
+2 = andq
+3 = xorq
+4 = cmpq
+
+Register name to register number mapping:
+rax = 0
+rcx = 1
+rdx = 2
+rbx = 3
+rsi = 4
+rdi = 5
+rsp = 6
+rbp = 7
+r8  = 8
+r9  = 9
+r10 = A
+r11 = B
+r12 = C
+r13 = D
+r14 = E
+r15 = F

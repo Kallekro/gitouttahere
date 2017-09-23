@@ -1,6 +1,1 @@
-
-start:    
     movq %rax, %rbx
-    nop
-    nop
-    hlt        

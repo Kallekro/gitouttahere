@@ -67,52 +67,36 @@ int main(int argc, char* argv[]) {
 
 	bool is_RtoRmove = is(MOV_RtoR, major_op);
         bool is_ItoRmove = is(MOV_ItoR, major_op);
-        bool is_RtoMmove = is(MOV_RtoM, major_op);
-        bool is_MtoRmove = is(MOV_MtoR, major_op);
+        bool is_move = is_RtoRmove || is_ItoRmove;
+        bool has_double_regs = is_RtoRmove;
+        bool has_reg = is_ItoRmove;
 
-        bool is_move = is_RtoRmove || is_ItoRmove || is_RtoMmove || is_MtoRmove;
-        bool has_regs = is_move;
-        bool mov_to_mem = is_RtoMmove;
-        bool has_imm = is_ItoRmove || mov_to_mem || is_MtoRmove;
-
-        val size = or( use_if(!has_regs, from_int(1)),
-                       use_if(has_regs, from_int(2)));
-
-        if (has_imm) {
-          size = add(size, from_int(4));
-        } 
-
+        val size = or( use_if(!has_double_regs || !has_reg, from_int(1)),
+                       use_if(has_double_regs || has_reg, from_int(2)));
         val reg_a = pick_bits(12,4, inst_word);
         val reg_b = pick_bits(8,4, inst_word);
-        val imm_bytes = or( use_if(!has_regs, pick_bits(8, 32, inst_word)),
-                            use_if(has_regs, pick_bits(16, 32, inst_word)));
+        val imm_bytes = or( use_if(!has_double_regs || !has_reg, pick_bits(8, 32, inst_word)),
+                            use_if(has_double_regs || has_reg, pick_bits(16, 32, inst_word)));
         val imm = imm_bytes;
         val sign_extended_imm = sign_extend(31,imm);
         val next_inst_pc = add(pc, size);
         stop = is(HLT, major_op);
         
-        val op_a;
-        val op_b;
         // execute
-        op_a = memory_read(regs, 0, reg_a, true);
-        if (is_MtoRmove) {
-          op_a = memory_read(mem, 0, add(op_a, imm), true);
+        if (has_double_regs) {
+          val op_a = memory_read(regs, 0, reg_a, true);
         }
-        if (is_ItoRmove) {
-          op_a = imm;
+        else {
+          val op_a = imm;
         }
-        if (has_imm && !is_ItoRmove) {
-          reg_b = add(reg_b, imm);
-        }       
-        op_b = memory_read(regs, 1, reg_b, true);
+        val op_b = memory_read(regs, 1, reg_b, true);
+
         // select result for register update
         val datapath_result = op_a;
 
         // pick result value and target register
         val target_reg = reg_b;
-        val target_mem = op_b; 
-        bool reg_wr_enable = is_move && !mov_to_mem;
-        bool mem_wr_enable = is_move && mov_to_mem;
+        bool reg_wr_enable = is_move;
 
         // determine PC for next cycle
         val next_pc = next_inst_pc;
@@ -143,7 +127,6 @@ int main(int argc, char* argv[]) {
         // store results at end of cycle
         pc = next_pc;
         memory_write(regs, 1, target_reg, datapath_result, reg_wr_enable);
-        memory_write(mem, 1, target_mem, datapath_result, mem_wr_enable);
     }
     printf("Done\n");
 }
