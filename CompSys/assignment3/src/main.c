@@ -75,16 +75,15 @@ int main(int argc, char* argv[]) {
         bool mov_to_mem = is_RtoMmove;
         bool has_imm = is_ItoRmove || mov_to_mem || is_MtoRmove;
 
-        val size = or( use_if(!has_regs, from_int(1)),
-                       use_if(has_regs, from_int(2)));
-
-        if (has_imm) {
-          size = add(size, from_int(4));
-        } 
-
+	val size = or( use_if(!has_regs, from_int(1)),
+                       use_if(has_regs, or(use_if(has_imm, from_int(6)),
+				           use_if(!has_imm, from_int(2))))
+		       );
+ 	
         val reg_a = pick_bits(12,4, inst_word);
         val reg_b = pick_bits(8,4, inst_word);
-        val imm_bytes = or( use_if(!has_regs, pick_bits(8, 32, inst_word)),
+
+	val imm_bytes = or( use_if(!has_regs, pick_bits(8, 32, inst_word)),
                             use_if(has_regs, pick_bits(16, 32, inst_word)));
         val imm = imm_bytes;
         val sign_extended_imm = sign_extend(31,imm);
@@ -94,18 +93,22 @@ int main(int argc, char* argv[]) {
         val op_a;
         val op_b;
         // execute
+
         op_a = memory_read(regs, 0, reg_a, true);
-        if (is_MtoRmove) {
-          op_a = memory_read(mem, 0, add(op_a, imm), true);
-        }
-        if (is_ItoRmove) {
-          op_a = imm;
-        }
-        if (has_imm && !is_ItoRmove) {
-          reg_b = add(reg_b, imm);
-        }       
+
+	op_a = or(use_if(is_MtoRmove, memory_read(mem, 0, add(op_a, imm), true)),
+		  use_if(!is_MtoRmove, op_a));
+
+	op_a = or(use_if(is_ItoRmove, imm),
+		  use_if(!is_ItoRmove, op_a));
+
+	reg_b = or(use_if(is_ItoRmove, reg_b),
+		   use_if(!is_ItoRmove, or(use_if(has_imm, add(reg_b, imm)),
+					   use_if(!has_imm, reg_b))));
+	       
         op_b = memory_read(regs, 1, reg_b, true);
-        // select result for register update
+
+	// select result for register update
         val datapath_result = op_a;
 
         // pick result value and target register
