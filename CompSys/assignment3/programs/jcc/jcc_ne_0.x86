@@ -1,0 +1,10 @@
+  movq $5, %rcx
+  movq $6, %rax
+  cmpq %rcx, %rax
+  jne label1
+  hlt
+label1:
+  //rax should be changed if jne
+  movq $42, %rax
+  hlt
+  
