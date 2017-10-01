@@ -1,0 +1,4 @@
+movq $8,%rax
+movq $8,%rcx
+// rax should be 8.
+addq %rcx,%rax

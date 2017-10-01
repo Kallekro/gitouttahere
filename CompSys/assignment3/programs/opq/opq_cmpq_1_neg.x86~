@@ -1,0 +1,7 @@
+movq $1, %rbx
+movq $-8,%rax
+movq $0,%rcx
+// rax, should not be updated
+cmpq %rcx,%rax
+// should move 1 into rax, if -8 is less than 0...
+cmovl %rbx,%rax
