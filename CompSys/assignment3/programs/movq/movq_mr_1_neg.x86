@@ -1,0 +1,5 @@
+movq $256,%rbx
+movq $-256, %rcx
+movq %rcx,(%rbx)
+// should read the value -256 from the memory and place it in rax.
+movq (%rbx),%rax

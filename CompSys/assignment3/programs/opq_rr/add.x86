@@ -1,3 +1,0 @@
-movq $5,%rax
-movq $2,%rcx
-addq %rcx,%rax

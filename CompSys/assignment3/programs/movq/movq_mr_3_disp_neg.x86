@@ -1,0 +1,4 @@
+movq $256, %rbx
+movq $42,%rcx
+movq %rcx, (%rbx)
+movq -16(%rbx),%rax
