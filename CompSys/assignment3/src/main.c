@@ -202,9 +202,8 @@ int main(int argc, char* argv[]) {
         
         // set register write enable      
         // if move to register and the conditions are met (for movq the minor_op is 0 therefor always move)
-        bool reg_wr_enable =((is_move && !is_RtoMmove) && eval_condition(cc, minor_op));
         // if arithmetic operation and not compare or stack operation
-        reg_wr_enable = reg_wr_enable || (is_Arithmetic && !is(0x4, minor_op)) || stack_op;
+        bool reg_wr_enable =((is_move && !is_RtoMmove) && eval_condition(cc, minor_op)) || (is_Arithmetic && !is(0x4, minor_op)) || stack_op;;
         
         // set memory write enable
         // only these three instructions need to write to memory  
