@@ -1,0 +1,4 @@
+//assume a move with immediates is tested.
+movq $10,%rax
+movq %rax,%rcx
+

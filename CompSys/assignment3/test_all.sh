@@ -1,17 +1,23 @@
 #!/usr/bin/env bash
 
-num_test=$(ls programs/*x86 | wc -l)
+num_test=$(ls programs/*/*x86 | wc -l)
 
 test_i=1
 
 echo "Running ${num_test} number of test."
-for test_program in $(ls programs/*.x86 | cut -d'.' -f1) 
+for test_dir in $(ls programs/) 
 do
-    raw=$(cut -d'/' -f2 <<< $test_program)
-    echo "Test number: ${test_i} - Name: ${raw}.x86"
-    printf "Result: "
-    ./run_sim.sh $test_program | egrep "Done" | wc -l
-    let test_i++
+    echo "Testing \"${test_dir}\" commands:"
+    printf "\n"
+    for test_program in $(ls programs/$test_dir/*x86)
+        do				    	    	    
+	    raw=$(cut -d'.' -f1 <<< $test_program)
+	    echo "Test number: ${test_i} - Name: ${raw}.x86"
+	    printf "Result:  "
+	    ./run_sim.sh $raw | egrep "Done" | wc -l
+	    printf "\n"
+	    let test_i++
+	done    
 done
 
 
