@@ -1,11 +1,10 @@
-  jmp label1
-label3:
-  movq $1, %rax
-label1:
-  subq %rax, %rbx
-  je label2
-  jmp end
-label2:
-  jmp label3
-end:
+  movq $5, %rcx
+  movq $5, %rax
+  cmpq %rcx, %rax
+  jge label1
   hlt
+label1:
+  //rax should be changed if je
+  movq $42, %rax
+  hlt
+  

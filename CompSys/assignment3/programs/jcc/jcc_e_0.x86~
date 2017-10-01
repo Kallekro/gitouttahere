@@ -1,9 +1,0 @@
-  movq $5, %rcx
-  movq $5, %rax
-  cmpq %rcx, %rax
-  je label1
-  hlt
-label1:
-  // rax should be changed if je
-  movq $42, %rax
-  halt

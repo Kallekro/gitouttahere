@@ -2,8 +2,6 @@
 
 num_test=$(ls programs/*/*x86 | wc -l)
 
-
-
 echo "Running ${num_test} number of test."
 for test_dir in $(ls programs/) 
 do
