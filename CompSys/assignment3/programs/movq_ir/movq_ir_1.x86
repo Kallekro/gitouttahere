@@ -1,2 +1,2 @@
 // negative immediate.
-mov $-42,%rax
+movq $-42,%rax
