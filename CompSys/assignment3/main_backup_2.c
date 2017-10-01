@@ -115,15 +115,16 @@ int main(int argc, char* argv[]) {
         size = or(use_if(is_Jump || is_Call, from_int(5)),
                   use_if(!is_Jump && !is_Call, size));	
 
+        bool flipped = is_MtoRmove;// || (is_Arithmetic && is(0x4, minor_op));
         // find register a in instruction
         // the registers are flipped in memory to register move
-        val reg_a = or(use_if(is_MtoRmove, pick_bits(8,4, inst_word)),
-                       use_if(!is_MtoRmove, pick_bits(12,4, inst_word)));
+        val reg_a = or(use_if(flipped, pick_bits(8,4, inst_word)),
+                       use_if(!flipped, pick_bits(12,4, inst_word)));
 
         // find instruction b in instruction
         // the registers are flipped in memory to register move
-        val reg_b = or(use_if(is_MtoRmove, pick_bits(12,4, inst_word)),
-                       use_if(!is_MtoRmove, pick_bits(8,4, inst_word)));
+        val reg_b = or(use_if(flipped, pick_bits(12,4, inst_word)),
+                       use_if(!flipped, pick_bits(8,4, inst_word)));
 
         // if the operation is a stack operation the target register aka. register b is the stack pointer register
 	      reg_b = or(use_if(stack_op, REG_SP),
