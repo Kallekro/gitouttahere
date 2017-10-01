@@ -1,0 +1,10 @@
+movq $64, %r8
+movq $-64, %r9
+movq $640, %rax
+movq %r8, (%rax)
+movq $512, %rax
+movq %r9, (%rax)
+
+movq $576, %rax
+movq 64(%rax), %rcx
+movq -64(%rax), %rdx
