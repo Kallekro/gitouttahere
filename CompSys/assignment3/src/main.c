@@ -23,6 +23,10 @@
 
 #define REG_SP from_int(4)
 
+// Macro for parsing condition codes
+#define CCParser(cur, is_arith, result) (is_arith && result) || ((is_arith ^ cur) && !is_arith);
+
+
 int main(int argc, char* argv[]) {
 
     if (argc < 2)
@@ -56,7 +60,7 @@ int main(int argc, char* argv[]) {
     int instruction_number = 0;
 
     while (!stop) { // for each cycle:      
-	++instruction_number;
+	      ++instruction_number;
 	
         // fetch next instruction
         val inst_word = memory_read_unaligned(mem, 0, 1, pc, true);
@@ -64,16 +68,16 @@ int main(int argc, char* argv[]) {
         // decode
         val major_op = pick_bits(4,4, inst_word);
         val minor_op = pick_bits(0,4, inst_word);
-
-	bool is_RtoRmove = is(MOV_RtoR, major_op);
+        
+        bool is_RtoRmove = is(MOV_RtoR, major_op);
         bool is_ItoRmove = is(MOV_ItoR, major_op);
         bool is_RtoMmove = is(MOV_RtoM, major_op);
         bool is_MtoRmove = is(MOV_MtoR, major_op);
 	
-	bool is_Arithmetic = is(ARITHMETIC, major_op);
+        bool is_Arithmetic = is(ARITHMETIC, major_op);
 
-	bool is_Push = is(PUSH, major_op);
-	bool is_Pop = is(POP, major_op);
+        bool is_Push = is(PUSH, major_op);
+        bool is_Pop = is(POP, major_op);
 
         bool is_Call = is(CALL, major_op);     
         bool is_Return = is(RET, major_op);
@@ -87,39 +91,36 @@ int main(int argc, char* argv[]) {
         bool is_Small = is_Nop || is_Halt || is_Return;
 
         bool is_move = is_RtoRmove || is_ItoRmove || is_RtoMmove || is_MtoRmove;
-	bool has_regs = is_move || is_Arithmetic || is_Push || is_Pop;
+      	bool has_regs = is_move || is_Arithmetic || is_Push || is_Pop;
         bool mov_to_mem = is_RtoMmove;
         bool has_imm = is_ItoRmove || mov_to_mem || is_MtoRmove || is_Jump || is_Call;
-	bool stack_op = is_Push || is_Pop || is_Call || is_Return;	
-	val size = or( use_if(is_Small, from_int(1)),
+	      bool stack_op = is_Push || is_Pop || is_Call || is_Return;	
+      	val size = or( use_if(is_Small, from_int(1)),
                        use_if(!is_Small, or(use_if(has_imm, from_int(6)),
-					   use_if(!has_imm, from_int(2))))
-		       );
+                                            use_if(!has_imm, from_int(2)))));
 	
         size = or(use_if(is_Jump || is_Call, from_int(5)),
                   use_if(!is_Jump && !is_Call, size));	
-       // val reg_a = pick_bits(12,4,inst_word);
-       // val reg_b = pick_bits(8,4,inst_word);
 
         val reg_a = or(use_if(is_MtoRmove, pick_bits(8,4, inst_word)),
                        use_if(!is_MtoRmove, pick_bits(12,4, inst_word)));
 
-	val reg_b = or(use_if(is_MtoRmove, pick_bits(12,4, inst_word)),
+        val reg_b = or(use_if(is_MtoRmove, pick_bits(12,4, inst_word)),
                        use_if(!is_MtoRmove, pick_bits(8,4, inst_word)));
 
-	reg_b = or(use_if(stack_op, REG_SP),
-		   use_if(!stack_op, reg_b));	
+	      reg_b = or(use_if(stack_op, REG_SP),
+		               use_if(!stack_op, reg_b));	
 
-	val imm_bytes = or( use_if(!has_regs, pick_bits(8, 32, inst_word)),
+	      val imm_bytes = or( use_if(!has_regs, pick_bits(8, 32, inst_word)),
                             use_if(has_regs, pick_bits(16, 32, inst_word)));
         val imm = or(use_if(has_imm, imm_bytes),
-		     use_if(!has_imm, from_int(0)));
+		                 use_if(!has_imm, from_int(0)));
 	
         val sign_extended_imm = sign_extend(31,imm);
 
         val next_inst_pc = add(pc, size);
 
-        val next_jmp_inst_pc = imm;
+        val next_jmp_inst_pc = sign_extended_imm;
 
         stop = is_Halt;
         
@@ -130,8 +131,8 @@ int main(int argc, char* argv[]) {
         op_a = memory_read(regs, 1, reg_a, true);
         val reg_a_val = op_a;
 
-	op_a = or(use_if(is_ItoRmove, imm),
-		  use_if(!is_ItoRmove, op_a));
+       	op_a = or(use_if(is_ItoRmove, sign_extended_imm),
+		    use_if(!is_ItoRmove, op_a));
 
         op_a = or(use_if(!stack_op, op_a),
                   use_if(stack_op, or(use_if(is_Push || is_Call,   from_int(-8)),
@@ -142,37 +143,37 @@ int main(int argc, char* argv[]) {
         val alu_method = or(use_if(is_Arithmetic, minor_op),
                             use_if(!is_Arithmetic, from_int(0))); // Set to add
 
-	alu_execute_result alu_res = alu_execute(alu_method, op_a, op_b);
+        alu_execute_result alu_res = alu_execute(alu_method, op_a, op_b);
 
-        // TODO:
-        // CLEAN UP THIS SHIT
-        cc.of = (is_Arithmetic && alu_res.cc.of) || ((is_Arithmetic ^ cc.of) && !is_Arithmetic);
-        cc.sf = (is_Arithmetic && alu_res.cc.sf) || ((is_Arithmetic ^ cc.sf) && !is_Arithmetic);
-        cc.zf = (is_Arithmetic && alu_res.cc.zf) || ((is_Arithmetic ^ cc.zf) && !is_Arithmetic);
+        // Set condition codes
+        cc.of = CCParser(cc.of, is_Arithmetic, alu_res.cc.of); 
+        cc.sf = CCParser(cc.sf, is_Arithmetic, alu_res.cc.sf);
+        cc.zf = CCParser(cc.zf, is_Arithmetic, alu_res.cc.zf);
         
-	// select result for register update
+	      // select result for register update
         val datapath_result_reg = or(use_if(is_Arithmetic || stack_op, alu_res.result),
-				     use_if(!is_Arithmetic && !stack_op, op_a));
+			                               use_if(!is_Arithmetic && !stack_op, op_a));
 
-        datapath_result_reg = or(use_if(is_MtoRmove,memory_read(mem,1,add(op_a, imm),is_MtoRmove)),
-		                 use_if(!is_MtoRmove,datapath_result_reg));
+        datapath_result_reg = or(use_if(is_MtoRmove,memory_read(mem,1,add(op_a, sign_extended_imm),is_MtoRmove)),
+                                 use_if(!is_MtoRmove,datapath_result_reg));
 
-	val datapath_result_mem = or(use_if(is_RtoMmove, op_a),
+	      val datapath_result_mem = or(use_if(is_RtoMmove, op_a),
                                      use_if(!is_RtoMmove, or(use_if(is_Push, reg_a_val), 
-                                                             use_if(!is_Push, imm))));
+                                                             use_if(!is_Push, sign_extended_imm))));
+        
         datapath_result_mem = or(use_if(is_Call, next_inst_pc),
-                                     use_if(!is_Call, datapath_result_mem));
+                                 use_if(!is_Call, datapath_result_mem));
         
         // pick result value and target register        
-	bool reg_wr_enable =((is_move && !mov_to_mem) && eval_condition(cc, minor_op));
+        bool reg_wr_enable =((is_move && !mov_to_mem) && eval_condition(cc, minor_op));
         reg_wr_enable = reg_wr_enable || (is_Arithmetic && !is(0x4, minor_op));
-	reg_wr_enable = reg_wr_enable || stack_op;
+        reg_wr_enable = reg_wr_enable || stack_op;
 	
-	bool mem_wr_enable = (is_move && mov_to_mem) || is_Push || is_Call;
+        bool mem_wr_enable = (is_move && mov_to_mem) || is_Push || is_Call;
 
-	val target_reg = reg_b;
+        val target_reg = reg_b;
 
-	val target_mem = or(use_if(is_RtoMmove, add(op_b, imm)), 
+        val target_mem = or(use_if(is_RtoMmove, add(op_b, sign_extended_imm)), 
                             use_if(!is_RtoMmove, add(op_b, from_int(-8))));
 
         val top_stack = memory_read(regs, 2, REG_SP, is_Pop || is_Return);
@@ -215,7 +216,7 @@ int main(int argc, char* argv[]) {
         // store results at end of cycle
         pc = next_pc;
         memory_write(regs, 0, target_reg, datapath_result_reg, reg_wr_enable);
-	memory_write(regs, 1, reg_a, top_stack, is_Pop);
+        memory_write(regs, 1, reg_a, top_stack, is_Pop);
         memory_write(mem, 0, target_mem, datapath_result_mem, mem_wr_enable);
     }
     printf("Done\n");
