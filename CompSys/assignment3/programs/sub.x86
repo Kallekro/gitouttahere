@@ -1,0 +1,3 @@
+movq $2,%rax
+movq $1,%rcx
+subq %rcx,%rax

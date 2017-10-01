@@ -77,7 +77,7 @@
 
 [_a-zA-Z][_a-zA-Z0-9]*          { strcpy(yylval.str_val, yytext); return IDENTIFIER; }
 
-[0-9][0-9]*                     { yylval.int_val = _isa_signedLong((int32_t) atoi(yytext)); return INT_LITERAL; }
+[-]?[0-9][0-9]*                 { yylval.int_val = _isa_signedLong((int32_t) atoi(yytext)); return INT_LITERAL; }
 0b[0-9a-fA-F][0-9a-fA-F]*       { yylval.int_val = _isa_signedLong((int32_t) strtoul(yytext + 2, NULL,  2)); return INT_LITERAL; }
 0o[0-9a-fA-F][0-9a-fA-F]*       { yylval.int_val = _isa_signedLong((int32_t) strtoul(yytext + 2, NULL,  8)); return INT_LITERAL; }
 0x[0-9a-fA-F][0-9a-fA-F]*       { yylval.int_val = _isa_signedLong((int32_t) strtoul(yytext + 2, NULL, 16)); return INT_LITERAL; }

@@ -97,7 +97,7 @@ static inline size_t isa_encode(unsigned char * memory, isa_Instruction instruct
         }
         case isa_Opcode_movq_mr:
         {
-            isa_writeByte(memory + 1, isa_packHalfs(instruction.mr.dst, instruction.mr.idx));
+            isa_writeByte(memory + 1, isa_packHalfs(instruction.mr.idx, instruction.mr.dst));
             isa_writeLong(memory + 2, instruction.mr.src);
             
             break;
@@ -154,7 +154,7 @@ static inline size_t isa_encode(unsigned char * memory, isa_Instruction instruct
         }
         case isa_Opcode_popq:
         {
-            isa_writeByte(memory + 1, isa_packHalfs(instruction.r, 0));
+            isa_writeByte(memory + 1, isa_packHalfs(0, instruction.r));
             
             break;
         }
@@ -220,8 +220,8 @@ static inline size_t isa_decode(unsigned char const * memory, isa_Instruction * 
         {
             isa_Byte const regs = isa_readByte(memory + 1);
             
-            instruction->mr.dst = isa_lo(regs);
-            instruction->mr.idx = isa_hi(regs);
+            instruction->mr.idx = isa_lo(regs);
+            instruction->mr.dst = isa_hi(regs);
             instruction->mr.src = isa_readLong(memory + 2);
             
             break;
@@ -288,7 +288,7 @@ static inline size_t isa_decode(unsigned char const * memory, isa_Instruction * 
         {
             isa_Byte const byte = isa_readByte(memory + 1);
             
-            instruction->r = isa_lo(byte);
+            instruction->r = isa_hi(byte);
             
             break;
         }

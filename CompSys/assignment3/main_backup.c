@@ -96,15 +96,14 @@ int main(int argc, char* argv[]) {
 					   use_if(!has_imm, from_int(2))))
 		       );
 	
-        size = or(use_if(is_Jump || is_Call, from_int(5)),
-                  use_if(!is_Jump && !is_Call, size));	
+        size = or(use_if(is_Jump, from_int(5)),
+                  use_if(!is_Jump, size));	
        // val reg_a = pick_bits(12,4,inst_word);
        // val reg_b = pick_bits(8,4,inst_word);
 
         val reg_a = or(use_if(is_MtoRmove, pick_bits(8,4, inst_word)),
                        use_if(!is_MtoRmove, pick_bits(12,4, inst_word)));
-
-	val reg_b = or(use_if(is_MtoRmove, pick_bits(12,4, inst_word)),
+        val reg_b = or(use_if(is_MtoRmove, pick_bits(12,4, inst_word)),
                        use_if(!is_MtoRmove, pick_bits(8,4, inst_word)));
 
 	reg_b = or(use_if(stack_op, REG_SP),
@@ -138,50 +137,45 @@ int main(int argc, char* argv[]) {
                                       use_if(!is_Push && !is_Call, from_int(8)))));
 	
         op_b = memory_read(regs, 0, reg_b, true);
-	
+        
         val alu_method = or(use_if(is_Arithmetic, minor_op),
                             use_if(!is_Arithmetic, from_int(0))); // Set to add
 
 	alu_execute_result alu_res = alu_execute(alu_method, op_a, op_b);
-
-        // TODO:
-        // CLEAN UP THIS SHIT
-        cc.of = (is_Arithmetic && alu_res.cc.of) || ((is_Arithmetic ^ cc.of) && !is_Arithmetic);
-        cc.sf = (is_Arithmetic && alu_res.cc.sf) || ((is_Arithmetic ^ cc.sf) && !is_Arithmetic);
-        cc.zf = (is_Arithmetic && alu_res.cc.zf) || ((is_Arithmetic ^ cc.zf) && !is_Arithmetic);
+        cc.of = (is_Arithmetic && alu_res.cc.of) || (is_Arithmetic ^ cc.of);
+        cc.sf = (is_Arithmetic && alu_res.cc.sf) || (is_Arithmetic ^ cc.sf);
+        cc.zf = (is_Arithmetic && alu_res.cc.zf) || (is_Arithmetic ^ cc.zf);
         
 	// select result for register update
         val datapath_result_reg = or(use_if(is_Arithmetic || stack_op, alu_res.result),
 				     use_if(!is_Arithmetic && !stack_op, op_a));
 
-        datapath_result_reg = or(use_if(is_MtoRmove,memory_read(mem,1,add(op_a, imm),is_MtoRmove)),
+        val mem_lookup = or(use_if(is_MtoRmove, add(op_a, imm)),
+                        use_if(!is_MtoRmove, from_int(0)));
+
+        datapath_result_reg = or(use_if(is_MtoRmove,memory_read(mem,1,mem_lookup,true)),
 		                 use_if(!is_MtoRmove,datapath_result_reg));
+
 
 	val datapath_result_mem = or(use_if(is_RtoMmove, op_a),
                                      use_if(!is_RtoMmove, or(use_if(is_Push, reg_a_val), 
                                                              use_if(!is_Push, imm))));
-        datapath_result_mem = or(use_if(is_Call, next_inst_pc),
-                                     use_if(!is_Call, datapath_result_mem));
-        
+
         // pick result value and target register        
 	bool reg_wr_enable =((is_move && !mov_to_mem) && eval_condition(cc, minor_op));
         reg_wr_enable = reg_wr_enable || (is_Arithmetic && !is(0x4, minor_op));
 	reg_wr_enable = reg_wr_enable || stack_op;
-	
+
 	bool mem_wr_enable = (is_move && mov_to_mem) || is_Push || is_Call;
 
 	val target_reg = reg_b;
 
 	val target_mem = or(use_if(is_RtoMmove, add(op_b, imm)), 
                             use_if(!is_RtoMmove, add(op_b, from_int(-8))));
-
-        val top_stack = memory_read(regs, 2, REG_SP, is_Pop || is_Return);
 	
         // determine PC for next cycle
-        val next_pc = or (use_if(do_Jump || is_Call, next_jmp_inst_pc),
-                          use_if(!do_Jump && !is_Call, next_inst_pc));
-        next_pc = or (use_if(is_Return, memory_read(mem, 0, top_stack, is_Return)),
-                          use_if(!is_Return, next_pc));
+        val next_pc = or (use_if(do_Jump, next_jmp_inst_pc),
+                          use_if(!do_Jump, next_inst_pc));
 
         // potentially pretty-print something to show progress before
         // ending cycle and overwriting state from start of cycle:
@@ -215,7 +209,6 @@ int main(int argc, char* argv[]) {
         // store results at end of cycle
         pc = next_pc;
         memory_write(regs, 0, target_reg, datapath_result_reg, reg_wr_enable);
-	memory_write(regs, 1, reg_a, top_stack, is_Pop);
         memory_write(mem, 0, target_mem, datapath_result_mem, mem_wr_enable);
     }
     printf("Done\n");

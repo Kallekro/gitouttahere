@@ -311,10 +311,14 @@ static inline isa_Status sim_alu
     
     if (trace != NULL)
     {
-        sim_traceRegisterUpdate(trace, state->cycle, dst, result);
+        if (op != isa_ALUOp_cmpq)
+        {
+            sim_traceRegisterUpdate(trace, state->cycle, dst, result);
+        }
+
         sim_traceInstructionPointerUpdate(trace, state->cycle, state->ip);
     }
-    
+
     return isa_Status_aok;
 }
 

@@ -1,0 +1,8 @@
+movq $5,%rax
+addq %rax, %rcx
+subq %rax, %rcx
+movq $1, %rdx
+xorq %rdx, %rax
+movq $12, %rbx
+andq %rax, %rbx
+hlt
