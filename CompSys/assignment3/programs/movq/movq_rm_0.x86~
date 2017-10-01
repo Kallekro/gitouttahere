@@ -1,0 +1,2 @@
+movq $5, %rax
+movq %rax, (%rbx)

@@ -1,0 +1,4 @@
+movq $256, %rcx
+movq $-1337, %rax
+movq $rax, (%rcx)
+
