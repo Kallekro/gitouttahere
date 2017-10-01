@@ -1,4 +1,0 @@
-movq $8,%rax
-movq $0,%rcx
-// rax should be 8.
-xorq %rcx,%rax
