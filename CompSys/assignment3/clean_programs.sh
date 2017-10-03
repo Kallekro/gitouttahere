@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-all=$(ls ./programs/*/* | egrep "*[^6]$") #| egrep "!(x86$)")
+all=$(ls ./test_programs/*/* | egrep "*[^6]$") #| egrep "!(x86$)")
 
 rm $all
