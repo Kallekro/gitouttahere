@@ -6,6 +6,9 @@
 #include <string.h>
 #include <time.h>
 
+int randInt(int lo, int hi) {
+  return ((rand() % hi) + lo);
+}
 
 int main () {
   time_t t;
