@@ -1,0 +1,7 @@
+movq $1, %rbx
+movq $8,%rax
+movq $0,%rcx
+// Should not update register on compare, only conditionflags.
+cmpq %rcx,%rax
+// if condition flags is set right, move 1 to rax.
+cmovg %rbx,%rax

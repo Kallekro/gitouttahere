@@ -1,0 +1,3 @@
+movq $1024, %rsp
+movq $55555, %rax
+pushq %rax 

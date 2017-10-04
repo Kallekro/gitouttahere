@@ -1,0 +1,39 @@
+//
+// Nis Wegmann, 2017
+//
+// test.x64
+//
+
+    .pos 0
+    movq stack, %rsp            // Set up the stack pointer.
+    movq $6, %r15               //
+    movq $2, %r14
+    mulq %r14, %r15
+    //call test
+    hlt
+    
+test:
+    movq $8, %rbx
+    movq $1, %rcx
+    xorq %rax,%rax
+    movq count(%rax), %rax      // %rax is zero
+    movq array, %rsi
+loop:
+    movq %rax, (%rsi)
+    addq %rbx, %rsi
+    subq %rcx, %rax
+    jne loop
+    ret
+    nop
+    nop
+    nop
+    .align 16
+count:
+    .quad 10                    // Count.
+    
+    .pos 0x100
+array:
+    .rand 100 3 3
+    
+    .pos 0x200
+stack:
