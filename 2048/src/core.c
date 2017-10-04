@@ -5,13 +5,14 @@
 #include<stdbool.h>
 #include<ncurses.h>
 #include<curses.h>
+#include<stdbool.h>
 
 enum moveType {Up, Down, Left, Right};
 
 int randInt(int, int);
 void printArray(int**, int);
 void initialize_with_val(int**, int, int);
-void feed_board(int**, int dim);
+
 
 int main (int argc, char* argv[]) {
 
@@ -21,6 +22,7 @@ int main (int argc, char* argv[]) {
   }
 
   initscr();
+  timeout(-1);
   raw();
   
   time_t t;
@@ -30,8 +32,6 @@ int main (int argc, char* argv[]) {
   
   int i;
   int** arr;
-
-  //enum moveType keyPress;
   
   // allocate memory for array
   arr = malloc(dim * sizeof(*arr));
@@ -39,14 +39,11 @@ int main (int argc, char* argv[]) {
     arr[i] = malloc(dim * sizeof(*arr));
   }
 
-  // initialize game board with zeros and feed it twice.
+  // initialize game board with zeros.
   initialize_with_val(arr, dim, 0);
-  feed_board(arr, dim); feed_board(arr, dim);
-  printArray(arr, dim);
-  
-  bool game_running = true;
 
-    
+  bool game_running = true;
+ 
   while (game_running) { 
     char c = 0 ;
     c = getch();
@@ -64,6 +61,10 @@ int main (int argc, char* argv[]) {
     
   }
   
+  printArray(arr, dim);
+
+  endwin();
+  
   // Free memory for array.
   for (i=0; i<dim; i++) {
     free(arr[i]);
@@ -73,23 +74,22 @@ int main (int argc, char* argv[]) {
   exit(EXIT_SUCCESS);
 }
 
-
-
 void feed_board(int** arr, int dim) {
-  int feed[2] = {2,4};
   bool inserted = false;
+
+  int feeds[2] = {2,4};
   int col_guess, row_guess;
-  int rnd_feedval = randInt(0,2);
+  int rndIndex = randInt(0,1);
 
   while (!inserted) {
-    col_guess = randInt(0,dim);
-    row_guess = randInt(0,dim);
+    col_guess = randInt(0,dim);row_guess = randInt(0,dim);
     
     if (arr[row_guess][col_guess] == 0) {
-      arr[row_guess][col_guess] = feed[rnd_feedval];
+      arr[row_guess][col_guess] = feeds[rndIndex];
       inserted = true;
     }  
   }
+  printf("Inserted the value %d, at index (%d, %d)", feeds[rndIndex], row_guess, col_guess);
 }
 
 
