@@ -4,6 +4,7 @@
 #include<time.h>
 #include<stdbool.h>
 #include<ncurses.h>
+#include<curses.h>
 
 enum moveType {Up, Down, Left, Right};
 
@@ -16,8 +17,12 @@ int main (int argc, char* argv[]) {
 
   if (argc != 2) {
     printf("usage: dim");
+    exit(EXIT_SUCCESS);
   }
-    
+
+  initscr();
+  raw();
+  
   time_t t;
   srand((unsigned) time(&t));
   
@@ -41,12 +46,22 @@ int main (int argc, char* argv[]) {
   
   bool game_running = true;
 
-  
+    
   while (game_running) { 
-
     char c = 0 ;
     c = getch();
-    printf("%c", c);
+    
+    if (c == 'q') {
+      game_running = false;
+    }
+    
+    switch(c) { 
+    case KEY_UP:
+      printf("LOL");
+      break;
+    }
+ 
+    
   }
   
   // Free memory for array.
