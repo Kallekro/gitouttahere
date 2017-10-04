@@ -1,9 +1,17 @@
 CC=gcc
-CFLAGS=-std=c11 -Wall -Werror -Wextra -pedantic -g3
+CFLAGS=-std=c11 -Wall -Werror -Wextra 
 
-file: core.c Makefile
-	$(CC) $(CFLAGS) -o core core.c
+all: core graphics
+
+core: core.c 
+	$(CC) $(CFLAGS) -o core core.c -lncurses
+
+graphics: graphics.c 
+	$(CC) $(CFLAGS) -o graphics graphics.c -lncurses
 
 clean:
 	rm -f *.o
 	rm -f core
+	rm -f graphics
+
+
