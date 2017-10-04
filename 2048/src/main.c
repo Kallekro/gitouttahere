@@ -1,23 +1,25 @@
-#include "graphics.h"
-
 #include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
+#include "graphics.h"
+
 int randInt(int lo, int hi);
 
 int gameLoop(int**arr);
 
-int randInt(int lo, int hi) {
-  return ((rand() % hi) + lo);
-}
-
-int main () {
+int main (int argc, char* argv[]) {
   time_t t;
   srand((unsigned) time(&t));
 
-  int dim = 4;
+  int dim;
+  if (argc < 2) {
+    dim = 4;
+  } else {
+    char * pEnd;
+    dim = strtol(argv[1], &pEnd, 10);
+  }
 
   int** arr;
 
@@ -48,18 +50,20 @@ int main () {
 }
 
 int gameLoop (int** arr) {
-
   int ch;
-
-  while (1) {
-    PrintArray(arr);
+  bool done = false;
+  while (!done) {
+    // Array, score, highscore
+    PrintGame(arr, 200, 2000);
 
     ch = getch();
     if (ch == KEY_F(1)) {
-      break;
+      done = true;
     } 
     else {
       switch (ch) {
+        case 'q':
+          done = true;
         case 10: // Enter key
           break;
         case KEY_LEFT :
@@ -79,3 +83,6 @@ int gameLoop (int** arr) {
   return 0;
 }
 
+int randInt(int lo, int hi) {
+  return ((rand() % hi) + lo);
+}

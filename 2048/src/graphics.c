@@ -4,11 +4,20 @@
 
 int InitializeGame();
 
+int PrintGame(int** arr, int score, int highscore);
 int PrintArray(int** arr);
+int PrintGUI(int score, int highscore);
+
 
 WINDOW *create_new_window(int height, int width, int starty, int startx);
 
 WINDOW *main_win;
+int main_height;
+int main_width;
+int main_posy;
+int main_posx;
+
+WINDOW *score_win;
   
 int dim;
 
@@ -37,7 +46,15 @@ int InitializeGame(int _dim) {
     return 1;
   }
 
-  main_win = create_new_window(dim * 3-1, dim * cellSize + 4, start_y, start_x-2);
+  main_height = dim * 2+3;
+  main_width = dim * cellSize + 3;
+  main_posy = start_y;
+  main_posx = start_x-1;
+
+  main_win = create_new_window(main_height, main_width, main_posy, main_posx);
+
+  score_win = create_new_window(4, main_width, start_y - 4, main_posx);
+
   return 0;
 }
 
@@ -50,8 +67,19 @@ WINDOW *create_new_window(int height, int width, int starty, int startx) {
   return new_win;    
 }
 
-int PrintArray(int** arr) {
+int PrintGame(int** arr, int score, int highscore) {
+  PrintArray(arr);
+  PrintGUI(score, highscore);
+
   refresh();
+  box(main_win, 0, 0);
+  box(score_win, 0, 0);
+  wrefresh(main_win);
+  wrefresh(score_win);
+  return 0;
+}
+
+int PrintArray(int** arr) {
   char buffer[cellSize];
   int local_x = 2;
   int y_pos = 2;
@@ -80,8 +108,19 @@ int PrintArray(int** arr) {
     y_pos += 2;
   }
 
-  box(main_win, 0, 0);
-  wrefresh(main_win);
-
   return 0;
 }
+
+int PrintGUI(int score, int highscore) {
+  // Print score and highscore
+  wmove(score_win, 1, 2);
+  wprintw(score_win, "Score: %d", score);
+  wmove(score_win, 2, 2);
+  wprintw(score_win, "Highscore: %d", highscore);
+
+  // Print help message
+  char* msg = "Press q or F1 to quit..";
+  mvprintw(main_posy + main_height + 1, main_posx + 1, "%s", msg);
+  return 0;
+}
+

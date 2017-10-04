@@ -4,6 +4,6 @@
 
 int InitializeGame();
 
-int PrintArray(int** arr);
+int PrintGame(int** arr, int score, int highscore);
 
 #endif
