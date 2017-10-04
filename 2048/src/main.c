@@ -56,13 +56,13 @@ int main () {
   }
 
   PrintArray(arr, dim, max_y, max_x);
+  refresh();
+  getch();
 
   for (int i=0; i<dim; i++) {
     free(arr[i]);
   }
   free(arr);
-  refresh();
-  getch();
   endwin();
 
   return 0;
