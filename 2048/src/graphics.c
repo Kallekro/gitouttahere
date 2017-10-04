@@ -37,7 +37,7 @@ int InitializeGame(int _dim) {
   curs_set(0);
 
   getmaxyx(stdscr, max_y, max_x);
-  cellSize = 9;
+  cellSize = 7;
   start_x = max_x / 2 - dim * cellSize / 2;
   start_y = max_y/2 - dim;
 
@@ -114,13 +114,13 @@ int PrintArray(int** arr) {
 int PrintGUI(int score, int highscore) {
   // Print score and highscore
   wmove(score_win, 1, 2);
-  wprintw(score_win, "Score: %d", score);
+  wprintw(score_win, "Score: %*s%d", 4, " ", score);
   wmove(score_win, 2, 2);
   wprintw(score_win, "Highscore: %d", highscore);
 
   // Print help message
   char* msg = "Press q or F1 to quit..";
-  mvprintw(main_posy + main_height + 1, main_posx + 1, "%s", msg);
+  mvprintw(main_posy + main_height + 1, main_posx + (main_width - strlen(msg))/2, "%s", msg);
   return 0;
 }
 
