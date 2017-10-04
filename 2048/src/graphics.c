@@ -11,53 +11,53 @@ int randInt(int lo, int hi) {
   return ((rand() % hi) + lo);
 }
 
-int main() {
-
-  time_t t;
-  srand((unsigned) time(&t));
-
-  InitializeGame();
-
-  int max_y, max_x; 
-  getmaxyx(stdscr, max_y, max_x);
-
-  int ch;
-
-  ch = getch();
-  if (ch == KEY_F(1)) {
-    printw("F1 Key pressed\n");
-  } 
-  else {
-    printw("Pressed key: %c", ch);
-  }
-
-  int dim = 4;
-  
-  int** arr;
-  arr = malloc(sizeof(*arr) * dim);
-
-  int numbers[6] = {0, 2, 4, 8, 16, 32};
-
-  for (int i=0; i<dim; i++) {
-    arr[i] = malloc(sizeof(int) * dim);
-
-    for (int j=0; j<dim; j++) {
-      arr[i][j] = numbers[randInt(0, 6)];
-    }
-  }
-
-  PrintArray(arr, dim, max_y, max_x);
-
-  for (int i=0; i<dim; i++) {
-    free(arr[i]);
-  }
-  free(arr);
-  refresh();
-  getch();
-  endwin();
-
-  return 0;
-}
+// int main() {
+// 
+//   time_t t;
+//   srand((unsigned) time(&t));
+// 
+//   InitializeGame();
+// 
+//   int max_y, max_x; 
+//   getmaxyx(stdscr, max_y, max_x);
+// 
+//   int ch;
+// 
+//   ch = getch();
+//   if (ch == KEY_F(1)) {
+//     printw("F1 Key pressed\n");
+//   } 
+//   else {
+//     printw("Pressed key: %c", ch);
+//   }
+// 
+//   int dim = 4;
+//   
+//   int** arr;
+//   arr = malloc(sizeof(*arr) * dim);
+// 
+//   int numbers[6] = {0, 2, 4, 8, 16, 32};
+// 
+//   for (int i=0; i<dim; i++) {
+//     arr[i] = malloc(sizeof(int) * dim);
+// 
+//     for (int j=0; j<dim; j++) {
+//       arr[i][j] = numbers[randInt(0, 6)];
+//     }
+//   }
+// 
+//   PrintArray(arr, dim, max_y, max_x);
+// 
+//   for (int i=0; i<dim; i++) {
+//     free(arr[i]);
+//   }
+//   free(arr);
+//   refresh();
+//   getch();
+//   endwin();
+// 
+//   return 0;
+// }
 
 int InitializeGame() {
   initscr();
@@ -75,18 +75,23 @@ int PrintArray(int** arr, int dim, int max_y, int max_x) {
   int start_x = max_x / 2 - dim * cellSize / 2 - 2; 
   int y_pos = max_y/2 - dim*2/2;
 
+  if (start_x <= 0 || y_pos <= 0) {
+    printw("Game does not fit on this screen. Please resize and restart");
+    return 1;
+  }
+
   move(y_pos-2, start_x);
   for (int i=0; i < dim * cellSize + 1; i++) {
     addch('_'); 
   }
 
   for (int i=0; i < dim; i++) {
-    move(y_pos, start_x);
     y_pos += 2;
+    mvprintw(y_pos-1, start_x, "|  ");
+    mvprintw(y_pos, start_x, "|  ");
+    move(y_pos, start_x);
     for (int j=0; j < dim; j++) {
-      //printw("%d", arr[j][i]);
       sprintf(buffer, "%d", arr[j][i]);
-      //printw("%d",strlen(buffer));
       if (strlen(buffer) % 2 == 0) {
         printw("%*s%s%*s", (cellSize - strlen(buffer))/2, " ",
                            buffer,
@@ -98,6 +103,12 @@ int PrintArray(int** arr, int dim, int max_y, int max_x) {
                            (cellSize - strlen(buffer))/2, " ");
       }
     }
+    printw("  |");
   }
+  move(y_pos, start_x-2);
+  for (int i=0; i < dim * cellSize + 1; i++) {
+    addch('_'); 
+  }
+
   return 0;
 }
