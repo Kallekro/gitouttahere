@@ -1,6 +1,5 @@
 #include "graphics.h"
 
-
 #include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,10 +13,8 @@ int main () {
   time_t t;
   srand((unsigned) time(&t));
 
-  InitializeGame();
-
-  int max_y, max_x; 
-  getmaxyx(stdscr, max_y, max_x);
+  int dim = 4;
+  InitializeGame(dim);
 
   int ch;
 
@@ -43,7 +40,6 @@ int main () {
   }
   
 
-  int dim = 4;
   
   int** arr;
   arr = malloc(sizeof(*arr) * dim);
@@ -58,7 +54,8 @@ int main () {
     }
   }
 
-  PrintArray(arr, dim, max_y, max_x);
+  //create_new_window(10, 10, 10, 10);
+  PrintArray(arr);
   refresh();
   getch();
 
