@@ -23,8 +23,22 @@ int main () {
     printw("F1 Key pressed\n");
   } 
   else {
-    printw("Pressed key: %c", ch);
+    switch (ch) {
+      case 10: // Enter key
+        break;
+      case KEY_LEFT :
+        break;
+      case KEY_RIGHT :  
+        break;
+      case KEY_UP :
+        break;
+      case KEY_DOWN:
+        break;
+      default:  
+        break;
+    }
   }
+  
 
   int dim = 4;
   
