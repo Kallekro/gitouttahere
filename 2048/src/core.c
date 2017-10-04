@@ -21,10 +21,6 @@ int main (int argc, char* argv[]) {
     exit(EXIT_SUCCESS);
   }
 
-  initscr();
-  timeout(-1);
-  raw();
-  
   time_t t;
   srand((unsigned) time(&t));
   
@@ -41,31 +37,29 @@ int main (int argc, char* argv[]) {
 
   // initialize game board with zeros.
   initialize_with_val(arr, dim, 0);
-
+  
   bool game_running = true;
  
   while (game_running) { 
-    char c = 0 ;
-    c = getch();
+    int c = 0 ;
+    c = getc(stdin);
     
     if (c == 'q') {
       game_running = false;
+      break;
     }
     
     switch(c) { 
-    case KEY_UP:
+    case 'A':
       printf("LOL");
       break;
     }
- 
-    
+    refresh();
   }
   
   printArray(arr, dim);
 
-  endwin();
-  
-  // Free memory for array.
+   // Free memory for array.
   for (i=0; i<dim; i++) {
     free(arr[i]);
   }
