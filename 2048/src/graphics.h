@@ -2,7 +2,7 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
-int InitializeGame();
+int InitializeGraphics();
 
 int PrintGame(int** arr, int score, int highscore);
 

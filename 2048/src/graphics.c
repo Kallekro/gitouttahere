@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int InitializeGame();
+int InitializeGraphics();
 
 int PrintGame(int** arr, int score, int highscore);
 int PrintArray(int** arr);
@@ -28,7 +28,7 @@ int cellSize;
 int start_x;  
 int start_y;
 
-int InitializeGame(int _dim) {
+int InitializeGraphics(int _dim) {
   dim = _dim;
   initscr();
   raw();
