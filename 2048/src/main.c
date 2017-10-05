@@ -56,13 +56,13 @@ int gameLoop (int** arr, int _highscore) {
 	  score += move_board(arr, dim, 3);
           break;
         case KEY_RIGHT :
-	  move_board(arr, dim, 2);
+	  score += move_board(arr, dim, 2);
           break;
         case KEY_UP :
-	  move_board(arr, dim, 0);
+	  score += move_board(arr, dim, 0);
           break;
         case KEY_DOWN:
-	  move_board(arr, dim, 1);
+	  score += move_board(arr, dim, 1);
           break;
         default:  
           break;

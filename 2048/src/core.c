@@ -68,13 +68,11 @@ int move_board(int** arr, int dim ,int move) {
     for (row=start_row; row < dim;row++) { 
       for (col=start_col; col < dim;col++) {	
 	if (arr[row][col]!=0){
-
 	  int res = move_cell(arr,dim, row, col, Up);
-	  if(res == -1 && moveScore == -1) {
-	    moveScore = -1;
-	  } else if (res != -1 && moveScore == -1) {
+	  if(res == -1 && moveScore == -1) {	    
+	  }  else if (res != -1 && moveScore == -1) {
 	    moveScore = res;
-	  } else {
+	  } else if (res != -1 && moveScore != -1) {
 	    moveScore += res;
 	  }
 
@@ -85,20 +83,30 @@ int move_board(int** arr, int dim ,int move) {
   } else if(move==1) { // Down
     for(row=start_row;row>=0;row--){
       for(col=start_col; col<dim;col++){
-	int res =move_cell(arr,dim, row, col, Down);
-	  if(res != -1) {
-	    moveScore += res;
-	  }
+
+	int res = move_cell(arr,dim, row, col, Down);
+	if(res == -1 && moveScore == -1) {	  
+	} else if (res != -1 && moveScore == -1) {
+	  moveScore = res;
+	} else if (res != -1 && moveScore != -1) {
+	  moveScore += res;
+	}
+
       }
     }    
   } else if (move==2) { // Right
     for (col=start_col; col>= 0; col--){
       for(row=start_row;row<dim;row++){
 	if (arr[row][col]!=0){
-	  int res =move_cell(arr,dim, row, col, Right);
-	  if(res != -1) {
+	  int res = move_cell(arr,dim, row, col, Right);
+	  if(res == -1 && moveScore == -1) {
+	  
+	  } else if (res != -1 && moveScore == -1) {
+	    moveScore = res;
+	  } else if (res != -1 && moveScore != -1){
 	    moveScore += res;
 	  }
+
 	}
       }
     }
@@ -106,10 +114,16 @@ int move_board(int** arr, int dim ,int move) {
     for (col=start_col; col<dim; col++){
       for(row=start_row;row<dim;row++){
 	if (arr[row][col]!=0){
-	  int res =move_cell(arr,dim, row, col, Left);
-	  if(res != -1) {
+	  
+	  int res = move_cell(arr,dim, row, col, Left);
+	  if(res == -1 && moveScore == -1) {
+	  
+	  } else if (res != -1 && moveScore == -1) {
+	    moveScore = res;
+	  } else if (res != -1 && moveScore != -1) {
 	    moveScore += res;
 	  }
+
 	}
       }
     }    
@@ -120,10 +134,12 @@ int move_board(int** arr, int dim ,int move) {
   }
   
   feed_board(arr, dim);
-  return moveScore + 1;
+
+  if (moveScore != 0)
+    return moveScore;
+
+  return 0;
 }
-
-
 
 int move_cell(int** arr,int dim, int row, int col, enum moveType move) {
   int curr = arr[row][col];
@@ -148,9 +164,7 @@ int move_cell(int** arr,int dim, int row, int col, enum moveType move) {
     i = col;
   }
   while (!done_moving) {
-
     if (move == Up) {
-      
       if (arr[i-1][col] == 0){
 	arr[i-1][col] = curr;
 	arr[i][col] = 0;
@@ -168,11 +182,11 @@ int move_cell(int** arr,int dim, int row, int col, enum moveType move) {
       }
       else {
 	done_moving = true;
-      }
-      
+      }      
       i--;
       if (i < 1) {
 	done_moving = true;
+	changed = true;
       }      
     }
     
@@ -194,13 +208,12 @@ int move_cell(int** arr,int dim, int row, int col, enum moveType move) {
       }
       else {
 	done_moving = true;
-      }
-      
+      }      
       i++;
       if (i > dim-2) {
 	done_moving = true;
+	changed = true;
       }
-      
     }
 
     else if (move == Right) {
@@ -221,10 +234,12 @@ int move_cell(int** arr,int dim, int row, int col, enum moveType move) {
       }
       else {
 	done_moving =true;
+	changed = true;
       }
       i++;      
       if (i > dim-2) {
 	done_moving = true;
+	changed = true;
       }      
     }
 
@@ -250,13 +265,14 @@ int move_cell(int** arr,int dim, int row, int col, enum moveType move) {
       i--;
       if(i < 1) {
 	done_moving = true;
+	changed = true;
       }
     }
   }
-
+  
   if (!changed)
     return -1;
-  
+
   return score;
 }
 
