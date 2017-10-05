@@ -12,72 +12,47 @@ enum moveType {Up, Down, Left, Right};
 
 int randInt(int, int);
 void printArray(int**, int);
-void initialize_with_val(int**, int, int);
-void move_board(int**,int,int);
-void move_cell(int**,int,  int, int, enum moveType);
+int** initialize(int);
+void move_board(int**,int,int, int**);
+void move_cell(int**,int,  int, int, enum moveType, int**);
 void feed_board(int**, int);
+void free_memory(int**, int);
+void fill_with_val(int**, int, int);
 
-int main (int argc, char* argv[]) {
+int** mask;
 
-  if (argc != 2) {
-    printf("usage: dim");
-    exit(EXIT_SUCCESS);
-  }
-  
+int** initialize_logic(int dim);
+
+
+int** initialize_logic (int dim) {
   time_t t;
   srand((unsigned) time(&t));
   
-  int dim = atoi(argv[1]);
-  
-  int i;
-  int** arr;
-  
-  // allocate memory for array
-  arr = malloc(dim * sizeof(*arr));
-  for (i = 0;i<dim;i++){
-    arr[i] = malloc(dim * sizeof(*arr));
-  }
-
-  // initialize game board with zeros.
-  initialize_with_val(arr, dim, 0);
-  
-  int movArr[1] = {0};
-  
-  feed_board(arr, dim);
+  int** arr = initialize(dim);
+  fill_with_val(arr, dim,0);
   feed_board(arr, dim);
   feed_board(arr,dim);
-  feed_board(arr,dim);
   
-  printArray(arr, dim);
-
-  printf ("\n\n");
-  
-  move_board(arr, dim, movArr[0]);
-
-  printArray(arr, dim);
-  
-  // Free memory for array.
-  for (i=0; i<dim; i++) {
-    free(arr[i]);
-  }
-  free(arr);
-
-  exit(EXIT_SUCCESS);
+  mask = initialize(dim);
+  return arr;
 }
 
-void move_board(int** arr, int dim ,int move) {
+
+void move_board(int** arr, int dim ,int move, int** mask) {
   int start_col = 0;
   int start_row = 0;
+
+  fill_with_val(mask, dim, 0);
   
   switch(move){
   case 0:
     start_row = 1; // up
     break;
   case 1:
-    start_row = dim;// down
+    start_row = dim-2;// down
     break;
   case 2:
-    start_col = dim; // right 
+    start_col = dim-2; // right 
     break;
   case 3:
     start_col = 1; // left
@@ -90,24 +65,26 @@ void move_board(int** arr, int dim ,int move) {
     for (row=start_row; row < dim;row++) { 
       for (col=start_col; col < dim;col++) {	
 	if (arr[row][col]!=0){
-	  move_cell(arr,dim, row, col, Up);
+	  move_cell(arr,dim, row, col, Up, mask);
 	}	
       }
     }
     
   } else if(move==1) { // Down
-    for(row=start_row;row>-1;row--){
+    for(row=start_row;row>=0;row--){
       for(col=start_col; col<dim;col++){
+	//printf("%d%d ", row, col);
 	if (arr[row][col]!=0){
-	  move_cell(arr,dim, row, col, Down);
+	  move_cell(arr,dim, row, col, Down,mask);
 	}
       }
     }    
   } else if (move==2) { // Right
-    for (col=start_col; col>-1; col--){
+    for (col=start_col; col>= 0; col--){
       for(row=start_row;row<dim;row++){
 	if (arr[row][col]!=0){
-	  move_cell(arr,dim, row, col, Right);
+	  //printf ("%d", arr[row][col]);
+	  move_cell(arr,dim, row, col, Right, mask);
 	}
       }
     }
@@ -115,7 +92,7 @@ void move_board(int** arr, int dim ,int move) {
     for (col=start_col; col<dim; col++){
       for(row=start_row;row<dim;row++){
 	if (arr[row][col]!=0){
-	  move_cell(arr,dim, row, col, Left);      
+	  move_cell(arr,dim, row, col, Left, mask);      
 	}
       }
     }    
@@ -124,73 +101,110 @@ void move_board(int** arr, int dim ,int move) {
 
 
 
-void move_cell(int** arr,int dim, int row, int col, enum moveType move) {
-
+void move_cell(int** arr,int dim, int row, int col, enum moveType move, int** mask) {
   int curr = arr[row][col];
-  bool done_moving = false;
 
+  bool done_moving = false;
   int i;
   
-  if (move==Up || move==Left) {
-    i = 0;
-  } else {
-    if (move == Right) {
-      i = col-1;
-    } else { i = row-1;}
+  if (move == Up) {
+    i = row;
   }
-  
-  while (!done_moving && i < row) {
+  if (move == Down ) {
+    i = row; 
+  }
+
+  if (move == Right) {
+    i = col;
+  }
+  if (move == Left) {
+    i = col;
+  }
+  while (!done_moving) {
 
     if (move == Up) {
-      if (arr[row-i-1][col] == 0){	
-	  arr[row-i-1][col] = curr;
-      arr[row-i][col] = 0;
+      
+      if (arr[i-1][col] == 0){
+	arr[i-1][col] = curr;
+	arr[i][col] = 0;
       }
-
-      else if (arr[row-1][col] == curr) {
-	arr[row-i-1][col] += curr;
-	arr[row-i][col] = 0;
+      else if (arr[i-1][col] == curr && mask[i-1][col] != 1) {
+	arr[i-1][col] += curr;
+	arr[i][col] = 0;
+	done_moving = true;
+	mask[i-1][col] = 1;
+      }
+      else {
+	done_moving = true;
+      }
+      
+      i--;
+      if (i < 1) {
+	done_moving = true;
+      }      
+    }
+    
+    else if (move == Down) {
+      if(arr[i+1][col] == 0 ) {
+	arr[i+1][col] = curr;
+	arr[i][col] = 0;
+      }
+      else if (arr[i+1][col] == curr && mask[i+1][col] != 1) {
+	arr[i+1][col] += curr;
+	arr[i][col] = 0;
+	done_moving = true;
+	mask[i+1][col] =1;
+      }
+      else {
 	done_moving = true;
       }
       
       i++;
-    }
-
-    else if (move == Down) {
-      if(arr[row+i+1][col] == 0) {
-	arr[row+i+1][col] = curr;
-	arr[row+i][col] = 0;
-      }
-      else if (arr[row+1+i][col] == curr) {
-	arr[row+1+i][col] += curr;
-	arr[row+i][col] = 0;
+      if (i > dim-2) {
 	done_moving = true;
       }
-      i--;
+      
     }
 
     else if (move == Right) {
-      if(arr[row][col+1] == 0) {
-	arr[row][col+1] = curr;
-	arr[row][col] = 0;
+      if(arr[row][i+1] == 0) {
+	arr[row][i+1] = curr;
+	arr[row][i] = 0;
       }
-      else if (arr[row][col+1] == curr) {
-	arr[row][col+1] += curr;
-	arr[row][col] = 0;
+      else if (arr[row][i+1] == curr && mask[row][i+1] != 1) {
+	arr[row][i+1] += curr;
+	arr[row][i] = 0;
+	done_moving = true;
+	mask[row][i+1] = 1;
       }
+      else {
+	done_moving =true;
+      }
+      i++;      
+      if (i > dim-2) {
+	done_moving = true;
+      }      
     }
 
     else if (move == Left) {
-      if(arr[row][col-1] == 0) {
-	arr[row][col-1] = curr;
-	arr[row][col] = 0;
+      if(arr[row][i-1] == 0) {
+	arr[row][i-1] = curr;
+	arr[row][i] = 0;
       }
-      else if (arr[row][col-1] == curr) {
-	arr[row][col-1] += curr;
-	arr[row][col-1] = 0;
+      else if (arr[row][i-1] == curr && mask[row][i-1] != 1) {
+	arr[row][i-1] += curr;
+	arr[row][i] = 0;
+	done_moving = true;
+	mask[row][i-1] = 1;
+      }
+      else {
+	done_moving = true;
+      }
+      i--;
+      if(i < 1) {
+	done_moving = true;
       }
     }
-    
   }
 }
 
@@ -214,11 +228,20 @@ void feed_board(int** arr, int dim) {
 }
 
 
-int randInt(int lo, int hi) {
+int randInt(int lo, int hi) {  
   return ((rand() % hi) + lo);
 }
 
-void initialize_with_val(int** arr, int dim, int val) {
+int** initialize(int dim) {
+  // allocate memory for array
+  int** arr;
+  arr = malloc(dim * sizeof(*arr));
+  for (int i = 0;i<dim;i++){
+    arr[i] = malloc(dim * sizeof(*arr));
+  }
+  return arr;
+}
+void fill_with_val(int** arr, int dim, int val) {  
   int col, row;
   for (col=0; col<dim; col++){
     for (row=0; row<dim; row++) {
@@ -227,6 +250,14 @@ void initialize_with_val(int** arr, int dim, int val) {
   }
 }
 
+void free_memory(int** arr, int dim) {
+  // Free memory for array.
+  for (int i=0; i<dim; i++) {
+    free(arr[i]);
+  }
+  free(arr);
+
+}
 
 void printArray(int** arr, int dim) {
   int col, row;
@@ -240,5 +271,7 @@ void printArray(int** arr, int dim) {
     }
     printf("\n");
   }
+
+  
 }
 
