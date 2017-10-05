@@ -47,7 +47,7 @@ int InitializeGraphics(int _dim) {
   }
 
   main_height = dim * 2+3;
-  main_width = dim * cellSize + 3;
+  main_width = dim * cellSize + 2;
   main_posy = start_y;
   main_posx = start_x-1;
 
@@ -81,7 +81,7 @@ int PrintGame(int** arr, int score, int highscore) {
 
 int PrintArray(int** arr) {
   char buffer[cellSize];
-  int local_x = 2;
+  int local_x = 1;
   int y_pos = 2;
 
   for (int i=0; i < dim; i++) {
