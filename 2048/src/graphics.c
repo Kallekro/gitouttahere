@@ -87,11 +87,11 @@ int PrintArray(int** arr) {
   for (int i=0; i < dim; i++) {
     wmove(main_win, y_pos, local_x);
     for (int j=0; j < dim; j++) {
-      if (arr[j][i] == 0) { 
+      if (arr[i][j] == 0) { 
         wprintw(main_win, "%*s", cellSize, " ");
         continue;
       }
-      sprintf(buffer, "%d", arr[j][i]);
+      sprintf(buffer, "%d", arr[i][j]);
       if (strlen(buffer) % 2 == 0) {
         wprintw(main_win,
                "%*s%s%*s", (cellSize - strlen(buffer))/2, " ",
