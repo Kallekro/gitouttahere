@@ -43,7 +43,11 @@ int main (int argc, char* argv[]) {
   
   int movArr[1] = {0};
   
-  feed_board(arr, dim);feed_board(arr, dim);
+  feed_board(arr, dim);
+  feed_board(arr, dim);
+  feed_board(arr,dim);
+  feed_board(arr,dim);
+  
   printArray(arr, dim);
 
   printf ("\n\n");
@@ -70,10 +74,10 @@ void move_board(int** arr, int dim ,int move) {
     start_row = 1; // up
     break;
   case 1:
-    start_row = dim-2;// down
+    start_row = dim;// down
     break;
   case 2:
-    start_col = dim-2; // right 
+    start_col = dim; // right 
     break;
   case 3:
     start_col = 1; // left
@@ -89,7 +93,8 @@ void move_board(int** arr, int dim ,int move) {
 	  move_cell(arr,dim, row, col, Up);
 	}	
       }
-    }  
+    }
+    
   } else if(move==1) { // Down
     for(row=start_row;row>-1;row--){
       for(col=start_col; col<dim;col++){
@@ -144,7 +149,7 @@ void move_cell(int** arr,int dim, int row, int col, enum moveType move) {
 
       else if (arr[row-1][col] == curr) {
 	arr[row-i-1][col] += curr;
-  arr[row-i][col] = 0;
+	arr[row-i][col] = 0;
 	done_moving = true;
       }
       
@@ -196,7 +201,7 @@ void feed_board(int** arr, int dim) {
 
   int feeds[2] = {2,4};
   int col_guess, row_guess;
-  int rndIndex = randInt(0,1);
+  int rndIndex = randInt(0,2);
 
   while (!inserted) {
     col_guess = randInt(0,dim);row_guess = randInt(0,dim);
