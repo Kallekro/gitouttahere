@@ -1,13 +1,11 @@
 CC=gcc
 CFLAGS=-std=c11 -Wall -Wextra -g
 
-all: core main
 
-core: core.c 
-	$(CC) $(CFLAGS) -o core core.c -lncurses
+all: main
 
 main: main.c graphics.c 
-	$(CC) $(CFLAGS) graphics.c main.c -o main -lncurses
+	$(CC) $(CFLAGS) graphics.c core.c main.c -o main -lncurses
 
 clean:
 	rm -f *.o

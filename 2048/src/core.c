@@ -13,10 +13,11 @@ enum moveType {Up, Down, Left, Right};
 int randInt(int, int);
 void printArray(int**, int);
 int** initialize(int);
-void move_board(int**,int,int, int**);
-void move_cell(int**,int,  int, int, enum moveType, int**);
+void move_board(int**,int,int);
+void move_cell(int**,int,  int, int, enum moveType);
 void feed_board(int**, int);
 void free_memory(int**, int);
+void free_all(int** arr,int dim);
 void fill_with_val(int**, int, int);
 
 int** mask;
@@ -38,7 +39,7 @@ int** initialize_logic (int dim) {
 }
 
 
-void move_board(int** arr, int dim ,int move, int** mask) {
+void move_board(int** arr, int dim ,int move) {
   int start_col = 0;
   int start_row = 0;
 
@@ -65,7 +66,7 @@ void move_board(int** arr, int dim ,int move, int** mask) {
     for (row=start_row; row < dim;row++) { 
       for (col=start_col; col < dim;col++) {	
 	if (arr[row][col]!=0){
-	  move_cell(arr,dim, row, col, Up, mask);
+	  move_cell(arr,dim, row, col, Up);
 	}	
       }
     }
@@ -75,7 +76,7 @@ void move_board(int** arr, int dim ,int move, int** mask) {
       for(col=start_col; col<dim;col++){
 	//printf("%d%d ", row, col);
 	if (arr[row][col]!=0){
-	  move_cell(arr,dim, row, col, Down,mask);
+	  move_cell(arr,dim, row, col, Down);
 	}
       }
     }    
@@ -84,7 +85,7 @@ void move_board(int** arr, int dim ,int move, int** mask) {
       for(row=start_row;row<dim;row++){
 	if (arr[row][col]!=0){
 	  //printf ("%d", arr[row][col]);
-	  move_cell(arr,dim, row, col, Right, mask);
+	  move_cell(arr,dim, row, col, Right);
 	}
       }
     }
@@ -92,7 +93,7 @@ void move_board(int** arr, int dim ,int move, int** mask) {
     for (col=start_col; col<dim; col++){
       for(row=start_row;row<dim;row++){
 	if (arr[row][col]!=0){
-	  move_cell(arr,dim, row, col, Left, mask);      
+	  move_cell(arr,dim, row, col, Left);      
 	}
       }
     }    
@@ -101,7 +102,7 @@ void move_board(int** arr, int dim ,int move, int** mask) {
 
 
 
-void move_cell(int** arr,int dim, int row, int col, enum moveType move, int** mask) {
+void move_cell(int** arr,int dim, int row, int col, enum moveType move) {
   int curr = arr[row][col];
 
   bool done_moving = false;
@@ -250,13 +251,17 @@ void fill_with_val(int** arr, int dim, int val) {
   }
 }
 
+void free_all(int** arr, int dim) {
+  free_memory(arr, dim);
+  free_memory(mask, dim);
+}
+
 void free_memory(int** arr, int dim) {
   // Free memory for array.
   for (int i=0; i<dim; i++) {
     free(arr[i]);
   }
   free(arr);
-
 }
 
 void printArray(int** arr, int dim) {
