@@ -53,7 +53,7 @@ int gameLoop (int** arr, int _highscore) {
         case 10: // Enter key
           break;
         case KEY_LEFT :
-	  move_board(arr, dim, 3);
+	  score += move_board(arr, dim, 3);
           break;
         case KEY_RIGHT :
 	  move_board(arr, dim, 2);
@@ -68,7 +68,6 @@ int gameLoop (int** arr, int _highscore) {
           break;
       }
     }
-    feed_board(arr, dim);
   }
   return 0;
 }
