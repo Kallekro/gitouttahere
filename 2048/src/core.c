@@ -13,8 +13,8 @@ enum moveType {Up, Down, Left, Right};
 int randInt(int, int);
 void printArray(int**, int);
 int** initialize(int);
-void move_board(int**,int,int);
-void move_cell(int**,int,  int, int, enum moveType);
+int move_board(int**,int,int);
+int move_cell(int**,int,  int, int, enum moveType);
 void feed_board(int**, int);
 void free_memory(int**, int);
 void free_all(int** arr,int dim);
@@ -39,10 +39,12 @@ int** initialize_logic (int dim) {
 }
 
 
-void move_board(int** arr, int dim ,int move) {
+int move_board(int** arr, int dim ,int move) {
   int start_col = 0;
   int start_row = 0;
 
+  int moveScore = -1;
+  
   fill_with_val(mask, dim, 0);
   
   switch(move){
@@ -66,7 +68,16 @@ void move_board(int** arr, int dim ,int move) {
     for (row=start_row; row < dim;row++) { 
       for (col=start_col; col < dim;col++) {	
 	if (arr[row][col]!=0){
-	  move_cell(arr,dim, row, col, Up);
+
+	  int res = move_cell(arr,dim, row, col, Up);
+	  if(res == -1 && moveScore == -1) {
+	    moveScore = -1;
+	  } else if (res != -1 && moveScore == -1) {
+	    moveScore = res;
+	  } else {
+	    moveScore += res;
+	  }
+
 	}	
       }
     }
@@ -74,18 +85,20 @@ void move_board(int** arr, int dim ,int move) {
   } else if(move==1) { // Down
     for(row=start_row;row>=0;row--){
       for(col=start_col; col<dim;col++){
-	//printf("%d%d ", row, col);
-	if (arr[row][col]!=0){
-	  move_cell(arr,dim, row, col, Down);
-	}
+	int res =move_cell(arr,dim, row, col, Down);
+	  if(res != -1) {
+	    moveScore += res;
+	  }
       }
     }    
   } else if (move==2) { // Right
     for (col=start_col; col>= 0; col--){
       for(row=start_row;row<dim;row++){
 	if (arr[row][col]!=0){
-	  //printf ("%d", arr[row][col]);
-	  move_cell(arr,dim, row, col, Right);
+	  int res =move_cell(arr,dim, row, col, Right);
+	  if(res != -1) {
+	    moveScore += res;
+	  }
 	}
       }
     }
@@ -93,18 +106,31 @@ void move_board(int** arr, int dim ,int move) {
     for (col=start_col; col<dim; col++){
       for(row=start_row;row<dim;row++){
 	if (arr[row][col]!=0){
-	  move_cell(arr,dim, row, col, Left);      
+	  int res =move_cell(arr,dim, row, col, Left);
+	  if(res != -1) {
+	    moveScore += res;
+	  }
 	}
       }
     }    
   }
+
+  if (moveScore == -1) {
+    return 0;
+  }
+  
+  feed_board(arr, dim);
+  return moveScore + 1;
 }
 
 
 
-void move_cell(int** arr,int dim, int row, int col, enum moveType move) {
+int move_cell(int** arr,int dim, int row, int col, enum moveType move) {
   int curr = arr[row][col];
 
+  int score = 0;
+  bool changed = false;
+  
   bool done_moving = false;
   int i;
   
@@ -128,12 +154,17 @@ void move_cell(int** arr,int dim, int row, int col, enum moveType move) {
       if (arr[i-1][col] == 0){
 	arr[i-1][col] = curr;
 	arr[i][col] = 0;
+	changed = true;
+	
       }
       else if (arr[i-1][col] == curr && mask[i-1][col] != 1) {
 	arr[i-1][col] += curr;
 	arr[i][col] = 0;
 	done_moving = true;
 	mask[i-1][col] = 1;
+
+	changed = true;
+	score = arr[i-1][col];
       }
       else {
 	done_moving = true;
@@ -149,12 +180,17 @@ void move_cell(int** arr,int dim, int row, int col, enum moveType move) {
       if(arr[i+1][col] == 0 ) {
 	arr[i+1][col] = curr;
 	arr[i][col] = 0;
+	changed = true;
+	
       }
       else if (arr[i+1][col] == curr && mask[i+1][col] != 1) {
 	arr[i+1][col] += curr;
 	arr[i][col] = 0;
 	done_moving = true;
 	mask[i+1][col] =1;
+
+	changed = true;
+	score = arr[i+1][col];
       }
       else {
 	done_moving = true;
@@ -171,12 +207,17 @@ void move_cell(int** arr,int dim, int row, int col, enum moveType move) {
       if(arr[row][i+1] == 0) {
 	arr[row][i+1] = curr;
 	arr[row][i] = 0;
+	changed = true;
+	
       }
       else if (arr[row][i+1] == curr && mask[row][i+1] != 1) {
 	arr[row][i+1] += curr;
 	arr[row][i] = 0;
 	done_moving = true;
 	mask[row][i+1] = 1;
+
+	changed = true;
+	score = arr[row][i+1];
       }
       else {
 	done_moving =true;
@@ -191,12 +232,17 @@ void move_cell(int** arr,int dim, int row, int col, enum moveType move) {
       if(arr[row][i-1] == 0) {
 	arr[row][i-1] = curr;
 	arr[row][i] = 0;
+	changed = true;
+	
       }
       else if (arr[row][i-1] == curr && mask[row][i-1] != 1) {
 	arr[row][i-1] += curr;
 	arr[row][i] = 0;
 	done_moving = true;
 	mask[row][i-1] = 1;
+
+	changed =true;
+	score = arr[row][i-1];
       }
       else {
 	done_moving = true;
@@ -207,6 +253,11 @@ void move_cell(int** arr,int dim, int row, int col, enum moveType move) {
       }
     }
   }
+
+  if (!changed)
+    return -1;
+  
+  return score;
 }
 
 
