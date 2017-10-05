@@ -67,69 +67,71 @@ int move_board(int** arr, int dim ,int move) {
   if (move==0) { // UP 
     for (row=start_row; row < dim;row++) { 
       for (col=start_col; col < dim;col++) {	
-	if (arr[row][col]!=0){
-	  int res = move_cell(arr,dim, row, col, Up);
-	  if(res == -1 && moveScore == -1) {	    
-	  }  else if (res != -1 && moveScore == -1) {
-	    moveScore = res;
-	  } else if (res != -1 && moveScore != -1) {
-	    moveScore += res;
-	  }
+	      if (arr[row][col]!=0){
+	        int res = move_cell(arr,dim, row, col, Up);
+	        if(res == -1 && moveScore == -1) {	    
+	        }  else if (res != -1 && moveScore == -1) {
+	          moveScore = res;
+	        } else if (res != -1 && moveScore != -1) {
+	          moveScore += res;
+	        }
 
-	}	
+	      }	
       }
     }
     
   } else if(move==1) { // Down
     for(row=start_row;row>=0;row--){
       for(col=start_col; col<dim;col++){
+        if (arr[row][col]!=0) {
+	        int res = move_cell(arr,dim, row, col, Down);
+	        if(res == -1 && moveScore == -1) {	  
+	        } else if (res != -1 && moveScore == -1) {
+	          moveScore = res;
+	        } else if (res != -1 && moveScore != -1) {
+	          moveScore += res;
+	        }
 
-	int res = move_cell(arr,dim, row, col, Down);
-	if(res == -1 && moveScore == -1) {	  
-	} else if (res != -1 && moveScore == -1) {
-	  moveScore = res;
-	} else if (res != -1 && moveScore != -1) {
-	  moveScore += res;
-	}
-
+        }
       }
     }    
   } else if (move==2) { // Right
     for (col=start_col; col>= 0; col--){
       for(row=start_row;row<dim;row++){
-	if (arr[row][col]!=0){
-	  int res = move_cell(arr,dim, row, col, Right);
-	  if(res == -1 && moveScore == -1) {
-	  
-	  } else if (res != -1 && moveScore == -1) {
-	    moveScore = res;
-	  } else if (res != -1 && moveScore != -1){
-	    moveScore += res;
-	  }
-
-	}
+        if (arr[row][col]!=0){
+          int res = move_cell(arr,dim, row, col, Right);
+          if(res == -1 && moveScore == -1) {
+          
+          } else if (res != -1 && moveScore == -1) {
+            moveScore = res;
+          } else if (res != -1 && moveScore != -1){
+            moveScore += res;
+          }
+        
+        }
       }
     }
   } else { // Left
     for (col=start_col; col<dim; col++){
       for(row=start_row;row<dim;row++){
-	if (arr[row][col]!=0){
-	  
-	  int res = move_cell(arr,dim, row, col, Left);
-	  if(res == -1 && moveScore == -1) {
-	  
-	  } else if (res != -1 && moveScore == -1) {
-	    moveScore = res;
-	  } else if (res != -1 && moveScore != -1) {
-	    moveScore += res;
-	  }
-
-	}
+        if (arr[row][col]!=0){
+          
+          int res = move_cell(arr,dim, row, col, Left);
+          if(res == -1 && moveScore == -1) {
+          
+          } else if (res != -1 && moveScore == -1) {
+            moveScore = res;
+          } else if (res != -1 && moveScore != -1) {
+            moveScore += res;
+          }
+        
+        }
       }
     }    
   }
 
   if (moveScore == -1) {
+
     return 0;
   }
   
@@ -166,106 +168,101 @@ int move_cell(int** arr,int dim, int row, int col, enum moveType move) {
   while (!done_moving) {
     if (move == Up) {
       if (arr[i-1][col] == 0){
-	arr[i-1][col] = curr;
-	arr[i][col] = 0;
-	changed = true;
+        arr[i-1][col] = curr;
+        arr[i][col] = 0;
+        changed = true;
 	
       }
       else if (arr[i-1][col] == curr && mask[i-1][col] != 1) {
-	arr[i-1][col] += curr;
-	arr[i][col] = 0;
-	done_moving = true;
-	mask[i-1][col] = 1;
-
-	changed = true;
-	score = arr[i-1][col];
+        arr[i-1][col] += curr;
+        arr[i][col] = 0;
+        done_moving = true;
+        mask[i-1][col] = 1;
+        
+        changed = true;
+        score = arr[i-1][col];
       }
       else {
-	done_moving = true;
+        done_moving = true;
       }      
       i--;
       if (i < 1) {
-	done_moving = true;
-	changed = true;
+        done_moving = true;
       }      
     }
     
     else if (move == Down) {
       if(arr[i+1][col] == 0 ) {
-	arr[i+1][col] = curr;
-	arr[i][col] = 0;
-	changed = true;
+        arr[i+1][col] = curr;
+        arr[i][col] = 0;
+        changed = true;
 	
       }
       else if (arr[i+1][col] == curr && mask[i+1][col] != 1) {
-	arr[i+1][col] += curr;
-	arr[i][col] = 0;
-	done_moving = true;
-	mask[i+1][col] =1;
+        arr[i+1][col] += curr;
+        arr[i][col] = 0;
+        done_moving = true;
+        mask[i+1][col] =1;
 
-	changed = true;
-	score = arr[i+1][col];
+        changed = true;
+        score = arr[i+1][col];
       }
       else {
-	done_moving = true;
+        done_moving = true;
       }      
       i++;
       if (i > dim-2) {
-	done_moving = true;
-	changed = true;
+        done_moving = true;
       }
     }
 
     else if (move == Right) {
       if(arr[row][i+1] == 0) {
-	arr[row][i+1] = curr;
-	arr[row][i] = 0;
-	changed = true;
+        arr[row][i+1] = curr;
+        arr[row][i] = 0;
+        changed = true;
 	
       }
       else if (arr[row][i+1] == curr && mask[row][i+1] != 1) {
-	arr[row][i+1] += curr;
-	arr[row][i] = 0;
-	done_moving = true;
-	mask[row][i+1] = 1;
-
-	changed = true;
-	score = arr[row][i+1];
+        arr[row][i+1] += curr;
+        arr[row][i] = 0;
+        done_moving = true;
+        mask[row][i+1] = 1;
+        
+        changed = true;
+        score = arr[row][i+1];
       }
       else {
-	done_moving =true;
-	changed = true;
+        done_moving =true;
       }
       i++;      
       if (i > dim-2) {
-	done_moving = true;
-	changed = true;
+        done_moving = true;
       }      
     }
 
     else if (move == Left) {
       if(arr[row][i-1] == 0) {
-	arr[row][i-1] = curr;
-	arr[row][i] = 0;
-	changed = true;
+        arr[row][i-1] = curr;
+        arr[row][i] = 0;
+        changed = true;
 	
       }
       else if (arr[row][i-1] == curr && mask[row][i-1] != 1) {
-	arr[row][i-1] += curr;
-	arr[row][i] = 0;
-	done_moving = true;
-	mask[row][i-1] = 1;
-
-	changed =true;
-	score = arr[row][i-1];
+        arr[row][i-1] += curr;
+        arr[row][i] = 0;
+        done_moving = true;
+        mask[row][i-1] = 1;
+        
+        changed =true;
+        score = arr[row][i-1];
       }
       else {
-	done_moving = true;
+        done_moving = true;
       }
       i--;
       if(i < 1) {
-	done_moving = true;
-	changed = true;
+        done_moving = true;
       }
     }
   }
