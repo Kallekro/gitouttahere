@@ -22,36 +22,21 @@ int main (int argc, char* argv[]) {
   }
 
   int** arr;
+  int highscore;
 
-  arr = malloc(sizeof(*arr) * dim);
-
-  for (int i=0; i<dim; i++) {
-    arr[i] = malloc(sizeof(int) * dim);
-  }
-
-  int numbers[15] = {0, 0, 0, 0, 2, 4, 8, 16, 32, 64,
-                     128, 256, 512, 1024, 2048};
-  for (int i=0; i<dim; i++) {
-    for (int j=0; j<dim; j++) {
-      arr[i][j] = numbers[randInt(0, 15)];
-    }
-  }
-
-  InitializeGame(dim);
-  gameLoop(arr);
+  InitializeGraphics(dim);
+  gameLoop(arr, highscore);
   endwin();
 
-  for (int i=0; i<dim; i++) {
-    free(arr[i]);
-  }
-  free(arr);
-
   return 0;
+
 }
 
-int gameLoop (int** arr) {
+int gameLoop (int** arr, int _highscore) {
   int ch;
   bool done = false;
+  int highscore = _highscore;
+  int score = 0;
   while (!done) {
     // Array, score, highscore
     PrintGame(arr, 200, 2000);
