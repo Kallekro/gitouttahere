@@ -134,18 +134,17 @@ void move_cell(int** arr,int dim, int row, int col, enum moveType move) {
     } else { i = row-1;}
   }
   
-  while (!done_moving || i < dim-1) {
+  while (!done_moving && i < row) {
 
     if (move == Up) {
-      printf("LOLOL");
-      if (arr[row+i-1][col] == 0){	
-	arr[row+i-1][col] = curr;
-	arr[row+i][col] = 0;
+      if (arr[row-i-1][col] == 0){	
+	  arr[row-i-1][col] = curr;
+      arr[row-i][col] = 0;
       }
 
       else if (arr[row-1][col] == curr) {
-	arr[row+i-1][col] += curr;
-	arr[row+i][col] = 0;
+	arr[row-i-1][col] += curr;
+  arr[row-i][col] = 0;
 	done_moving = true;
       }
       
