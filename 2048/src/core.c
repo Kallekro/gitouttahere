@@ -13,7 +13,7 @@ enum moveType {Up, Down, Left, Right};
 int randInt(int, int);
 void printArray(int**, int);
 int** initialize(int);
-int move_board(int**,int,int);
+int move_board(int**,int,int, bool feed);
 int move_cell(int**,int,  int, int, enum moveType);
 void feed_board(int**, int);
 void free_memory(int**, int);
@@ -39,7 +39,7 @@ int** initialize_logic (int dim) {
 }
 
 
-int move_board(int** arr, int dim ,int move) {
+int move_board(int** arr, int dim ,int move, bool feed) {
   int start_col = 0;
   int start_row = 0;
 
@@ -134,8 +134,9 @@ int move_board(int** arr, int dim ,int move) {
 
     return 0;
   }
-  
-  feed_board(arr, dim);
+
+  if (feed) 
+    feed_board(arr, dim);
 
   if (moveScore != 0)
     return moveScore;
