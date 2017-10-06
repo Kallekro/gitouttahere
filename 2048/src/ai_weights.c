@@ -6,7 +6,7 @@
 #include "support.h"
 
 int initAI (int dim);
-int findBestMove(int** arr, int dim);
+int findBestMove(int** arr, int dim, int depth);
 int fillWeightArray(float** arr, int dim);
 int fillWeightArray_B(float** arr, int dim);
 int weightedSum(int** arr, int dim);
@@ -33,15 +33,20 @@ int freeWeightArr (int dim) {
   return 0;
 }
 
-int findBestMove(int** arr, int dim) {
+int findBestMove(int** arr, int dim, int depth) {
   int greatestSum = 0;
   int bestMove = 0;
   for (int i=0; i < 4; i++) {
     int** arrCopy = copy_array(arr, dim);
     int res = move_board(arrCopy, dim, i, false);
     if (res != -1) {
-    
-      int newSum = weightedSum(arrCopy, dim);
+      int newSum;
+      if (depth == 0) {
+        newSum = weightedSum(arrCopy, dim);
+      } 
+      else {
+        newSum = weightedSum(arrCopy, dim) * depth + findBestMove(arrCopy, dim, depth-1);
+      }
       if (newSum >= greatestSum) {
         greatestSum = newSum;
         bestMove = i;
@@ -85,7 +90,7 @@ int fillWeightArray_B (float** arr, int dim) {
   for (int i=0; i < dim; i++) {
     for (int j=0; j < dim; j++) {
       if (i + j > 0) {
-        w = 1.0 / (((float) i) * 4 + (((float) j)/1.75) + 1.0);
+        w = 1.0 / (((float) i) * 2.75 + (((float) j)/1.85) + 1.0);
       }
       arr[i][j] = w;
       printw("%f", w);

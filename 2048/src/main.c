@@ -68,7 +68,7 @@ int gameLoop (int** arr, int _highscore, bool useAI) {
       //  done=true;
       //}
       //}
-      int move = findBestMove(arr, dim);
+      int move = findBestMove(arr, dim, 10);
       prevMove = move;
       res = move_board(arr, dim, move, true);
       if (res == -1) { res = 0; }
@@ -110,7 +110,8 @@ int gameLoop (int** arr, int _highscore, bool useAI) {
         }
       }
     }
-
   }
+  //PrintGame(arr, score, highscore);
+
   return 0;
 }
