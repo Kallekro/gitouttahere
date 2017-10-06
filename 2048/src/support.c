@@ -1,5 +1,6 @@
 #include<stdlib.h>
 #include<stdio.h>
+#include<stdbool.h>
 
 int randInt(int, int);
 void printArray(int**, int);
@@ -7,7 +8,8 @@ int** initialize(int);
 void free_memory(int** arr,int dim);
 void fill_with_val(int**, int, int);
 int** copy_array(int** arr, int);
-
+bool is_filled(int**arr, int dim);
+ 
 // generate a randval between lo and hi+1
 int randInt(int lo, int hi) {  
   return ((rand() % hi) + lo);
@@ -66,6 +68,23 @@ int** copy_array(int** arr, int dim) {
     }
   }
   return cp_arr;
+}
+
+bool is_filled(int** arr, int dim) {
+  bool full = true;
+  int i,j;
+
+  for(i=0; i<dim; i++) {
+    for(j=0; j<dim; j++){
+      if(arr[i][j] == 0) {
+	full = false;
+      }
+    }
+    if(!full) {
+      break;
+    }
+  }
+  return full;
 }
 
   
