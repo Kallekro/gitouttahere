@@ -1,18 +1,16 @@
-#include<stdlib.h>
-#include<time.h>
 #include<stdbool.h>
+#include<time.h>
 #include"support.h"
+
 
 enum moveType {Up, Down, Left, Right};
 
-void move_board(int**,int,int);
-void move_cell(int**,int,  int, int, enum moveType);
+int move_board(int**,int,int, bool feed);
+int move_cell(int**,int,  int, int, enum moveType);
 void feed_board(int**, int);
-void free_all(int** arr,int dim);
+int** initialize_logic(int dim);
 
 int** mask;
-
-int** initialize_logic(int dim);
 
 
 int** initialize_logic (int dim) {
@@ -28,11 +26,12 @@ int** initialize_logic (int dim) {
   return arr;
 }
 
-
-void move_board(int** arr, int dim ,int move) {
+int move_board(int** arr, int dim ,int move, bool feed) {
   int start_col = 0;
   int start_row = 0;
 
+  int moveScore = -1;
+  
   fill_with_val(mask, dim, 0);
   
   switch(move){
@@ -55,46 +54,89 @@ void move_board(int** arr, int dim ,int move) {
   if (move==0) { // UP 
     for (row=start_row; row < dim;row++) { 
       for (col=start_col; col < dim;col++) {	
-	if (arr[row][col]!=0){
-	  move_cell(arr,dim, row, col, Up);
-	}	
+	      if (arr[row][col]!=0){
+	        int res = move_cell(arr,dim, row, col, Up);
+	        if(res == -1 && moveScore == -1) {	    
+	        }  else if (res != -1 && moveScore == -1) {
+	          moveScore = res;
+	        } else if (res != -1 && moveScore != -1) {
+	          moveScore += res;
+	        }
+
+	      }	
       }
     }
     
   } else if(move==1) { // Down
     for(row=start_row;row>=0;row--){
       for(col=start_col; col<dim;col++){
-	//printf("%d%d ", row, col);
-	if (arr[row][col]!=0){
-	  move_cell(arr,dim, row, col, Down);
-	}
+        if (arr[row][col]!=0) {
+	        int res = move_cell(arr,dim, row, col, Down);
+	        if(res == -1 && moveScore == -1) {	  
+	        } else if (res != -1 && moveScore == -1) {
+	          moveScore = res;
+	        } else if (res != -1 && moveScore != -1) {
+	          moveScore += res;
+	        }
+
+        }
       }
     }    
   } else if (move==2) { // Right
     for (col=start_col; col>= 0; col--){
       for(row=start_row;row<dim;row++){
-	if (arr[row][col]!=0){
-	  //printf ("%d", arr[row][col]);
-	  move_cell(arr,dim, row, col, Right);
-	}
+        if (arr[row][col]!=0){
+          int res = move_cell(arr,dim, row, col, Right);
+          if(res == -1 && moveScore == -1) {
+          
+          } else if (res != -1 && moveScore == -1) {
+            moveScore = res;
+          } else if (res != -1 && moveScore != -1){
+            moveScore += res;
+          }
+        
+        }
       }
     }
   } else { // Left
     for (col=start_col; col<dim; col++){
       for(row=start_row;row<dim;row++){
-	if (arr[row][col]!=0){
-	  move_cell(arr,dim, row, col, Left);      
-	}
+        if (arr[row][col]!=0){
+          
+          int res = move_cell(arr,dim, row, col, Left);
+          if(res == -1 && moveScore == -1) {
+          
+          } else if (res != -1 && moveScore == -1) {
+            moveScore = res;
+          } else if (res != -1 && moveScore != -1) {
+            moveScore += res;
+          }
+        
+        }
       }
     }    
   }
+
+  if (moveScore == -1) {
+
+    return 0;
+  }
+
+  if (feed) 
+    feed_board(arr, dim);
+
+  if (moveScore != 0)
+    return moveScore;
+
+  return 0;
 }
 
-
-
-void move_cell(int** arr,int dim, int row, int col, enum moveType move) {
+int move_cell(int** arr,int dim, int row, int col, enum moveType move) {
   int curr = arr[row][col];
 
+  int score = 0;
+  bool changed = false;
+  
   bool done_moving = false;
   int i;
   
@@ -112,23 +154,25 @@ void move_cell(int** arr,int dim, int row, int col, enum moveType move) {
     i = col;
   }
   while (!done_moving) {
-
     if (move == Up) {
-      
       if (arr[i-1][col] == 0){
         arr[i-1][col] = curr;
         arr[i][col] = 0;
+        changed = true;
+	
       }
       else if (arr[i-1][col] == curr && mask[i-1][col] != 1) {
         arr[i-1][col] += curr;
-	      arr[i][col] = 0;
-	      done_moving = true;
-	      mask[i-1][col] = 1;
+        arr[i][col] = 0;
+        done_moving = true;
+        mask[i-1][col] = 1;
+        
+        changed = true;
+        score = arr[i-1][col];
       }
       else {
         done_moving = true;
-      }
-      
+      }      
       i--;
       if (i < 1) {
         done_moving = true;
@@ -139,66 +183,83 @@ void move_cell(int** arr,int dim, int row, int col, enum moveType move) {
       if(arr[i+1][col] == 0 ) {
         arr[i+1][col] = curr;
         arr[i][col] = 0;
+        changed = true;
+	
       }
       else if (arr[i+1][col] == curr && mask[i+1][col] != 1) {
         arr[i+1][col] += curr;
         arr[i][col] = 0;
         done_moving = true;
         mask[i+1][col] =1;
+
+        changed = true;
+        score = arr[i+1][col];
       }
       else {
         done_moving = true;
-      }
-      
+      }      
       i++;
       if (i > dim-2) {
         done_moving = true;
       }
-      
     }
 
     else if (move == Right) {
       if(arr[row][i+1] == 0) {
         arr[row][i+1] = curr;
         arr[row][i] = 0;
+        changed = true;
+	
       }
       else if (arr[row][i+1] == curr && mask[row][i+1] != 1) {
         arr[row][i+1] += curr;
         arr[row][i] = 0;
         done_moving = true;
         mask[row][i+1] = 1;
+        
+        changed = true;
+        score = arr[row][i+1];
       }
       else {
-	done_moving =true;
+        done_moving =true;
       }
       i++;      
       if (i > dim-2) {
-	done_moving = true;
+        done_moving = true;
       }      
     }
 
     else if (move == Left) {
       if(arr[row][i-1] == 0) {
-	arr[row][i-1] = curr;
-	arr[row][i] = 0;
+        arr[row][i-1] = curr;
+        arr[row][i] = 0;
+        changed = true;
+	
       }
       else if (arr[row][i-1] == curr && mask[row][i-1] != 1) {
-	arr[row][i-1] += curr;
-	arr[row][i] = 0;
-	done_moving = true;
-	mask[row][i-1] = 1;
+        arr[row][i-1] += curr;
+        arr[row][i] = 0;
+        done_moving = true;
+        mask[row][i-1] = 1;
+        
+        changed =true;
+        score = arr[row][i-1];
       }
       else {
-	done_moving = true;
+        done_moving = true;
       }
       i--;
       if(i < 1) {
-	done_moving = true;
+        done_moving = true;
       }
     }
   }
-}
+  
+  if (!changed)
+    return -1;
 
+  return score;
+}
 
 
 void feed_board(int** arr, int dim) {
@@ -217,6 +278,7 @@ void feed_board(int** arr, int dim) {
     }  
   }
 }
+
 
 
 void free_all(int** arr, int dim) {

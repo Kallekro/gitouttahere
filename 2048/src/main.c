@@ -2,17 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include "support.h"
 #include "core.h"
 #include "graphics.h"
-
-int gameLoop(int**arr, int highscore);
 
 int dim;
 
 int main (int argc, char* argv[]) {
-  time_t t;
-  srand((unsigned) time(&t));
-  
+
   if (argc < 2) {
     dim = 4;
   } else {
@@ -26,11 +23,9 @@ int main (int argc, char* argv[]) {
   InitializeGraphics(dim);
   gameLoop(arr, highscore);
   endwin();
-
-  free_all(arr, dim);
   
+  free_all(arr, dim);
   return 0;
-
 }
 
 int gameLoop (int** arr, int _highscore) {
@@ -53,16 +48,16 @@ int gameLoop (int** arr, int _highscore) {
         case 10: // Enter key
           break;
         case KEY_LEFT :
-	  score += move_board(arr, dim, 3);
+	  score += move_board(arr, dim, 3, true);
           break;
         case KEY_RIGHT :
-	  score += move_board(arr, dim, 2);
+	  score += move_board(arr, dim, 2, true);
           break;
         case KEY_UP :
-	  score += move_board(arr, dim, 0);
+	  score += move_board(arr, dim, 0, true);
           break;
         case KEY_DOWN:
-	  score += move_board(arr, dim, 1);
+	  score += move_board(arr, dim, 1, true);
           break;
         default:  
           break;
