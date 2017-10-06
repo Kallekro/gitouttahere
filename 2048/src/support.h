@@ -8,5 +8,6 @@ void printArray(int** arr, int dim);
 int** initialize(int dim);
 void free_memory(int** arr, int dim);
 void fill_with_val(int** arr, int dim, int val);
+int** copy_array(int** arr, int dim);
 
 #endif

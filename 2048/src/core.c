@@ -1,24 +1,13 @@
-#include<string.h>
-#include<stdlib.h>
-#include<stdio.h>
 #include<time.h>
+#include<stdlib.h>
 #include<stdbool.h>
-#include<ncurses.h>
-#include<curses.h>
-#include<stdbool.h>
-
+#include"support.h"
 
 enum moveType {Up, Down, Left, Right};
-
-int randInt(int, int);
-void printArray(int**, int);
-int** initialize(int);
 int move_board(int**,int,int, bool feed);
 int move_cell(int**,int,  int, int, enum moveType);
 void feed_board(int**, int);
-void free_memory(int**, int);
 void free_all(int** arr,int dim);
-void fill_with_val(int**, int, int);
 
 int** mask;
 
@@ -293,55 +282,9 @@ void feed_board(int** arr, int dim) {
   }
 }
 
-
-int randInt(int lo, int hi) {  
-  return ((rand() % hi) + lo);
-}
-
-int** initialize(int dim) {
-  // allocate memory for array
-  int** arr;
-  arr = malloc(dim * sizeof(*arr));
-  for (int i = 0;i<dim;i++){
-    arr[i] = malloc(dim * sizeof(*arr));
-  }
-  return arr;
-}
-void fill_with_val(int** arr, int dim, int val) {  
-  int col, row;
-  for (col=0; col<dim; col++){
-    for (row=0; row<dim; row++) {
-      arr[col][row] = val;
-    }
-  }
-}
-
 void free_all(int** arr, int dim) {
   free_memory(arr, dim);
   free_memory(mask, dim);
 }
 
-void free_memory(int** arr, int dim) {
-  // Free memory for array.
-  for (int i=0; i<dim; i++) {
-    free(arr[i]);
-  }
-  free(arr);
-}
-
-void printArray(int** arr, int dim) {
-  int col, row;
-  for (col=0; col<dim; col++){
-    for (row=0; row<dim; row++) {
-      if (row == 0) {printf ("| ");}
-
-      printf("%d ", arr[col][row]);
-
-      if (row == dim-1) {printf (" |");}
-    }
-    printf("\n");
-  }
-
-  
-}
 

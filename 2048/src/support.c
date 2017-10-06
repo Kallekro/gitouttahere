@@ -6,7 +6,7 @@ void printArray(int**, int);
 int** initialize(int);
 void free_memory(int** arr,int dim);
 void fill_with_val(int**, int, int);
-
+int** copy_array(int** arr, int);
 
 // generate a randval between lo and hi+1
 int randInt(int lo, int hi) {  
@@ -55,6 +55,17 @@ void fill_with_val(int** arr, int dim, int val) {
       arr[col][row] = val;
     }
   }
+}
+
+int** copy_array(int** arr, int dim) {
+  int** cp_arr = initialize(dim);
+  int i,j;
+  for (i=0;i<dim;i++){
+    for (j=0;j<dim;j++){
+      cp_arr[i][j] = arr[i][j];
+    }
+  }
+  return cp_arr;
 }
 
   
