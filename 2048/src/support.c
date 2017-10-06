@@ -87,5 +87,15 @@ bool is_filled(int** arr, int dim) {
   return full;
 }
 
-  
+int max_uint(int** arr, int dim) {
+  int max = -1;
+  for (int i = 0; i<dim; i++) {
+    for (int j = 0; j<dim; j++) {
+      if (arr[i][j] > max) {
+        max = arr[i][j];
+      }
+    }
+  }
+  return max;
+}
 
