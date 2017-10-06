@@ -8,6 +8,7 @@ int move_board(int**,int,int, bool feed);
 int move_cell(int**,int,  int, int, enum moveType);
 void feed_board(int**, int);
 void free_all(int** arr,int dim);
+bool playerIsDead(int** arr, int dim);
 
 int** mask;
 
@@ -120,8 +121,7 @@ int move_board(int** arr, int dim ,int move, bool feed) {
   }
 
   if (moveScore == -1) {
-
-    return 0;
+    return -1;
   }
 
   if (feed) 
@@ -287,4 +287,14 @@ void free_all(int** arr, int dim) {
   free_memory(mask, dim);
 }
 
-
+bool playerIsDead(int** arr, int dim) {
+  if (is_filled(arr, dim)) {
+    for (int i = 0; i < 4; i++) {
+      if (move_board(arr, dim, i, false) != -1) {
+        return false;
+      }
+    }
+    return true;
+  }
+  return false;
+}
