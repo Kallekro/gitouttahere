@@ -22,7 +22,10 @@ int main (int argc, char* argv[]) {
 
   int** arr = initialize_logic(dim);
   InitializeGraphics(dim);
+
   initAI(dim);
+  getch();
+
 
   int highscore;
   gameLoop(arr, highscore, true);
@@ -41,13 +44,35 @@ int gameLoop (int** arr, int _highscore, bool useAI) {
   bool done = false;
   int highscore = _highscore;
   int score = 0;
+  int c = 0;
+  int prevMove = -1;
   while (!done) {
+    mvprintw(0, c, "%d", prevMove);
+    c++;
+    //if (c > 100000) {
+    //  done = true;
+    //}
+
     // Array, score, highscore
     PrintGame(arr, score, highscore);
 
+    if (playerIsDead(arr, dim)) {
+      done = true;
+    }
+    
+    int res;
+
     if (useAI) {
+      //if (c % 10 == 0) {
+      //if (getch() == 'q') {
+      //  done=true;
+      //}
+      //}
       int move = findBestMove(arr, dim);
-      move_board(arr, dim, move, true);
+      prevMove = move;
+      res = move_board(arr, dim, move, true);
+      if (res == -1) { res = 0; }
+      score += res;
     }
     else {
       ch = getch();
@@ -61,16 +86,24 @@ int gameLoop (int** arr, int _highscore, bool useAI) {
           case 10: // Enter key
             break;
           case KEY_LEFT :
-            score += move_board(arr, dim, 3, true);
+            res = move_board(arr, dim, 3, true);
+            if (res == -1) { res = 0; }
+            score += res;
             break;
           case KEY_RIGHT :
-            score += move_board(arr, dim, 2, true);
+            res = move_board(arr, dim, 2, true);
+            if (res == -1) { res = 0; }
+            score += res;
             break;
           case KEY_UP :
-            score += move_board(arr, dim, 0, true);
+            res = move_board(arr, dim, 0, true);
+            if (res == -1) { res = 0; }
+            score += res;
             break;
           case KEY_DOWN:
-            score += move_board(arr, dim, 1, true);
+            res = move_board(arr, dim, 1, true);
+            if (res == -1) { res = 0; }
+            score += res;
             break;
           default:  
             break;
@@ -78,9 +111,6 @@ int gameLoop (int** arr, int _highscore, bool useAI) {
       }
     }
 
-    if (is_filled(arr, dim)) {
-      done = true;
-    }
   }
   return 0;
 }

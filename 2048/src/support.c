@@ -77,7 +77,7 @@ bool is_filled(int** arr, int dim) {
   for(i=0; i<dim; i++) {
     for(j=0; j<dim; j++){
       if(arr[i][j] == 0) {
-	full = false;
+     	  full = false;
       }
     }
     if(!full) {
