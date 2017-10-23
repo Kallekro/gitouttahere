@@ -1,5 +1,0 @@
-movq $256, %rbx
-movq $42, %rcx
-movq %rcx, (%rbx)
-// should not read the value 42 from mem, because of displacement.
-movq 16(%rbx),%rax

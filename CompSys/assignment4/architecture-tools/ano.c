@@ -980,15 +980,17 @@ void model_pop(annotation_ptr annotation, reg_id_t dest, word_t addr) {
 
 void annotation_usage()
 {
-    printf("Modelling options\n");
+    printf("\nGeneral options\n");
+    printf("  -diff                 end simulation by printing registers and changed memory cells\n");
+
+    printf("\nModeling options\n");
     printf("  -prof                 collect and display profiling information for each instruction\n");
     printf("  -t                    trace: print disassembly and result of each instruction\n");
     printf("  -m                    model resource use and estimate timing\n");
     printf("  -c                    print cycle diagram for each instruction (implies -m and -t)\n");
     printf("  -ddep-only            model only data dependencies, ignore actual resource needs\n");
-    printf("  -diff                 end simulation by printing registers and changed memory cells\n");
 
-    printf("Pipeline delays\n");
+    printf("\nPipeline delays (requires a modeling option to be recognized)\n");
     printf("  -dlat=<cycles>        latency of decoder (default 1, 2 or 3 dependent on other options)\n");
     printf("  -clat=<cycles>        latency of cache read (default 3)\n");
     printf("  -l2lat=<cycles>       additional latency of L2 (shared) cache access (default 9)\n");
@@ -996,7 +998,7 @@ void annotation_usage()
     printf("  -ptlat=<cycles>       latency of prediction if flow change (default 2)\n");
     printf("  -pntlat=<cycles>      latency of prediction if no flow change (default 0)\n");
 
-    printf("Cache configuration\n");
+    printf("\nCache configuration (requires a modeling option to be recognized)\n");
     printf("  -ic:blksz=<bits>      select number of bits for indexing i-cache block (default 5)\n");
     printf("  -ic:idxsz=<bits>      select number of bits in i-cache index (default 7)\n");
     printf("  -ic:assoc=<num>       select i-cache associativity (default 4)\n");
@@ -1007,7 +1009,7 @@ void annotation_usage()
     printf("  -l2:idxsz=<bits>      select number of bits in L2-cache index (default 11)\n");
     printf("  -l2:assoc=<num>       select L2-cache associativity (default 4)\n");
 
-    printf("Predictor configuration\n");
+    printf("\nPredictor configuration (requires a modeling option to be recognized)\n");
     printf("  -bpred=oracle         select oracle predictor (no mispredictions)\n");
     printf("  -bpred=taken          select taken predictor\n");
     printf("  -bpred=nt             select not taken predictor\n");
@@ -1015,13 +1017,13 @@ void annotation_usage()
     printf("  -bpred=gshare:<size>  select gshare predictor of given size (default 12 bits)\n");
     printf("  -bpred=local:<size>   select local predictor of given size\n");
 
-    printf("Superscalar resource configuration\n");
+    printf("\nSuperscalar resource configuration (requires a modeling option to be recognized)\n");
     printf("  -pw=<width>           width of pipeline (default 1)\n");
     printf("  -cp=<ports>           number of cache ports (default: 1)\n");
     printf("  -xp=<ports>           number of agen/alu ports (=units) (default: half of -pw +1)\n");
     printf("  -mp=<ports>           number of multiplier ports (=units) (default: 1)\n");
 
-    printf("Out-of-order pipeline configuration\n");
+    printf("\nOut-of-order pipeline configuration (requires a modeling option to be recognized)\n");
     printf("  -ooo                  enable out-of-order scheduling\n");
     printf("  -rob=<size>           give size of reorder buffer (default 128)\n");
     printf("  -cq=<size>            give size of queue/scheduler for cache access (default 32)\n");

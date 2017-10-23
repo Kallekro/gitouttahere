@@ -1,4 +1,0 @@
-main:
-  movq $8, %rax
-  movq %rax, (%rax)
-  hlt

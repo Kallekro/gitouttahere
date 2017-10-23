@@ -1,5 +1,0 @@
-movq $-5,%rax
-movq $-5,%rcx
-// should equal 10.
-subq %rax,%rcx
-hlt

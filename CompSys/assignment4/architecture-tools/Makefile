@@ -1,4 +1,8 @@
+UNAME_S := $(shell uname -s)
 CC = gcc
+ifeq ($(UNAME_S),Darwin)
+	CC = gcc-6
+endif
 CFLAGS = -Wall -Wextra -O1 -std=c11 -pedantic -g
 LEX = flex
 YACC = bison

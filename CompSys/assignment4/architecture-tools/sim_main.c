@@ -70,7 +70,7 @@ extern int main(int argc, const char * argv[])
     }
     argv[1] = NULL;
     // Open trace-file.
-    
+#if 0
     if (argc == 3 && argv[2])
     {
 	char const * traceFilename = argv[2];
@@ -85,6 +85,7 @@ extern int main(int argc, const char * argv[])
         }
 	argv[2] = NULL;
     }
+#endif
     int dump_diff = has_flag("-diff", argc, argv);
     if (!arguments_ok(argc-1, argv+1)) {
 	printf("\n");

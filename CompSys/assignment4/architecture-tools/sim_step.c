@@ -285,7 +285,7 @@ static inline isa_Status sim_alu
         state->registers[dst] = result;
     }
     
-    state->flags = isa_computeFlags(state->flags, op, oprnd1, oprnd2, result);
+    state->flags = isa_computeFlags(state->flags, op, oprnd2, oprnd1, result);
     
   #ifdef USE_ANNOTATION
     if (annotation != NULL)
