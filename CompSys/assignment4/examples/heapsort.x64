@@ -3,7 +3,7 @@ start:
     movq data_size, %rsp  // set stack pointer
     movq $8, %r15
     subq %r15, %rsp
-    call main
+    call main    
     hlt
     
 main:
@@ -136,6 +136,6 @@ heapsort_l2_entry:
 
     .pos 0x1000
 data_size:
-    .quad 10000
+    .quad 10
 data:
-    .rand 1234 10000
+    .rand 1234 10

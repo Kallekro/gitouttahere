@@ -1,9 +1,0 @@
-
-
-* Write a shellscript that does the following things:
-  - Run different x86-programs with different inputs.
-  - Run the simulator with the 3 different machine configurations.
-  - Collect cycle-data for each 'run' and save it.
-
-* Analyze data and make plots (python).
-  - n vs number of cycles.

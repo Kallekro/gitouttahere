@@ -78,7 +78,7 @@ echo -n > merge_n_data3.data
 for file in heap_1_n heap_2_n merge_n
 do
     printf "\nTesting file: $file.x64\n"
-    for n in {1000..10000..1000}
+    for n in {500..10000..500}
     do
 	printf "n=$n\n"
 	new_dim="    .quad $n"
@@ -96,8 +96,7 @@ do
 
 	# Machine 3
         output=$(printf "%s_data3.data" $file)
-        get_cycles $file $output "-pw=4 -ooo"
-	
+        get_cycles $file $output "-pw=4 -ooo"	
     done
 done
 
