@@ -93,7 +93,7 @@ do
 	    new_dim="    .quad $n"
 	    new_rand="    .rand 1234 $n"
 	    sed -i 's/^.*\.quad .*$/'"$new_dim"'/' $file  
-	    sed -i 's/^.*\.rand 1234 .*$/'"$new_rand"'/' $file
+	    sed -i 's/^.*\.rand .*$/'"$new_rand"'/' $file
 	    
 	    # Machine 1
 	    output=$(printf "%s_data1.data" $file)
@@ -106,7 +106,6 @@ do
 	    # Machine 3
       output=$(printf "%s_data3.data" $file)
       get_cycles $file data_files/$output "-pw=4 -ooo"	
-      cat merge_n
     done
 done
 
