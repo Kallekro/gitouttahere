@@ -79,12 +79,12 @@ l3:                             //         for (k = 0; ...) {
     .pos 0x400
 stack:
 dim:
-    .quad 50
+    .quad 50 
 
 mat1:
-    .rand 1234 2500
+    .rand 1337 2500
 
 mat2:
-    .rand 1234 2500
+    .rand 1338 2500
 
 out:
