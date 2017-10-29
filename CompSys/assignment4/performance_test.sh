@@ -9,17 +9,17 @@ quicksort="asm_programs/quicksort.x64"
 mat_mul2="asm_programs/matmul.x64"
 
 ## temporary copy of x64-source file. Used for changing n.
-cp $mat_mul matmul_n
-cp $mat_mul2 matmul2_n
+cp $mat_mul oldmatmul_n
+cp $mat_mul2 newmatmul_n
 
 ## Create files to hold simulation data.
-echo -n > data_files/matmul_n_data1.data
-echo -n > data_files/matmul_n_data2.data
-echo -n > data_files/matmul_n_data3.data
+echo -n > data_files/oldmatmul_n_data1.data
+echo -n > data_files/oldmatmul_n_data2.data
+echo -n > data_files/oldmatmul_n_data3.data
 
-echo -n > data_files/matmul2_n_data1.data
-echo -n > data_files/matmul2_n_data2.data
-echo -n > data_files/matmul2_n_data3.data
+echo -n > data_files/newmatmul_n_data1.data
+echo -n > data_files/newmatmul_n_data2.data
+echo -n > data_files/newmatmul_n_data3.data
 
 ## tmp files
 touch out_tmp.o
@@ -36,16 +36,17 @@ function get_cycles {
     ./architecture-tools/sim out_tmp.o -m $sim_flags > data_tmp
     cycles=$(egrep 'cycles.*:\ (\d*)' data_tmp | cut -d ':' -f3)
     echo $n$cycles >> $output_file
+    printf "$cycles"
 }
 
 
 ## Testing the matrix multiplication programs
-for file in matmul_n matmul2_n
+for file in oldmatmul_n newmatmul_n
 do
-    printf "Testing $file\n"
+    printf "\nTesting $file\n"
     for n in {10..50..5} # Testing for n=[10..50]
     do
-        printf "n=$n\n"
+        printf "\nn=$n\n"
         let n_squared=$n*$n
         new_dim="    .quad $n"
         new_rand="    .rand 1234 $n_squared"
@@ -57,18 +58,22 @@ do
         ### Get the total ammount of cycles for program $file with input n for all machines.
         ## Machine 1
 	      output=$(printf "%s_data1.data" $file)
+        printf "M1 Cycles: "
         get_cycles $file data_files/$output
         ## Machine 2
 	      output=$(printf "%s_data2.data" $file)
+        printf "\t M2 Cycles: "
         get_cycles $file data_files/$output "-pw=4"
         ## Machine 3
 	      output=$(printf "%s_data3.data" $file)
+        printf "\t M3 Cycles: "
         get_cycles $file data_files/$output "-pw=4 -ooo"
+        printf "\n"
     done
 done
 
-rm matmul_n
-rm matmul2_n
+rm oldmatmul_n
+rm newmatmul_n
 
 
 ## temporary copy of x64-source file. Used for changing n.
@@ -102,7 +107,7 @@ do
     printf "\nTesting file: $file.x64\n"
     for n in {1000..10000..1000}
     do
-	    printf "n=$n\n"
+	    printf "\nn=$n\n"
 	    new_dim="    .quad $n"
 	    new_rand="    .rand 1234 $n"
       ## searching and replacing the input dimension.
@@ -111,15 +116,19 @@ do
 
 	    # Machine 1
 	    output=$(printf "%s_data1.data" $file)
+      printf "M1 Cycles: "
       get_cycles $file data_files/$output 
 
 	    # Machine 2
 	    output=$(printf "%s_data2.data" $file)
+      printf "\t M2 Cycles: "
 	    get_cycles $file data_files/$output "-pw=4"
 
 	    # Machine 3
       output=$(printf "%s_data3.data" $file)
+      printf "\t M3 Cycles: "
       get_cycles $file data_files/$output "-pw=4 -ooo"	
+      printf "\n"
     done
 done
 

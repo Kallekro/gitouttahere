@@ -1,0 +1,23 @@
+Old matmul 1: 38.21
+New matmul 1: 32.08
+
+Old matmul 2: 32.11 
+New matmul 2: 25.98
+
+Old matmul 3: 6.67
+New matmul 3: 6.66
+
+Heap1 1: 39.09
+Heap2 1: 42.26
+Merge 1: 26.45
+Quick 1: 26.75
+
+Heap1 2: 30.72 
+Heap2 2: 33.87
+Merge 2: 19.65
+Quick 2: 23.28
+
+Heap1 3: 21.60
+Heap2 3: 19.00
+Merge 3: 15.32
+Quick 3: 15.17

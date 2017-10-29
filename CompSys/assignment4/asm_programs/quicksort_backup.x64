@@ -40,9 +40,10 @@ quicksort:
     pushq %rcx              // push low and high to the stack since they might be
     pushq %rdx              // altered before returning from the recursion
 
-    movq %rax, %rcx         // %rcx = high = p
+    movq %rax, %rcx  
+    subq %r15, %rcx         // %rcx = high = p - 1
 
-    call quicksort          // called with indices: low = low, high = p 
+    call quicksort          // called with indices: low = low, high = p - 1
 
     popq %rdx               // restore low and high from stack
     popq %rcx
@@ -56,65 +57,66 @@ qs_ret:
     ret
 
 // Partition 
-// Splits a subarray to two smaller subarrays, 
-// using the Hoare partition scheme. 
+// Splits a subarray to two smaller subarrays 
+// using the last element in the array as a pivot. 
 // It works in place meaning the values are swapped around,
 // and no extra memory is needed.
-// It uses two pointers starting at each end of the array,
-// moving them towards eachother until they pass eachother,
-// swapping inverted pairs as it passes them.
-// This is very good for the caches,
-// since we start looping through i, then after that loop,
-// loop through j. This means the values will 
-// almost always be adjacent.
-//
-// Arguments for partition are similar to quicksort.
+// Arguments for partition are similar to quicksort
 // Variables used in partition:
 // %r8  = value of pivot element
 // %r9  = index i
 // %r10 = index j
-// %r13 = value arr[i] 
-// %r14 = value arr[j] 
+// %r11 = temporary register for values being swapped
+// %rbp = temporary register for memory lookups
 // %r15 = globally set 8-byte de-/incrementer
 // %rax = return register - function returns index of pivot after split
 partition:
-    movq (%rdx), %r8        // %r8 = pivot value (= arr[lo])
+    movq (%rcx), %r8        // %r8 = pivot     (=arr[hi])
 
     movq %rdx, %r9       
-    subq %r15, %r9          // %r9 = lo - 1      (= i)
-
-    movq %rcx, %r10
-    addq %r15, %r10         // %r10 = hi + 1      (= j)
+    subq %r15, %r9          // %r9 = lo - 1    (= i)
+    movq %r9, %r10          // %r10 = lo -1    (= j)
 
 part_loop:
-i_loop:
-    addq %r15, %r9          // i++
-    movq (%r9), %r13        // %r13 = arr[i]
-    cmpq %r8, %r13          // if arr[i] < pivot
-    jl i_loop
-j_loop:
-    subq %r15, %r10         // j--
-    movq (%r10), %r14       // %r14 = arr[j]
-    cmpq %r14, %r8          // if arr[j] > pivot
-    jl j_loop
-    
-    cmpq %r10, %r9          // if i >= j
-    jge part_ret
+    addq %r15, %r10         // j++
+    cmpq %rcx, %r10         // if j < high continue loop
+    jge part_end
 
-    movq %r13, (%r10)   // swap inverted pair, arr[i] and arr[j]
-    movq %r14, (%r9)
+    movq (%r10),%rbp 
+    cmpq %r8, %rbp          // if arr[j] < pivot swap values
+    jge part_loop
+
+    addq %r15, %r9          // i++
+
+    // swapping
+    movq (%r10), %r11       // tmp = arr[j]
+    movq (%r9), %rbp
+    movq %rbp, (%r10)       // arr[j] = arr[i]         
+    movq %r11, (%r9)        // arr[i] = tmp     
+
     jmp part_loop 
 
+part_end:
+    addq %r15, %r9          // i++
+
+    movq (%r9),%rbp
+    cmpq %rbp, %r8          // if pivot < arr[i+1] set pivot correctly 
+    jge part_ret
+     
+    // swapping
+    movq (%rcx),%r11        // tmp = arr[hi]
+    movq (%r9),%rbp
+    movq %rbp, (%rcx)       // arr[hi] = arr[i+1]
+    movq %r11, (%r9)        // arr[i] = tmp
+
 part_ret:
-    movq %r10, %rax
+    movq %r9, %rax          // return i+1
     ret
 
-// Set encoding position for the "input"-data
+// Set encoding position to 1000 for the "input"-data
 // The memory behind this position will contain the instructions and the stack
-    .pos 0x600
+    .pos 0x1000	
 dim:	 
-    .quad 10000
+    .quad 5000
 data:
-    .rand 1234 10000 1
-// Set position for out data (printing the result)
-    .pos 0x20000
+    .rand 1234 5000 1
