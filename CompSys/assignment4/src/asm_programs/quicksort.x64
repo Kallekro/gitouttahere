@@ -1,0 +1,120 @@
+.pos 0x0
+start:
+    movq $8, %r15           // init incrementer
+    movq dim, %rsp          // init stack pointer
+    subq %r15, %rsp
+
+    call main          
+    hlt
+    
+main:
+    movq data, %rdi         // %rdi = start address of array
+
+    movq %rdi, %rdx         // %rdx = low index
+
+    movq $0, %r13
+    movq dim(%r13), %rcx    // %rcx = high index + 1 (dim)
+    mulq %r15, %rcx         // multiply index by 8
+    addq %rdi, %rcx         // add array pointer address
+    subq %r15, %rcx         // subtract 8 to get the correct 0-indexed index 
+
+    movq %rcx, %r12         // store a copy of the index for printing
+    
+    call quicksort
+    ret
+
+// Quicksort
+// Recursively sorts an array using quicksort algorithm.
+// Arguments for quicksort are:
+// %rdi = pointer to array
+// %rdx = low index
+// %rcx = high index
+// Variables used in quicksort:
+// %rax = index of pivot returned from partition
+quicksort:
+    cmpq %rcx, %rdx  
+    jge qs_ret              // if low < high continue sorting
+
+    call partition
+
+    pushq %rcx              // push low and high to the stack since they might be
+    pushq %rdx              // altered before returning from the recursion
+
+    movq %rax, %rcx         // %rcx = high = p
+
+    call quicksort          // called with indices: low = low, high = p 
+
+    popq %rdx               // restore low and high from stack
+    popq %rcx
+
+    movq %rax, %rdx         
+    addq %r15, %rdx         // %rdx = low = p + 1
+
+    call quicksort          // called with indices: low = p + 1, high = high
+
+qs_ret:
+    ret
+
+// Partition 
+// Splits a subarray to two smaller subarrays, 
+// using the Hoare partition scheme. 
+// It works in place meaning the values are swapped around,
+// and no extra memory is needed.
+// It uses two pointers starting at each end of the array,
+// moving them towards eachother until they pass eachother,
+// swapping inverted pairs as it passes them.
+// This is very good for the caches,
+// since we start looping through i, then after that loop,
+// loop through j. This means the values will 
+// almost always be adjacent.
+//
+// Arguments for partition are similar to quicksort.
+// Variables used in partition:
+// %r8  = value of pivot element
+// %r9  = index i
+// %r10 = index j
+// %r13 = value arr[i] 
+// %r14 = value arr[j] 
+// %r15 = globally set 8-byte de-/incrementer
+// %rax = return register - function returns index of pivot after split
+partition:
+    movq (%rdx), %r8        // %r8 = pivot value (= arr[lo])
+
+    movq %rdx, %r9       
+    subq %r15, %r9          // %r9 = lo - 1      (= i)
+
+    movq %rcx, %r10
+    addq %r15, %r10         // %r10 = hi + 1      (= j)
+
+part_loop:
+i_loop:
+    addq %r15, %r9          // i++
+    movq (%r9), %r13        // %r13 = arr[i]
+    cmpq %r8, %r13          // if arr[i] < pivot
+    jl i_loop
+j_loop:
+    subq %r15, %r10         // j--
+    movq (%r10), %r14       // %r14 = arr[j]
+    cmpq %r14, %r8          // if arr[j] > pivot
+    jl j_loop
+    
+    cmpq %r10, %r9          // if i >= j
+    jge part_ret
+
+    movq %r13, (%r10)   // swap inverted pair, arr[i] and arr[j]
+    movq %r14, (%r9)
+    jmp part_loop 
+
+part_ret:
+    movq %r10, %rax
+    ret
+
+// Set encoding position for the "input"-data
+// The memory behind this position will contain the instructions and the stack
+    .pos 0x600
+dim:	 
+    .quad 10000
+data:
+    .rand 1234 10000 1
+// Set position for out data (printing the result)
+    .pos 0x20000
