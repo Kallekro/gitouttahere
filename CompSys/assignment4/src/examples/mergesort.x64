@@ -146,8 +146,8 @@ merge2_l3_entry:
 
 .pos 0x300
 data_size:
-    .quad 10000
+    .quad 100000
 data:
-    .rand 1234 10000
+    .rand 1234 100000
 .pos 0x18000
 results:

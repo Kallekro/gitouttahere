@@ -111,10 +111,10 @@ part_ret:
 
 // Set encoding position for the "input"-data
 // The memory behind this position will contain the instructions and the stack
-    .pos 0x600
+    .pos 0x1000
 dim:	 
-    .quad 10000
+    .quad 100000
 data:
-    .rand 1234 10000 1
+    .rand 1234 100000 1
 // Set position for out data (printing the result)
     .pos 0x20000

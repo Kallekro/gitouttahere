@@ -13,12 +13,12 @@ def main():
 
     if prg_type == "1":
         fun = lambda x: x**3
-        fun_name="O(n) = n^3*k"
+        fun_name="n^3*k"
         plt_name="matmul"
         title="Matmul - Maskintype "
     elif prg_type == "2":
         fun = lambda x: x * math.log(x, 2)
-        fun_name="O(n) = n*log(n)*k"
+        fun_name="n*log(n)*k"
         plt_name="sort"
         title="Sorting - Maskintype "
     else:
