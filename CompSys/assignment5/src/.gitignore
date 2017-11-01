@@ -1,0 +1,5 @@
+# gitignore everything with no extension
+*
+!*.*
+
+*.o
