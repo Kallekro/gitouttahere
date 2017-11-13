@@ -20,19 +20,29 @@ void transducers_free_stream(stream *s) {
   free(s);
 }
 
-int transducers_link_source(stream **out,
-                            transducers_source s, const void *arg) {
-  /* Creates new stream and links source to it */
-   
+int createNewStream(stream **out) {
   // allocate memory for new stream
   stream* newStream = malloc(sizeof(stream));
   // create temporary file
   FILE* tfile = tmpfile();
   if (tfile == NULL) {
     printf("Unable to create temporary file");
-    return 1; 
+    return 1;
   }
-  
+
+  // parent assigns values to struct and returns
+  newStream->fp = tfile;        // set file pointer
+  newStream->connected = false; // set connected to false (ready to connect)
+  *out = newStream;             // set out pointer to the new stream
+
+  return 0;
+}
+
+int transducers_link_source(stream **out,
+                            transducers_source s, const void *arg) {
+  /* Creates new stream and links source to it */
+  createNewStream(out);
+
   // fork process
   int pid = fork();
   if (pid < 0) {
@@ -41,15 +51,11 @@ int transducers_link_source(stream **out,
 
   if (pid == 0) {
     // child does work and exits
-    s (arg, tfile);
+    s (arg, (*out)->fp);
     exit(0);
   }
+  (*out)->pid = pid;         // set pid of child worker process
 
-  // parent assigns values to struct and returns
-  newStream->fp = tfile;        // set file pointer
-  newStream->pid = pid;         // set pid of child worker process
-  newStream->connected = false; // set connected to false (ready to connect)
-  *out = newStream;             // set out pointer to the new stream
   return 0;
 }
 
@@ -72,34 +78,68 @@ int transducers_link_sink(transducers_sink s, void *arg,
 int transducers_link_1(stream **out,
                        transducers_1 t, const void *arg,
                        stream* in) {
-  if (in->connected || *out->connected) {
+  if (in->connected) {
     return 1; // stream already connected to another transducer or sink
   }
-  out=out; /* unused */
-  t=t; /* unused */
-  arg=arg; /* unused */
-  in=in; /* unused */
-  return 1;
+
+  createNewStream(out);
+
+  int pid = fork();
+  if (pid == 0) {
+    int status;
+    waitpid(in->pid, &status, 0);
+    rewind(in->fp);
+    t(arg, (*out)->fp, in->fp);
+    exit(0);
+  }
+  (*out)->pid = pid;
+
+  return 0;
 }
 
 int transducers_link_2(stream **out,
                        transducers_2 t, const void *arg,
                        stream* in1, stream* in2) {
-  if (in1->connected || in2->connected || *out->connected) {
+  if (in1->connected || in2->connected) {
     return 1; // stream already connected to another transducer or sink
   }
-  out=out; /* unused */
-  t=t; /* unused */
-  arg=arg; /* unused */
-  in1=in1; /* unused */
-  in2=in2; /* unused */
-  return 1;
+
+  createNewStream(out);
+
+  int pid = fork();
+  if (pid == 0) {
+    int status;
+    waitpid(in1->pid, &status, 0);
+    // error handle here plz
+    waitpid(in2->pid, &status, 0);
+    rewind(in1->fp); rewind(in2->fp);
+    t(arg, (*out)->fp, in1->fp, in2->fp);
+    exit(0);
+  }
+  (*out)->pid = pid;
+
+  return 0;
 }
 
 int transducers_dup(stream **out1, stream **out2,
                     stream *in) {
-  out1=out1; /* unused */
-  out2=out2; /* unused */
-  in=in; /* unused */
-  return 1;
+  createNewStream(out1); createNewStream(out2);
+
+  int pid = fork();
+  if (pid == 0) {
+    int status;
+    waitpid(in->pid, &status, 0);
+
+    unsigned char c;
+    while (fread(&c, sizeof(unsigned char), 1, in->fp) == 1) {
+      if (fwrite(&c, sizeof(unsigned char), 1, (*out1)->fp) != 1
+          || fwrite(&c, sizeof(unsigned char), 1, (*out2)->fp) != 1) {
+        return 1;
+      }
+    }
+  }
+  (*out1)->pid = pid;
+  (*out2)->pid = pid;
+
+  return 0;
 }
