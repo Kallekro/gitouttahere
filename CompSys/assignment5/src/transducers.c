@@ -39,7 +39,7 @@ void transducers_free_stream(stream *s) {
 int createNewStream(stream **out) {
   // allocate memory for new stream
   stream* newStream = malloc(sizeof(stream));
-  if (newStream) {
+  if (!newStream) {
     unix_error("malloc error");
   }
   // create temporary file
@@ -109,6 +109,10 @@ int transducers_link_1(stream **out,
   if (pid == 0) {
     int status;
     waitpid(in->pid, &status, 0);
+    if (!WIFEXITED(status)) {
+      printf("child %d terminated abnormally with exit status=%d", in->pid, WEXITSTATUS(status));
+      return 1;
+    }
     rewind(in->fp);
     t(arg, (*out)->fp, in->fp);
     exit(0);
@@ -131,8 +135,16 @@ int transducers_link_2(stream **out,
   if (pid == 0) {
     int status;
     waitpid(in1->pid, &status, 0);
+    if (!WIFEXITED(status)) {
+      printf("child %d terminated abnormally with exit status=%d", in1->pid, WEXITSTATUS(status));
+      return 1;
+    }
     // error handle here plz
     waitpid(in2->pid, &status, 0);
+    if (!WIFEXITED(status)) {
+      printf("child %d terminated abnormally with exit status=%d", in2->pid, WEXITSTATUS(status));
+      return 1;
+    }
     rewind(in1->fp); rewind(in2->fp);
     t(arg, (*out)->fp, in1->fp, in2->fp);
     exit(0);
@@ -150,6 +162,10 @@ int transducers_dup(stream **out1, stream **out2,
   if (pid == 0) {
     int status;
     waitpid(in->pid, &status, 0);
+    if (!WIFEXITED(status)) {
+      printf("child %d terminated abnormally with exit status=%d", in->pid, WEXITSTATUS(status));
+      return 1;
+    }
 
     unsigned char c;
     while (fread(&c, sizeof(unsigned char), 1, in->fp) == 1) {
