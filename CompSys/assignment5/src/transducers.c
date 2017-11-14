@@ -39,7 +39,7 @@ void transducers_free_stream(stream *s) {
 int createNewStream(stream **out) {
   // allocate memory for new stream
   stream* newStream = malloc(sizeof(stream));
-  if (*newStream) {
+  if (newStream) {
     unix_error("malloc error");
   }
   // create temporary file
@@ -61,7 +61,6 @@ int transducers_link_source(stream **out,
                             transducers_source s, const void *arg) {
   /* Creates new stream and links source to it */
   if (createNewStream(out) != 0) {
-    printf("");
     return 1;
   };
 
@@ -88,8 +87,12 @@ int transducers_link_sink(transducers_sink s, void *arg,
 
   int status;                   // integer for holding wait status
   waitpid(in->pid, &status, 0); // wait for the worker process to finish with stream 
-  rewind(in->fp);               // go to start of file
-  s(arg, in->fp);               // do blocking work
+  if (!WIFEXITED(status)) {
+    printf("child %d terminated abnormally with exit status=%d", in->pid, WEXITSTATUS(status));
+    return 1;
+  }
+  rewind(in->fp);  // go to start of file
+  s(arg, in->fp);
   return 0;
 }
 
