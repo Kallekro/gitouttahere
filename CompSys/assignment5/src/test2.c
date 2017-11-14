@@ -47,7 +47,7 @@ int main() {
   const int input1[9] = {/*length first ele*/len, 4, 1, 8, 2, 10, -1, 0, 100};
   const int input2[9] = {/*length first ele*/len, 1, 1, 1, 1, 1, 1, 1, 1};
 
-  int *output = malloc(len);
+  int *output = malloc(sizeof(int) * len);
   //output[strlen(input)] = '\0'; /* Ensure terminating NULL. */
  
   assert(transducers_link_source(&s[0], int_stream, input1) == 0);
