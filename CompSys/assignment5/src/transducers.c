@@ -28,10 +28,8 @@ int Fork() {
 
 //
 
-
 void transducers_free_stream(stream *s) {
   /* Free stream object */
-
   // close the temporary file, which also removes it from file system
   fclose(s->fp);
   // free stream memory
@@ -42,12 +40,12 @@ int createNewStream(stream **out) {
   // allocate memory for new stream
   stream* newStream = malloc(sizeof(stream));
   if (*newStream) {
-    
+    unix_error("malloc error");
   }
   // create temporary file
   FILE* tfile = tmpfile();
   if (tfile == NULL) {
-    //printf("Unable to create temporary file");
+    printf("Unable to create temporary file");
     return 1;
   }
 
