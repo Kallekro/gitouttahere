@@ -4,12 +4,30 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <stdbool.h>
+#include <errno.h>
+#include <string.h>
 
 struct stream {
   bool connected; // is connected to transducer or sink?
   int pid;        // pid of worker process
   FILE* fp;       // pointer to file stream
 };
+
+// system call error handling.
+void unix_error(char *msg) {
+  fprintf(stderr, "%s: %s\n", msg, strerror(errno));
+}
+
+int Fork() {
+  int pid;
+  if ((pid = fork()) < 0){
+    unix_error("fork error");
+  }
+  return pid;
+}
+
+//
+
 
 void transducers_free_stream(stream *s) {
   /* Free stream object */
@@ -23,10 +41,13 @@ void transducers_free_stream(stream *s) {
 int createNewStream(stream **out) {
   // allocate memory for new stream
   stream* newStream = malloc(sizeof(stream));
+  if (*newStream) {
+    
+  }
   // create temporary file
   FILE* tfile = tmpfile();
   if (tfile == NULL) {
-    printf("Unable to create temporary file");
+    //printf("Unable to create temporary file");
     return 1;
   }
 
@@ -41,14 +62,13 @@ int createNewStream(stream **out) {
 int transducers_link_source(stream **out,
                             transducers_source s, const void *arg) {
   /* Creates new stream and links source to it */
-  createNewStream(out);
+  if (createNewStream(out) != 0) {
+    printf("");
+    return 1;
+  };
 
   // fork process
-  int pid = fork();
-  if (pid < 0) {
-    printf("Unable to create child process");
-  }
-
+  int pid = Fork();
   if (pid == 0) {
     // child does work and exits
     s (arg, (*out)->fp);
@@ -84,7 +104,7 @@ int transducers_link_1(stream **out,
 
   createNewStream(out);
 
-  int pid = fork();
+  int pid = Fork();
   if (pid == 0) {
     int status;
     waitpid(in->pid, &status, 0);
@@ -106,7 +126,7 @@ int transducers_link_2(stream **out,
 
   createNewStream(out);
 
-  int pid = fork();
+  int pid = Fork();
   if (pid == 0) {
     int status;
     waitpid(in1->pid, &status, 0);
@@ -125,7 +145,7 @@ int transducers_dup(stream **out1, stream **out2,
                     stream *in) {
   createNewStream(out1); createNewStream(out2);
 
-  int pid = fork();
+  int pid = Fork();
   if (pid == 0) {
     int status;
     waitpid(in->pid, &status, 0);
