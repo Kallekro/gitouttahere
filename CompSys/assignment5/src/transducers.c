@@ -26,6 +26,16 @@ int Fork() {
   return pid;
 }
 
+int Waitpid(pid_t pid, int *iptr) {
+  pid_t retpid;
+  retpid = waitpid(pid, iptr, 0);
+  //if (retpid < 0) {
+    unix_error("waitpid error");
+  //}
+  //while (waitpid(pid, iptr, 0) < 0) {}
+  return retpid;
+}
+
 //
 
 void transducers_free_stream(stream *s) {
@@ -86,7 +96,8 @@ int transducers_link_sink(transducers_sink s, void *arg,
   in->connected = true;         // set connected to true (can't connect with anything else)
 
   int status;                   // integer for holding wait status
-  waitpid(in->pid, &status, 0); // wait for the worker process to finish with stream 
+  printf("sink waits");
+  Waitpid(in->pid, &status); // wait for the worker process to finish with stream 
   if (!WIFEXITED(status)) {
     printf("child %d terminated abnormally with exit status=%d", in->pid, WEXITSTATUS(status));
     return 1;
@@ -111,7 +122,8 @@ int transducers_link_1(stream **out,
   int pid = Fork();
   if (pid == 0) {
     int status;
-    waitpid(in->pid, &status, 0);
+    printf("link 1 waits");
+    Waitpid(in->pid, &status);
     if (!WIFEXITED(status)) {
       printf("child %d terminated abnormally with exit status=%d", in->pid, WEXITSTATUS(status));
       return 1;
@@ -141,13 +153,13 @@ int transducers_link_2(stream **out,
   int pid = Fork();
   if (pid == 0) {
     int status;
-    waitpid(in1->pid, &status, 0);
+    Waitpid(in1->pid, &status);
     if (!WIFEXITED(status)) {
       printf("child %d terminated abnormally with exit status=%d", in1->pid, WEXITSTATUS(status));
       return 1;
     }
     // error handle here plz
-    waitpid(in2->pid, &status, 0);
+    Waitpid(in2->pid, &status);
     if (!WIFEXITED(status)) {
       printf("child %d terminated abnormally with exit status=%d", in2->pid, WEXITSTATUS(status));
       return 1;
@@ -175,7 +187,7 @@ int transducers_dup(stream **out1, stream **out2,
   int pid = Fork();
   if (pid == 0) {
     int status;
-    waitpid(in->pid, &status, 0);
+    Waitpid(in->pid, &status);
     if (!WIFEXITED(status)) {
       printf("child %d terminated abnormally with exit status=%d", in->pid, WEXITSTATUS(status));
       return 1;
