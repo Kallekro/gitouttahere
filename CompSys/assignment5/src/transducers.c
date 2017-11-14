@@ -103,7 +103,9 @@ int transducers_link_1(stream **out,
     return 1; // stream already connected to another transducer or sink
   }
 
-  createNewStream(out);
+  if (createNewStream(out) != 0) {
+    return 1;
+  }
 
   int pid = Fork();
   if (pid == 0) {
@@ -129,7 +131,9 @@ int transducers_link_2(stream **out,
     return 1; // stream already connected to another transducer or sink
   }
 
-  createNewStream(out);
+  if(createNewStream(out) != 0) {
+    return 1;
+  }
 
   int pid = Fork();
   if (pid == 0) {
@@ -156,7 +160,9 @@ int transducers_link_2(stream **out,
 
 int transducers_dup(stream **out1, stream **out2,
                     stream *in) {
-  createNewStream(out1); createNewStream(out2);
+  if(createNewStream(out1) != 0 || createNewStream(out2) != 0) {
+    return 1;
+  }
 
   int pid = Fork();
   if (pid == 0) {
