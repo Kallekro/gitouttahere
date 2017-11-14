@@ -102,6 +102,7 @@ int transducers_link_1(stream **out,
   if (in->connected) {
     return 1; // stream already connected to another transducer or sink
   }
+  in->connected = true;         // set connected to true (can't connect with anything else)
 
   if (createNewStream(out) != 0) {
     return 1;
@@ -130,6 +131,8 @@ int transducers_link_2(stream **out,
   if (in1->connected || in2->connected) {
     return 1; // stream already connected to another transducer or sink
   }
+  in1->connected = true;         // set connected to true (can't connect with anything else)
+  in2->connected = true;         // set connected to true (can't connect with anything else)
 
   if(createNewStream(out) != 0) {
     return 1;
@@ -160,6 +163,11 @@ int transducers_link_2(stream **out,
 
 int transducers_dup(stream **out1, stream **out2,
                     stream *in) {
+  if (in->connected) {
+    return 1; // stream already connected to another transducer or sink
+  }
+  in->connected = true;         // set connected to true (can't connect with anything else)
+
   if(createNewStream(out1) != 0 || createNewStream(out2) != 0) {
     return 1;
   }
