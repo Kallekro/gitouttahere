@@ -41,8 +41,6 @@ int Waitpid(pid_t pid) {
   waitpid(pid, &status, 0);
 
   if (!WIFEXITED(status)) {
-    printf("child %d terminated abnormally with exit status=%d\n", pid, WEXITSTATUS(status));
-    unix_error("waitpid error");
     return -1;
   }
   return 0;
