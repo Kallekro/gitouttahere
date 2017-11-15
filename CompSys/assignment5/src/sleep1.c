@@ -29,7 +29,6 @@ int main() {
 
   assert(transducers_link_source(&s[0], string_stream, input) == 0);
   assert(transducers_link_sink(save_stream, output, s[0]) == 0);
-  printf("output: %s\n", output);
 
   /* We cannot use the '==' operator for comparing strings, as strings
      in C are just pointers.  Using '==' would compare the _addresses_

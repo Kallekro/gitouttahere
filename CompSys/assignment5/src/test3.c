@@ -55,15 +55,11 @@ int main() {
   assert(transducers_link_source(&s[1], int_stream, input2) == 0);
 
   assert(transducers_dup(&s[2], &s[3], s[1]) == 0);
-  assert(transducers_link_2(&s[4], add_stream, 0, s[2], s[3]) == 0);
 
+  assert(transducers_link_2(&s[4], add_stream, 0, s[2], s[3]) == 0);
   assert(transducers_link_2(&s[5], add_stream, 0, s[4], s[0]) == 0);
   assert(transducers_link_sink(save_stream, output, s[5]) == 0);
 
-  for (int i=0; i < len-1; i++) {
-    printf("out: %d\n", output[i]);
-  }
-  
   int expectedOutput[8] = {6, 3, 10, 4, 12, 1, 2, 102};
   assert(check_equal(expectedOutput, output, len) == 0);
 

@@ -8,7 +8,16 @@
 
 void string_stream(const void *arg, FILE *out) {
   fputs((const char*) arg, out);
-  exit(0);
+}
+
+void add_stream(const void *arg, FILE *out, FILE *in1, FILE *in2) {
+  arg=arg; // Unused
+  int x, y;
+  while ((fread(&x, sizeof(int), 1, in1) == 1) &&
+         (fread(&y, sizeof(int), 1, in2) == 1)) {
+    int sum = x + y;
+    fwrite(&sum, sizeof(int), 1, out);
+  }
 }
 
 void increment_stream(const void *arg, FILE *out, FILE *in) {
@@ -33,7 +42,7 @@ void save_stream(void *arg, FILE *in) {
 }
 
 int main() {
-  stream* s[2];
+  stream* s[4];
 
   char *input = "Hello, World!";
   char *output = malloc(strlen(input)+1);
@@ -42,17 +51,16 @@ int main() {
 
   assert(transducers_link_source(&s[0], string_stream, input) == 0);
   assert(transducers_link_1(&s[1], increment_stream, &inc, s[0]) == 0);
-  assert(transducers_link_sink(save_stream, output, s[1]) == 0);
+  assert(transducers_link_1(&s[1], increment_stream, &inc, s[0]) == 2);
 
-  /* We cannot use the '==' operator for comparing strings, as strings
-     in C are just pointers.  Using '==' would compare the _addresses_
-     of the two strings, which is not what we want. */
-  assert(strcmp("Ifmmp-!Xpsme\"",output) == 0);
-  free(output);
+  assert(transducers_dup(&s[2], &s[3], s[1]) == 0);
+  assert(transducers_dup(&s[2], &s[3], s[1]) == 2);
 
-  /* Note the sizeof()-trick to determine the number of elements in
-     the array.  This *only* works for statically allocated arrays,
-     *not* ones created by malloc(). */
+  assert(transducers_link_2(&s[2], add_stream, 0, s[2], s[3]) == 0);
+  assert(transducers_link_2(&s[2], add_stream, 0, s[2], s[3]) == 2);
+
+  assert(transducers_link_sink(save_stream, output, s[2]) == 0);
+
   for (int i = 0; i < (int)(sizeof(s)/sizeof(s[0])); i++) {
     transducers_free_stream(s[i]);
   }
