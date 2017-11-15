@@ -20,6 +20,21 @@ int Fork() {
   return pid;
 }
 
+int Pipe(int* fd) {
+  if (pipe(fd) < 0) {
+    return -1;
+  }
+  return 0;
+}
+
+void* Malloc(size_t size) {
+  void* ptr = malloc(size);
+  if (ptr == NULL) {
+    return NULL;
+  }
+  return ptr;
+}
+
 int Waitpid(pid_t pid) {
   int status;
   waitpid(pid, &status, 0);
@@ -68,7 +83,7 @@ struct stream {
 };
 
 void transducers_free_stream(stream *s) {
-  close(s->read_fd);
+  Close(s->read_fd);
   free(s->pids);
   free(s);
 }
@@ -78,14 +93,17 @@ int transducers_link_source(stream **out,
 
   // two file descriptors / pipe-ends
   int fd[2]; // read-end , write-end
+
   // create pipes
-  if (pipe(fd) == -1) {
-     unix_error("pipe error");
+  if (Pipe(fd) == -1) {
      return -1;
   }
 
-  stream* new_stream = malloc(sizeof(stream)); 
-  int pid = fork();
+
+  int pid = Fork();
+  if (pid == -1) {
+    return -1; // on fork error
+  }
 
   if (pid == 0) {
     Close(fd[0]); // close read-end (not needed for child)
@@ -104,8 +122,16 @@ int transducers_link_source(stream **out,
   }
   Close(fd[1]); // close write-end (not needed for parent)
 
+  stream* new_stream = Malloc(sizeof(stream));
+  if (new_stream == NULL) {
+    return -1; // on malloc error
+  }
   new_stream->read_fd = fd[0];
-  new_stream->pids = malloc(sizeof(int)); 
+  new_stream->pids = Malloc(sizeof(int)); 
+
+  if (new_stream->pids == NULL) {
+    return -1; // malloc error
+  }
   new_stream->pids[0] = pid;
   new_stream->pid_len = 1;
   new_stream->connected = 0;
@@ -124,9 +150,10 @@ int transducers_link_sink(transducers_sink s, void *arg,
 
   for (int i=0; i < in->pid_len; i++) {
     if(Waitpid(in->pids[i]) != 0) {
-      return 1;
+      return -1;
     }
   }
+
   FILE* file_stream = Fdopen(in->read_fd, "r");
   s(arg, file_stream);
   Fclose(file_stream);
@@ -143,12 +170,15 @@ int transducers_link_1(stream **out,
 
   int fd[2]; // read-end , write-end
 
-  if (pipe(fd) < 0) {
-     unix_error("pipe");
-     return 1;
+  if (Pipe(fd) == -1) {
+    return -1; // on pipe error
   }
 
-  int pid = fork();
+  int pid = Fork();
+
+  if (pid == -1) {
+    return -1;
+  }
 
   if (pid == 0) {
     Close(fd[0]);
@@ -161,10 +191,21 @@ int transducers_link_1(stream **out,
   }
   Close(fd[1]);
 
-  stream* new_stream = malloc(sizeof(stream)); 
+  stream* new_stream = Malloc(sizeof(stream)); 
+
+  if (new_stream == NULL) {
+    return -1; // on malloc error;
+  }
+
   new_stream->read_fd = fd[0];
-  new_stream->pids = malloc(sizeof(int) * in->pid_len + sizeof(int)); 
-  memcpy(new_stream->pids, in->pids, sizeof(int) * in->pid_len);
+  new_stream->pids = Malloc(sizeof(int) * in->pid_len + sizeof(int)); 
+
+  if (new_stream->pids == NULL) {
+    return -1; // on malloc error
+  }
+  if( memcpy(new_stream->pids, in->pids, sizeof(int) * in->pid_len) == NULL ) {
+    return -1; // memcopy error
+  }
   new_stream->pids[in->pid_len] = pid;
   new_stream->pid_len = in->pid_len+1;
   *out = new_stream;
@@ -182,12 +223,15 @@ int transducers_link_2(stream **out,
 
   int fd[2]; // read-end , write-end
 
-  if (pipe(fd) == -1) {
-     unix_error("pipe");
-     return 1;
+  if (Pipe(fd) == -1) {
+     return -1;
   }
 
-  int pid = fork();
+  int pid = Fork();
+
+  if(pid == -1) {
+    return -1; // on fork error()
+  }
 
   if (pid == 0) {
     Close(fd[0]);
@@ -201,38 +245,59 @@ int transducers_link_2(stream **out,
     exit(0);
   }
   Close(fd[1]);
-  stream* new_stream = malloc(sizeof(stream)); 
-  new_stream->read_fd = fd[0];
-  new_stream->pids = malloc(sizeof(int) * (in1->pid_len + in2->pid_len) + sizeof(int)); 
+  stream* new_stream = Malloc(sizeof(stream)); 
+  if (new_stream == NULL) {
+    return -1; // on malloc error
+  }
 
-  memcpy(new_stream->pids, in1->pids, sizeof(int) * in1->pid_len);
-  memcpy((new_stream->pids + in1->pid_len * sizeof(int)), in2->pids, sizeof(int) * in2->pid_len);
+  new_stream->read_fd = fd[0];
+  new_stream->pids = Malloc(sizeof(int) * (in1->pid_len + in2->pid_len) + sizeof(int)); 
+
+  if (new_stream->pids == NULL) {
+    return -1; // malloc error
+  }
+
+  if(memcpy(new_stream->pids, in1->pids, sizeof(int) * in1->pid_len) == NULL) {
+    return -1;
+  }
+  if(memcpy((new_stream->pids + in1->pid_len * sizeof(int)), in2->pids, sizeof(int) * in2->pid_len) == NULL) {
+    return -1;
+  }
 
   new_stream->pids[in1->pid_len + in2->pid_len] = pid;
   new_stream->pid_len = in1->pid_len + in2->pid_len + 1;
   *out = new_stream;
-
   return 0;
 }
 
 int transducers_dup(stream **out1, stream **out2,
                     stream *in) {
-
   if (in->connected) {
     return 2;
   }
   in->connected = 1;
-  stream* new_stream1 = malloc(sizeof(stream));
-  stream* new_stream2 = malloc(sizeof(stream));
 
+  stream* new_stream1 = Malloc(sizeof(stream));
+  stream* new_stream2 = Malloc(sizeof(stream));
+
+  if (new_stream1 == NULL || new_stream2 == NULL) {
+    return -1; // on malloc error
+  }
   new_stream1->read_fd = in->read_fd;
   new_stream2->read_fd = in->read_fd;
 
-  new_stream1->pids = malloc(in->pid_len * sizeof(int));
-  new_stream2->pids = malloc(in->pid_len * sizeof(int));
+  new_stream1->pids = Malloc(in->pid_len * sizeof(int));
+  new_stream2->pids = Malloc(in->pid_len * sizeof(int));
 
-  memcpy(new_stream1->pids, in->pids, in->pid_len * sizeof(int));
-  memcpy(new_stream2->pids, in->pids, in->pid_len * sizeof(int));
+  if (new_stream1 == NULL || new_stream2 == NULL) {
+    return -1; // on malloc error
+  }
+  if(memcpy(new_stream1->pids, in->pids, in->pid_len * sizeof(int)) == NULL) {
+    return -1;
+  }
+  if(memcpy(new_stream2->pids, in->pids, in->pid_len * sizeof(int)) == NULL) {
+    return -1;
+  }
 
   new_stream1->pid_len = in->pid_len;
   new_stream2->pid_len = in->pid_len;
