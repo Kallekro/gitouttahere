@@ -100,7 +100,7 @@ int transducers_link_sink(transducers_sink s, void *arg,
   in->connected = true;         // set connected to true (can't connect with anything else)
 
   int status;                   // integer for holding wait status
-  Waitpid(in->pid, &status, "SINK"); // wait for the worker process to finish with stream 
+  Waitpid(in->pid, &status); // wait for the worker process to finish with stream 
   if (!WIFEXITED(status)) {
     printf("child %d terminated abnormally with exit status=%d", in->pid, WEXITSTATUS(status));
     return 1;

@@ -313,8 +313,8 @@ int transducers_dup(stream **out1, stream **out2,
   if (new_stream1 == NULL || new_stream2 == NULL) {
     return -1; // on malloc error
   }
-  new_stream1->read_fd = in->read_fd;
-  new_stream2->read_fd = in->read_fd;
+  new_stream1->read_fd = Fdopen(in->read_fd, "w");
+  new_stream2->read_fd = Fdopen(in->read_fd, "w");
 
   new_stream1->pids = Malloc(in->pid_len * sizeof(int));
   new_stream2->pids = Malloc(in->pid_len * sizeof(int));
