@@ -326,19 +326,28 @@ int transducers_dup(stream **out1, stream **out2,
   pipe(new_fd1);
   pipe(new_fd2);
 
-  FILE* read_stream = Fdopen(in->read_fd, "r");
-  FILE* write_stream1 = Fdopen(new_fd1[1], "w");
-  FILE* write_stream2 = Fdopen(new_fd2[1], "w");
+  int pid = Fork();
+  if (pid == 0) {
 
-  unsigned char c;
-  while (fread(&c, sizeof(unsigned char), 1, read_stream) == 1) {
-    fwrite(&c, sizeof(unsigned char), 1, write_stream1);
-    fwrite(&c, sizeof(unsigned char), 1, write_stream2);
+    Close(new_fd1[0]); Close(new_fd2[0]);
+
+    FILE* read_stream = Fdopen(in->read_fd, "r");
+    FILE* write_stream1 = Fdopen(new_fd1[1], "w");
+    FILE* write_stream2 = Fdopen(new_fd2[1], "w");
+
+    unsigned char c;
+    while (fread(&c, sizeof(unsigned char), 1, read_stream) == 1) {
+      fwrite(&c, sizeof(unsigned char), 1, write_stream1);
+      fwrite(&c, sizeof(unsigned char), 1, write_stream2);
+    }
+
+    Fclose(read_stream);
+    Fclose(write_stream1);
+    Fclose(write_stream2);
+
+    exit(0);
   }
-
-  Fclose(read_stream);
-  Fclose(write_stream1);
-  Fclose(write_stream2);
+  Close(new_fd1[1]); Close(new_fd2[1]);
 
   new_stream1->read_fd = new_fd2[0];
   new_stream2->read_fd = new_fd1[0];
