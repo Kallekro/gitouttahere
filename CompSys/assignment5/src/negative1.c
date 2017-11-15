@@ -41,7 +41,7 @@ int main() {
 
   assert(transducers_link_source(&s[0], string_stream, input) == 0);
   assert(transducers_link_1(&s[1], increment_stream, &inc, s[0]) == 0);
-  assert(transducers_link_1(&s[1], increment_stream, &inc, s[0]) == 1);
+  assert(transducers_link_1(&s[1], increment_stream, &inc, s[0]) == 2);
   assert(transducers_link_sink(save_stream, output, s[1]) == 0);
   printf("Output: %s\n", output);
 

@@ -8,6 +8,7 @@
 
 void string_stream(const void *arg, FILE *out) {
   fputs((const char*) arg, out);
+  sleep(2);
 }
 
 void save_stream(void *arg, FILE *in) {
@@ -28,8 +29,7 @@ int main() {
 
   assert(transducers_link_source(&s[0], string_stream, input) == 0);
   assert(transducers_link_sink(save_stream, output, s[0]) == 0);
-  // Try to use same stream for different sink
-  assert(transducers_link_sink(save_stream, output, s[0]) == 2);
+  printf("output: %s\n", output);
 
   /* We cannot use the '==' operator for comparing strings, as strings
      in C are just pointers.  Using '==' would compare the _addresses_
@@ -42,6 +42,5 @@ int main() {
   for (int i = 0; i < (int)(sizeof(s)/sizeof(s[0])); i++) {
     transducers_free_stream(s[i]);
   }
-
   return 0;
 }
