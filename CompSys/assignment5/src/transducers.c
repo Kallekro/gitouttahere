@@ -10,6 +10,7 @@
 void unix_error(char *msg) {
   fprintf(stderr, "%s: %s\n", msg, strerror(errno));
 }
+// error handled helper functions
 
 int Fork() {
   int pid;
@@ -104,16 +105,19 @@ int transducers_link_source(stream **out,
     return -1; // on fork error
   }
 
-  if (pid == 0) {
+  if (pid == 0) { // child process
 
     if(Close(fd[0]) == -1) { // close read-end (not needed for child)
       return -1; // pipe close error
     }
+
+    // opening read-end of the file in write mode
     FILE* file_stream = Fdopen(fd[1], "w");
 
     if (file_stream == NULL) {
       exit(1); // File was not opened correctly
     }
+    // executing transducer source-function
     s(arg, file_stream);
 
     if (Fclose(file_stream) == -1) { 
@@ -126,12 +130,12 @@ int transducers_link_source(stream **out,
     return -1; // on error
   }
 
-  stream* new_stream = Malloc(sizeof(stream));
+  stream* new_stream = Malloc(sizeof(stream)); // space for new stream.
   if (new_stream == NULL) {
     return -1; // on malloc error
   }
   new_stream->read_fd = fd[0];
-  new_stream->pids = Malloc(sizeof(int)); 
+  new_stream->pids = Malloc(sizeof(int));  // space for new streams child-pid-array
 
   if (new_stream->pids == NULL) {
     return -1; // malloc error
@@ -158,7 +162,7 @@ int transducers_link_sink(transducers_sink s, void *arg,
     }
   }
 
-  FILE* file_stream = Fdopen(in->read_fd, "r");
+  FILE* file_stream = Fdopen(in->read_fd, "r"); // opening the read-end of the pipe in read-mode
   s(arg, file_stream);
   if(Fclose(file_stream) == -1) {
     return -1; // fclose error
@@ -176,7 +180,7 @@ int transducers_link_1(stream **out,
 
   int fd[2]; // read-end , write-end
 
-  if (Pipe(fd) == -1) {
+  if (Pipe(fd) == -1) { // creating pipe
     return -1; // on pipe error
   }
 
@@ -186,11 +190,13 @@ int transducers_link_1(stream **out,
     return -1;
   }
 
-  if (pid == 0) {
+  if (pid == 0) { // if child process.
     if(Close(fd[0]) == -1) {
       exit(1); // on close error
     }
 
+
+    // two fd's for reading and writing to and from the pipe
     FILE* file_read_stream = Fdopen(in->read_fd, "r");
     FILE* file_write_stream = Fdopen(fd[1], "w");
 
@@ -198,6 +204,7 @@ int transducers_link_1(stream **out,
       exit(2); // on fdopen error
     }
 
+    // execute linking transducer for reading and writing from pipe(files)
     t(arg, file_write_stream, file_read_stream);
 
     if (Fclose(file_read_stream) == -1 || Fclose(file_write_stream) == -1) {
@@ -208,19 +215,20 @@ int transducers_link_1(stream **out,
   if (Close(fd[1]) == -1) {
     return -1;
   }
-
+  // space for new output stream
   stream* new_stream = Malloc(sizeof(stream)); 
 
   if (new_stream == NULL) {
     return -1; // on malloc error;
   }
 
-  new_stream->read_fd = fd[0];
-  new_stream->pids = Malloc(sizeof(int) * in->pid_len + sizeof(int)); 
+  new_stream->read_fd = fd[0]; // having the new pipes read-end as fd
+  new_stream->pids = Malloc(sizeof(int) * in->pid_len + sizeof(int)); // space for child pids 
 
   if (new_stream->pids == NULL) {
     return -1; // on malloc error
   }
+  // copying child-pid-array from input-stream to output-stream
   if( memcpy(new_stream->pids, in->pids, sizeof(int) * in->pid_len) == NULL ) {
     unix_error("memcopy error");
     return -1; // memcopy error
@@ -243,7 +251,7 @@ int transducers_link_2(stream **out,
 
   int fd[2]; // read-end , write-end
 
-  if (Pipe(fd) == -1) {
+  if (Pipe(fd) == -1) { // creating a pipe
      return -1;
   }
 
@@ -258,6 +266,7 @@ int transducers_link_2(stream **out,
       exit(1); // on close error
     }
 
+    // openening two files in read-mode and one in write-mode for passing to the link2-transducer
     FILE* file_read_stream1 = Fdopen(in1->read_fd, "r");
     FILE* file_read_stream2 = Fdopen(in2->read_fd, "r");
     FILE* file_write_stream = Fdopen(fd[1], "w");
@@ -266,7 +275,7 @@ int transducers_link_2(stream **out,
         || file_write_stream == NULL) {
       exit(2); //on fdopen error
     }
-
+    // executing the double linking transducer with the initialised filepointers.
     t(arg, file_write_stream, file_read_stream1, file_read_stream2);
 
     if (Fclose(file_read_stream1) == -1 || Fclose(file_read_stream2) == -1
@@ -276,6 +285,7 @@ int transducers_link_2(stream **out,
     exit(0);
   }
   Close(fd[1]);
+  // space for the new output-stream
   stream* new_stream = Malloc(sizeof(stream)); 
   if (new_stream == NULL) {
     return -1; // on malloc error
@@ -288,6 +298,7 @@ int transducers_link_2(stream **out,
     return -1; // malloc error
   }
 
+  // copying the child-pid-array from the two input-streams to the new output-stream-array
   if(memcpy(new_stream->pids, in1->pids, sizeof(int) * in1->pid_len) == NULL) {
     unix_error("memcopy error");
     return -1;
@@ -297,7 +308,7 @@ int transducers_link_2(stream **out,
     return -1;
   }
 
-  new_stream->pids[in1->pid_len + in2->pid_len] = pid;
+  new_stream->pids[in1->pid_len + in2->pid_len] = pid; // adding this transducers child-pid to the stream.
   new_stream->pid_len = in1->pid_len + in2->pid_len + 1;
   new_stream->connected = 0;
   *out = new_stream;
@@ -329,10 +340,13 @@ int transducers_dup(stream **out1, stream **out2,
 
     Close(new_fd1[0]); Close(new_fd2[0]);
 
+    // opening read-end of the pipe and two write-ends of two pipes.
     FILE* read_stream = Fdopen(in->read_fd, "r");
     FILE* write_stream1 = Fdopen(new_fd1[1], "w");
     FILE* write_stream2 = Fdopen(new_fd2[1], "w");
 
+
+    // read the input pipe and write to the output pipes.
     unsigned char c;
     while (fread(&c, sizeof(unsigned char), 1, read_stream) == 1) {
       fwrite(&c, sizeof(unsigned char), 1, write_stream1);
@@ -356,6 +370,8 @@ int transducers_dup(stream **out1, stream **out2,
   if (new_stream1 == NULL || new_stream2 == NULL) {
     return -1; // on malloc error
   }
+
+  // copy child-pid-array to the new output-stream
   if(memcpy(new_stream1->pids, in->pids, in->pid_len * sizeof(int)) == NULL) {
     unix_error("memcopy error");
     return -1;
