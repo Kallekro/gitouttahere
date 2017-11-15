@@ -227,6 +227,7 @@ int transducers_link_1(stream **out,
   }
   new_stream->pids[in->pid_len] = pid;
   new_stream->pid_len = in->pid_len+1;
+  new_stream->connected = 0;
   *out = new_stream;
   return 0;
 }
@@ -290,12 +291,13 @@ int transducers_link_2(stream **out,
   if(memcpy(new_stream->pids, in1->pids, sizeof(int) * in1->pid_len) == NULL) {
     return -1;
   }
-  if(memcpy((new_stream->pids + in1->pid_len * sizeof(int)), in2->pids, sizeof(int) * in2->pid_len) == NULL) {
+  if(memcpy((new_stream->pids + in1->pid_len), in2->pids, sizeof(int) * in2->pid_len) == NULL) {
     return -1;
   }
 
   new_stream->pids[in1->pid_len + in2->pid_len] = pid;
   new_stream->pid_len = in1->pid_len + in2->pid_len + 1;
+  new_stream->connected = 0;
   *out = new_stream;
   return 0;
 }
@@ -313,8 +315,29 @@ int transducers_dup(stream **out1, stream **out2,
   if (new_stream1 == NULL || new_stream2 == NULL) {
     return -1; // on malloc error
   }
-  new_stream1->read_fd = Fdopen(in->read_fd, "w");
-  new_stream2->read_fd = Fdopen(in->read_fd, "w");
+
+  int new_fd1[2];
+  int new_fd2[2];
+
+  pipe(new_fd1);
+  pipe(new_fd2);
+
+  FILE* read_stream = Fdopen(in->read_fd, "r");
+  FILE* write_stream1 = Fdopen(new_fd1[1], "w");
+  FILE* write_stream2 = Fdopen(new_fd2[1], "w");
+
+  unsigned char c;
+  while (fread(&c, sizeof(unsigned char), 1, read_stream) == 1) {
+    fwrite(&c, sizeof(unsigned char), 1, write_stream1);
+    fwrite(&c, sizeof(unsigned char), 1, write_stream2);
+  }
+
+  Fclose(read_stream);
+  Fclose(write_stream1);
+  Fclose(write_stream2);
+
+  new_stream1->read_fd = new_fd2[0];
+  new_stream2->read_fd = new_fd1[0];
 
   new_stream1->pids = Malloc(in->pid_len * sizeof(int));
   new_stream2->pids = Malloc(in->pid_len * sizeof(int));
