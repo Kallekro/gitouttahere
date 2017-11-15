@@ -11,7 +11,53 @@ void unix_error(char *msg) {
   fprintf(stderr, "%s: %s\n", msg, strerror(errno));
 }
 
+int Fork() {
+  int pid;
+  if ((pid = fork()) < 0){
+    unix_error("fork error");
+  }
+  return pid;
+}
+
+int Waitpid(pid_t pid) {
+  int status;
+  waitpid(pid, &status, 0);
+
+  if (!WIFEXITED(status)) {
+    printf("child %d terminated abnormally with exit status=%d\n", pid, WEXITSTATUS(status));
+    unix_error("waitpid error");
+    return 1;
+  }
+  return 0;
+}
+
+FILE* Fdopen(int fd, char* mode) {
+  FILE* fp = fdopen(fd, mode);
+  if(fp == NULL) {
+    unix_error("fopen error");
+    return NULL;
+  }
+  return fp;
+}
+
+int Fclose(FILE* fd) {
+  int ret = fclose(fd);
+  if (ret < 0) {
+    unix_error("fclose error");
+    return 1;
+  }
+  return 0;
+}
 /* End of helper functions */
+
+int Close(int fd) {
+  int ec = close(fd);
+  if (ec < 0) {
+    return 1; // pipe didnt close properly
+  }
+  return 0;
+}
+
 
 struct stream {
   int read_fd;
@@ -31,10 +77,9 @@ int transducers_link_source(stream **out,
 
   // two file descriptors / pipe-ends
   int fd[2]; // read-end , write-end
-
   // create pipes
   if (pipe(fd) == -1) {
-     unix_error("pipe");
+     unix_error("pipe error");
      return 1;
   }
 
@@ -42,14 +87,22 @@ int transducers_link_source(stream **out,
   int pid = fork();
 
   if (pid == 0) {
-    close(fd[0]); // close read-end (not needed for child)
-    FILE* file_stream = fdopen(fd[1], "w");
+    Close(fd[0]); // close read-end (not needed for child)
+    FILE* file_stream = Fdopen(fd[1], "w");
+
+    if (file_stream == NULL) {
+      exit(1); // File was not opened correctly
+    }
     s(arg, file_stream);
-    fclose(file_stream); // close write-end (send EOF to reader)
+
+    if (Fclose(file_stream) != 0) { 
+      exit(2); // file didn't close normally
+    };
+
     exit(0);
   }
-  close(fd[1]); // close write-end (not needed for parent)
-  
+  Close(fd[1]); // close write-end (not needed for parent)
+
   new_stream->read_fd = fd[0];
   new_stream->pids = malloc(sizeof(int)); 
   new_stream->pids[0] = pid;
@@ -68,13 +121,14 @@ int transducers_link_sink(transducers_sink s, void *arg,
   }
   in->connected = 1;
 
-  int status;
   for (int i=0; i < in->pid_len; i++) {
-    waitpid(in->pids[i], &status, 0); 
+    if(Waitpid(in->pids[i]) != 0) {
+      return 1;
+    }
   }
-  FILE* file_stream = fdopen(in->read_fd, "r");
+  FILE* file_stream = Fdopen(in->read_fd, "r");
   s(arg, file_stream);
-  fclose(file_stream);
+  Fclose(file_stream);
   return 0;
 }
 
@@ -157,7 +211,7 @@ int transducers_link_2(stream **out,
   new_stream->pids[in1->pid_len + in2->pid_len] = pid;
   new_stream->pid_len = in1->pid_len + in2->pid_len + 1;
   *out = new_stream;
-  
+
   return 0;
 }
 
@@ -182,7 +236,11 @@ int transducers_dup(stream **out1, stream **out2,
 
   new_stream1->pid_len = in->pid_len;
   new_stream2->pid_len = in->pid_len;
-  
+
+  new_stream1->connected = 0;
+  new_stream2->connected = 0;
+
+
   *out1 = new_stream1;
   *out2 = new_stream2;
   return 0;
