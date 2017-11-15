@@ -106,7 +106,10 @@ int transducers_link_source(stream **out,
   }
 
   if (pid == 0) {
-    Close(fd[0]); // close read-end (not needed for child)
+
+    if(Close(fd[0]) == -1) { // close read-end (not needed for child)
+      return -1; // pipe close error
+    }
     FILE* file_stream = Fdopen(fd[1], "w");
 
     if (file_stream == NULL) {
@@ -114,13 +117,15 @@ int transducers_link_source(stream **out,
     }
     s(arg, file_stream);
 
-    if (Fclose(file_stream) != 0) { 
+    if (Fclose(file_stream) == -1) { 
       exit(2); // file didn't close normally
     };
 
     exit(0);
   }
-  Close(fd[1]); // close write-end (not needed for parent)
+  if(Close(fd[1]) == -1)  { // close write-end (not needed for parent)
+    return -1; // on error
+  }
 
   stream* new_stream = Malloc(sizeof(stream));
   if (new_stream == NULL) {
@@ -156,7 +161,9 @@ int transducers_link_sink(transducers_sink s, void *arg,
 
   FILE* file_stream = Fdopen(in->read_fd, "r");
   s(arg, file_stream);
-  Fclose(file_stream);
+  if(Fclose(file_stream) == -1) {
+    return -1; // fclose error
+  }
   return 0;
 }
 
@@ -181,15 +188,27 @@ int transducers_link_1(stream **out,
   }
 
   if (pid == 0) {
-    Close(fd[0]);
+    if(Close(fd[0]) == -1) {
+      exit(1); // on close error
+    }
+
     FILE* file_read_stream = Fdopen(in->read_fd, "r");
     FILE* file_write_stream = Fdopen(fd[1], "w");
+
+    if (file_read_stream == NULL || file_write_stream == NULL) {
+      exit(2); // on fdopen error
+    }
+
     t(arg, file_write_stream, file_read_stream);
-    Fclose(file_read_stream); 
-    Fclose(file_write_stream);
+
+    if (Fclose(file_read_stream) == -1 || Fclose(file_write_stream) == -1) {
+      exit(3); // on fclose error
+    }
     exit(0);
   }
-  Close(fd[1]);
+  if (Close(fd[1]) == -1) {
+    return -1;
+  }
 
   stream* new_stream = Malloc(sizeof(stream)); 
 
@@ -234,14 +253,25 @@ int transducers_link_2(stream **out,
   }
 
   if (pid == 0) {
-    Close(fd[0]);
+    if (Close(fd[0]) == -1) {
+      exit(1); // on close error
+    }
+
     FILE* file_read_stream1 = Fdopen(in1->read_fd, "r");
     FILE* file_read_stream2 = Fdopen(in2->read_fd, "r");
     FILE* file_write_stream = Fdopen(fd[1], "w");
+
+    if (file_read_stream1 == NULL || file_read_stream2 == NULL
+        || file_write_stream == NULL) {
+      exit(2); //on fdopen error
+    }
+
     t(arg, file_write_stream, file_read_stream1, file_read_stream2);
-    Fclose(file_read_stream1);
-    Fclose(file_read_stream2);
-    Fclose(file_write_stream);
+
+    if (Fclose(file_read_stream1) == -1 || Fclose(file_read_stream2) == -1
+        || Fclose(file_write_stream) == -1) {
+      exit(3); // on fclose error
+    }
     exit(0);
   }
   Close(fd[1]);
