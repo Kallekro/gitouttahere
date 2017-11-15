@@ -30,6 +30,7 @@ int Pipe(int* fd) {
 void* Malloc(size_t size) {
   void* ptr = malloc(size);
   if (ptr == NULL) {
+    unix_error("malloc error");
     return NULL;
   }
   return ptr;
@@ -223,6 +224,7 @@ int transducers_link_1(stream **out,
     return -1; // on malloc error
   }
   if( memcpy(new_stream->pids, in->pids, sizeof(int) * in->pid_len) == NULL ) {
+    unix_error("memcopy error");
     return -1; // memcopy error
   }
   new_stream->pids[in->pid_len] = pid;
@@ -289,9 +291,11 @@ int transducers_link_2(stream **out,
   }
 
   if(memcpy(new_stream->pids, in1->pids, sizeof(int) * in1->pid_len) == NULL) {
+    unix_error("memcopy error");
     return -1;
   }
   if(memcpy((new_stream->pids + in1->pid_len), in2->pids, sizeof(int) * in2->pid_len) == NULL) {
+    unix_error("memcopy error");
     return -1;
   }
 
@@ -346,9 +350,11 @@ int transducers_dup(stream **out1, stream **out2,
     return -1; // on malloc error
   }
   if(memcpy(new_stream1->pids, in->pids, in->pid_len * sizeof(int)) == NULL) {
+    unix_error("memcopy error");
     return -1;
   }
   if(memcpy(new_stream2->pids, in->pids, in->pid_len * sizeof(int)) == NULL) {
+    unix_error("memcopy error");
     return -1;
   }
 
