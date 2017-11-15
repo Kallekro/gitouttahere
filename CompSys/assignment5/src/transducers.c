@@ -15,6 +15,7 @@ int Fork() {
   int pid;
   if ((pid = fork()) < 0){
     unix_error("fork error");
+    return -1;
   }
   return pid;
 }
@@ -26,7 +27,7 @@ int Waitpid(pid_t pid) {
   if (!WIFEXITED(status)) {
     printf("child %d terminated abnormally with exit status=%d\n", pid, WEXITSTATUS(status));
     unix_error("waitpid error");
-    return 1;
+    return -1;
   }
   return 0;
 }
@@ -44,7 +45,7 @@ int Fclose(FILE* fd) {
   int ret = fclose(fd);
   if (ret < 0) {
     unix_error("fclose error");
-    return 1;
+    return -1;
   }
   return 0;
 }
@@ -53,7 +54,7 @@ int Fclose(FILE* fd) {
 int Close(int fd) {
   int ec = close(fd);
   if (ec < 0) {
-    return 1; // pipe didnt close properly
+    return -1; // pipe didnt close properly
   }
   return 0;
 }
@@ -80,7 +81,7 @@ int transducers_link_source(stream **out,
   // create pipes
   if (pipe(fd) == -1) {
      unix_error("pipe error");
-     return 1;
+     return -1;
   }
 
   stream* new_stream = malloc(sizeof(stream)); 
@@ -142,7 +143,7 @@ int transducers_link_1(stream **out,
 
   int fd[2]; // read-end , write-end
 
-  if (pipe(fd) == -1) {
+  if (pipe(fd) < 0) {
      unix_error("pipe");
      return 1;
   }
@@ -150,15 +151,15 @@ int transducers_link_1(stream **out,
   int pid = fork();
 
   if (pid == 0) {
-    close(fd[0]);
-    FILE* file_read_stream = fdopen(in->read_fd, "r");
-    FILE* file_write_stream = fdopen(fd[1], "w");
+    Close(fd[0]);
+    FILE* file_read_stream = Fdopen(in->read_fd, "r");
+    FILE* file_write_stream = Fdopen(fd[1], "w");
     t(arg, file_write_stream, file_read_stream);
-    fclose(file_read_stream); 
-    fclose(file_write_stream);
+    Fclose(file_read_stream); 
+    Fclose(file_write_stream);
     exit(0);
   }
-  close(fd[1]);
+  Close(fd[1]);
 
   stream* new_stream = malloc(sizeof(stream)); 
   new_stream->read_fd = fd[0];
@@ -167,7 +168,6 @@ int transducers_link_1(stream **out,
   new_stream->pids[in->pid_len] = pid;
   new_stream->pid_len = in->pid_len+1;
   *out = new_stream;
-
   return 0;
 }
 
@@ -190,17 +190,17 @@ int transducers_link_2(stream **out,
   int pid = fork();
 
   if (pid == 0) {
-    close(fd[0]);
-    FILE* file_read_stream1 = fdopen(in1->read_fd, "r");
-    FILE* file_read_stream2 = fdopen(in2->read_fd, "r");
-    FILE* file_write_stream = fdopen(fd[1], "w");
+    Close(fd[0]);
+    FILE* file_read_stream1 = Fdopen(in1->read_fd, "r");
+    FILE* file_read_stream2 = Fdopen(in2->read_fd, "r");
+    FILE* file_write_stream = Fdopen(fd[1], "w");
     t(arg, file_write_stream, file_read_stream1, file_read_stream2);
-    fclose(file_read_stream1);
-    fclose(file_read_stream2);
-    fclose(file_write_stream);
+    Fclose(file_read_stream1);
+    Fclose(file_read_stream2);
+    Fclose(file_write_stream);
     exit(0);
   }
-  close(fd[1]);
+  Close(fd[1]);
   stream* new_stream = malloc(sizeof(stream)); 
   new_stream->read_fd = fd[0];
   new_stream->pids = malloc(sizeof(int) * (in1->pid_len + in2->pid_len) + sizeof(int)); 
