@@ -8,7 +8,7 @@
 
 void string_stream(const void *arg, FILE *out) {
   fputs((const char*) arg, out);
-  sleep(2);
+  exit(0);
 }
 
 void increment_stream(const void *arg, FILE *out, FILE *in) {

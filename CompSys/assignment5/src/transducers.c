@@ -1,207 +1,89 @@
 #include "transducers.h"
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <stdbool.h>
-#include <errno.h>
-#include <string.h>
 
-struct stream {
-  bool connected; // is connected to transducer or sink?
-  int pid;        // pid of worker process
-  FILE* fp;       // pointer to file stream
-};
 
 // system call error handling.
 void unix_error(char *msg) {
   fprintf(stderr, "%s: %s\n", msg, strerror(errno));
 }
 
-int Fork() {
-  int pid;
-  if ((pid = fork()) < 0){
-    unix_error("fork error");
-  }
-  return pid;
-}
+/* End of helper functions */
 
-int Waitpid(pid_t pid, int *iptr, char* prnt_str) {
-  pid_t retpid;
-  retpid = waitpid(pid, iptr, 0);
-  printf("%s waits\n", prnt_str);
-  //if (retpid < 0) {
-    unix_error("waitpid error");
-  //}
-  //while (waitpid(pid, iptr, 0) < 0) {}
-  return retpid;
-}
-
-//
+struct stream {
+  int read_fd;
+  int *pids;
+  int pid_len;
+};
 
 void transducers_free_stream(stream *s) {
-  /* Free stream object */
-  // close the temporary file, which also removes it from file system
-  fclose(s->fp);
-  // free stream memory
-  free(s);
-}
-
-int createNewStream(stream **out) {
-  // allocate memory for new stream
-  stream* newStream = malloc(sizeof(stream));
-  if (!newStream) {
-    unix_error("malloc error");
-  }
-  // create temporary file
-  FILE* tfile = tmpfile();
-  if (tfile == NULL) {
-    printf("Unable to create temporary file");
-    return 1;
-  }
-
-  // parent assigns values to struct and returns
-  newStream->fp = tfile;        // set file pointer
-  newStream->connected = false; // set connected to false (ready to connect)
-  *out = newStream;             // set out pointer to the new stream
-
-  return 0;
+  s=s; /* unused */
 }
 
 int transducers_link_source(stream **out,
                             transducers_source s, const void *arg) {
-  /* Creates new stream and links source to it */
-  if (createNewStream(out) != 0) {
-    return 1;
-  };
 
-  // fork process
-  int pid = Fork();
+  int fd[2]; // read-end , write-end
+
+  if (pipe(fd) == -1) {
+     unix_error("pipe");
+     return 1;
+  }
+
+  int pid = fork();
+
   if (pid == 0) {
-    // child does work and exits
-    s (arg, (*out)->fp);
+    close(fd[0]); // close read-end (not needed)
+    s(arg, fd[1]);
+    close(fd[1]); // close write-end (send EOF to reader)
     exit(0);
   }
-  (*out)->pid = pid;         // set pid of child worker process
+  close(fd[1]);
+  
+  stream* new_stream = malloc(sizeof(stream)); 
+  new_stream.read_fd = fd[0];
+  new_stream.pids = malloc(sizeof(int)); 
+  new_streams.pids[0] = pid;
+  new_streams.pid_len = 1;
+  *out = new_stream;
 
   return 0;
 }
 
 int transducers_link_sink(transducers_sink s, void *arg,
                           stream *in) {
-  /* Link a stream to a sink */
-
-  if (in->connected) {
-    return 1;                   // stream already connected to another transducer or sink
+  int status;
+  for (int i=0; i < in.pid_len; i++) {
+    waitpid(in.pids[i], &status, 0); 
   }
-  in->connected = true;         // set connected to true (can't connect with anything else)
+  s(arg, in.read_fd);
 
-  int status;                   // integer for holding wait status
-  Waitpid(in->pid, &status, "SINK"); // wait for the worker process to finish with stream 
-  if (!WIFEXITED(status)) {
-    printf("child %d terminated abnormally with exit status=%d", in->pid, WEXITSTATUS(status));
-    return 1;
-  }
-  rewind(in->fp);  // go to start of file
-  s(arg, in->fp);
   return 0;
 }
 
 int transducers_link_1(stream **out,
                        transducers_1 t, const void *arg,
                        stream* in) {
-  if (in->connected) {
-    return 1; // stream already connected to another transducer or sink
-  }
-  in->connected = true;         // set connected to true (can't connect with anything else)
-
-  if (createNewStream(out) != 0) {
-    return 1;
-  }
-
-  int pid = Fork();
-  if (pid == 0) {
-    int status;
-    Waitpid(in->pid, &status, "LINK 1");
-    if (!WIFEXITED(status)) {
-      printf("child %d terminated abnormally with exit status=%d", in->pid, WEXITSTATUS(status));
-      return 1;
-    }
-    rewind(in->fp);
-    t(arg, (*out)->fp, in->fp);
-    exit(0);
-  }
-  (*out)->pid = pid;
-
-  return 0;
+  out=out; /* unused */
+  t=t; /* unused */
+  arg=arg; /* unused */
+  in=in; /* unused */
+  return 1;
 }
 
 int transducers_link_2(stream **out,
                        transducers_2 t, const void *arg,
                        stream* in1, stream* in2) {
-  if (in1->connected || in2->connected) {
-    return 1; // stream already connected to another transducer or sink
-  }
-  in1->connected = true;         // set connected to true (can't connect with anything else)
-  in2->connected = true;         // set connected to true (can't connect with anything else)
-
-  if(createNewStream(out) != 0) {
-    return 1;
-  }
-
-  int pid = Fork();
-  if (pid == 0) {
-    int status;
-    Waitpid(in1->pid, &status, "LINK 2");
-    if (!WIFEXITED(status)) {
-      printf("child %d terminated abnormally with exit status=%d", in1->pid, WEXITSTATUS(status));
-      return 1;
-    }
-    // error handle here plz
-    Waitpid(in2->pid, &status, "LINK 2");
-    if (!WIFEXITED(status)) {
-      printf("child %d terminated abnormally with exit status=%d", in2->pid, WEXITSTATUS(status));
-      return 1;
-    }
-    rewind(in1->fp); rewind(in2->fp);
-    t(arg, (*out)->fp, in1->fp, in2->fp);
-    exit(0);
-  }
-  (*out)->pid = pid;
-
-  return 0;
+  out=out; /* unused */
+  t=t; /* unused */
+  arg=arg; /* unused */
+  in1=in1; /* unused */
+  in2=in2; /* unused */
+  return 1;
 }
 
 int transducers_dup(stream **out1, stream **out2,
                     stream *in) {
-  if (in->connected) {
-    return 1; // stream already connected to another transducer or sink
-  }
-  in->connected = true;         // set connected to true (can't connect with anything else)
-
-  if(createNewStream(out1) != 0 || createNewStream(out2) != 0) {
-    return 1;
-  }
-
-  int pid = Fork();
-  if (pid == 0) {
-    int status;
-    Waitpid(in->pid, &status, "DUP");
-    if (!WIFEXITED(status)) {
-      printf("child %d terminated abnormally with exit status=%d", in->pid, WEXITSTATUS(status));
-      return 1;
-    }
-
-    unsigned char c;
-    while (fread(&c, sizeof(unsigned char), 1, in->fp) == 1) {
-      if (fwrite(&c, sizeof(unsigned char), 1, (*out1)->fp) != 1
-          || fwrite(&c, sizeof(unsigned char), 1, (*out2)->fp) != 1) {
-        return 1;
-      }
-    }
-  }
-  (*out1)->pid = pid;
-  (*out2)->pid = pid;
-
-  return 0;
+  out1=out1; /* unused */
+  out2=out2; /* unused */
+  in=in; /* unused */
+  return 1;
 }
