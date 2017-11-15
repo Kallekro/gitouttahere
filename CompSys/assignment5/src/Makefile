@@ -1,4 +1,4 @@
-TESTS=test0 test1 test2 test3 test4 negative0 big_test sleep1
+TESTS=test0 test1 test2 test3 test4 negative0 negative1 big_test sleep1
 EXAMPLES=divisible
 
 CC=gcc
