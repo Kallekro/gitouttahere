@@ -25,6 +25,15 @@ void add_stream(const void *arg, FILE *out, FILE *in1, FILE *in2) {
   }
 }
 
+void add_constant(const void *arg, FILE *out, FILE *in) {
+  int x;
+
+  while (fread(&x, sizeof(int), 1, in) == 1) {
+    int sum = x + *((int*) arg);
+    fwrite(&sum, sizeof(int), 1, out);
+  }
+}
+
 void save_stream(void *arg, FILE *in) {
   int *d = arg;
 
@@ -57,7 +66,7 @@ int check_equal (int* a, int* b, int n) {
 }
 
 int main() {
-  stream* s[7];
+  stream* s[8];
 
   const int len = 8;
   const int input1[9] = {/*length first ele*/len, 4, 1, 8, 2, 10, -1, 0, 100};
@@ -76,20 +85,23 @@ int main() {
 
   assert(transducers_dup(&s[2], &s[3], s[1]) == 0);
 
+  
   assert(transducers_link_2(&s[4], add_stream, 0, s[2], s[3]) == 0);
+  int constant = 2;
+  assert(transducers_link_1(&s[5], add_constant, &constant, s[4]) == 0);
 
   // "intermediate" program
   // should finish before main
-  assert(transducers_link_source(&s[6], string_stream, input_str) == 0);
-  assert(transducers_link_sink(save_string_stream, output_str, s[6]) == 0);
+  assert(transducers_link_source(&s[7], string_stream, input_str) == 0);
+  assert(transducers_link_sink(save_string_stream, output_str, s[7]) == 0);
   printf("%s\n", output_str); 
   assert(strcmp(input_str, output_str) == 0);
 
   // "main" continues
-  assert(transducers_link_2(&s[5], add_stream, 0, s[4], s[0]) == 0);
-  assert(transducers_link_sink(save_stream, output, s[5]) == 0);
+  assert(transducers_link_2(&s[6], add_stream, 0, s[5], s[0]) == 0);
+  assert(transducers_link_sink(save_stream, output, s[6]) == 0);
 
-  int expectedOutput[8] = {6, 3, 10, 4, 12, 1, 2, 102};
+  int expectedOutput[8] = {8, 5, 12, 6, 14, 3, 4, 104};
   assert(check_equal(expectedOutput, output, len) == 0);
 
   free(output);
