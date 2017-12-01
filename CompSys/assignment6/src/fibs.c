@@ -73,7 +73,7 @@ void* worker(void *arg) {
 int main(int argc, char * const *argv) {
   int num_threads = 1;
 
-  if (argc > 3 && strcmp(argv[1], "-n") == 0) {
+  if (argc == 3 && strcmp(argv[1], "-n") == 0) {
     // Since atoi() simply returns zero on syntax errors, we cannot
     // distinguish between the user entering a zero, or some
     // non-numeric garbage.  In fact, we cannot even tell whether the
@@ -86,6 +86,7 @@ int main(int argc, char * const *argv) {
       err(1, "invalid thread count: %s", argv[2]);
     }
   }
+  printf("Num threads: %d\n", num_threads);
 
   // Create job queue.
   struct job_queue jq;
