@@ -10,6 +10,7 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <fts.h>
 
 // err.h contains various nonstandard BSD extensions, but they are
@@ -17,6 +18,10 @@
 #include <err.h>
 
 #include "histogram.h"
+
+unsigned long long file_counter = 0;
+unsigned long long byte_counter = 0;
+double total_latency = 0;
 
 int global_histogram[8] = { 0 };
 
@@ -31,17 +36,32 @@ int fhistogram(char const *path) {
     return -1;
   }
 
-  int i = 0;
+  double latency = 0.0;
 
+  struct timeval start_time;
+  struct timeval end_time;
+
+  int i = 0;
   char c;
+
   while (fread(&c, sizeof(c), 1, f) == 1) {
     i++;
     update_histogram(local_histogram, c);
     if ((i % 100000) == 0) {
+      gettimeofday(&start_time, NULL);
+
       merge_histogram(local_histogram, global_histogram);
       print_histogram(global_histogram);
+
+      gettimeofday(&end_time, NULL);
+      latency += ((end_time.tv_sec * 1000000 + end_time.tv_usec) - (start_time.tv_sec * 1000000 + start_time.tv_usec))/1000000.0;
     }
   }
+
+  total_latency += latency;
+
+  file_counter++;
+  byte_counter += ftell(f);
 
   fclose(f);
 
@@ -58,6 +78,9 @@ int main(int argc, char * const *argv) {
   }
 
   char * const *paths = &argv[1];
+
+  struct timeval start_time;
+  gettimeofday(&start_time, NULL);
 
   // FTS_LOGICAL = follow symbolic links
   // FTS_NOCHDIR = do not change the working directory of the process
@@ -89,5 +112,17 @@ int main(int argc, char * const *argv) {
 
   move_lines(9);
 
+  struct timeval end_time;
+
+  gettimeofday(&end_time, NULL);
+  double total_time = ((end_time.tv_sec * 1000000 + end_time.tv_usec) - (start_time.tv_sec * 1000000 + start_time.tv_usec)) / 1000000.0;
+
+
+  printf("\nTotal time: %f\n", total_time);
+  printf("Files per second: %f\n", (file_counter / total_time));
+  printf("Bytes per second: %f\n", (byte_counter / total_time)); 
+
+  printf("Total time spent printing: %f\n", total_latency);
+  printf("Spent %f%% of the time printing.", (total_latency / total_time) * 100 );
   return 0;
 }
