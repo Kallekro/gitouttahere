@@ -200,5 +200,6 @@ int main(int argc, char * const *argv) {
     printf("Spent %f%% of the time printing.", (total_latency / total_time) * 100 );
   }
 
+
   return 0;
 }

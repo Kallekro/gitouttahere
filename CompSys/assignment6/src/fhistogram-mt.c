@@ -211,7 +211,6 @@ int main(int argc, char * const *argv) {
       total_latency = (latency_glob / jobcount_glob);
     }
 
-    printf("Update mean latency per histogram update: %f\n", (total_latency/print_count_glob));
     printf("Total time spent updating histogram: %f\n", total_latency);
     printf("Spent %f%% of the time printing.", (total_latency / total_time) * 100 );
   }
