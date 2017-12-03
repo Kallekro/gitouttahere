@@ -1,8 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-#include <pthread.h>
-#include <string.h>
 
 #include "job_queue.h"
 
@@ -11,64 +9,60 @@ int job_queue_init(struct job_queue *job_queue, int capacity) {
   job_queue->first = 0;
   job_queue->num_used = 0;
   job_queue->buffer = malloc(sizeof(void*) * capacity);
+  job_queue->dead = 0;
   
-  //pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-  //pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
-
-
-  //pthread_mutex_init(&(mutex), NULL);
-  //pthread_cond_init( &(cond), NULL);
-
-  //job_queue->mutex = mutex;
-  //job_queue->cond = cond;
-
+  // the mutex is initialized as a normal fast mutex
   pthread_mutex_init(&(job_queue->mutex), NULL);
+  // condition is also initialized with default values
   pthread_cond_init(&(job_queue->cond), NULL);
 
-  job_queue->dead = 0;
-
-
-  printf("Initialized\n");
   return 0;
 }
 
 int job_queue_destroy(struct job_queue *job_queue) {
-  //pthread_mutex_lock(&(job_queue->mutex));
-  pthread_mutex_trylock(&(job_queue->mutex));
+  pthread_mutex_lock(&(job_queue->mutex));
 
+  job_queue->dead = 1;
+  // wait until the job queue is empty
   while (job_queue->num_used > 0) {
+    // note that the mutex is unlocked while waiting so other threads can use the queue
     pthread_cond_wait(&(job_queue->cond), &(job_queue->mutex));
   }
+
+  // set dead to true. this will cause every thread waiting to pop() to return -1 after the broadcast
   
   pthread_mutex_unlock(&(job_queue->mutex));
+  pthread_cond_broadcast(&(job_queue->cond));
+  
   free(job_queue->buffer);
   
   pthread_mutex_destroy(&(job_queue->mutex));
   pthread_cond_destroy(&(job_queue->cond));
 
-  job_queue->dead = 1;
-
   return 0;
 }
 
 int job_queue_push(struct job_queue *job_queue, void *data) {
-  //pthread_mutex_lock(&(job_queue->mutex));
-  pthread_mutex_trylock(&(job_queue->mutex));
+  pthread_mutex_lock(&(job_queue->mutex));
   
+  // wait until there is room in the job queue if it is filled
   while (job_queue->num_used >= job_queue->capacity) {
     pthread_cond_wait(&(job_queue->cond), &(job_queue->mutex));
   }
 
-  printf("Num: %d\n", job_queue->num_used);
-  job_queue->num_used++;
-  printf("Num: %d\n", job_queue->num_used);
-
   int index = job_queue->first + job_queue->num_used;
-  if (index > job_queue->capacity) {
-    index = 0;
+  // if the index exceeds capacity, wrap around the buffer
+  if (index >= job_queue->capacity) {
+    index = job_queue->first + job_queue->num_used - job_queue->capacity;
   }
+
+  // after incrementing num_used we should broadcast to let waiting threads check their condition
+  job_queue->num_used++;
+
+  // push the data
   job_queue->buffer[index] = data;
 
+  // unlock mutex and broadcast condition
   pthread_mutex_unlock(&(job_queue->mutex));
   pthread_cond_broadcast(&(job_queue->cond));
 
@@ -76,30 +70,31 @@ int job_queue_push(struct job_queue *job_queue, void *data) {
 }
 
 int job_queue_pop(struct job_queue *job_queue, void **data) {
-  //printf("Worker started\n");
-  //pthread_mutex_lock(&(job_queue->mutex));
-  //printf("error: %s\n", strerror(pthread_mutex_trylock(&(job_queue->mutex))));
-  printf("error: %s\n", strerror(pthread_mutex_lock(&(job_queue->mutex))));
+  pthread_mutex_lock(&(job_queue->mutex));
   
-  printf("Mutex is locked!\n");
-
-  //printf("Worker Num: %d\n", job_queue->num_used);
+  // wait until there is a job in the queue
   while (job_queue->num_used == 0) {
-    printf("Worker waits\n");
+    // return -1 if the job queue has been killed
+    if (job_queue->dead) {
+      pthread_mutex_unlock(&(job_queue->mutex));
+      return -1;
+    }
     pthread_cond_wait(&(job_queue->cond), &(job_queue->mutex));
   }
-  //printf("Worker Num: %d\n", job_queue->num_used);
+  // after decrementing we should broadcast to let waiting threads check their condition
   job_queue->num_used--;
   
+  // copy the data to the output
   *data = job_queue->buffer[job_queue->first];
+  // increment first element to next one in the queue (possibly wrap around buffer)
   job_queue->first++;
+  if (job_queue->first >= job_queue->capacity) {
+    job_queue->first = 0;
+  }
 
+  // unlock mutex and broadcast condition
   pthread_mutex_unlock(&(job_queue->mutex));
-  printf("Mutex is unlocked!\n");
   pthread_cond_broadcast(&(job_queue->cond));
   
   return 0;
 }
-
-
-

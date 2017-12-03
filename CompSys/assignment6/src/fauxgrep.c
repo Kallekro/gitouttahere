@@ -9,6 +9,7 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <fts.h>
 
 // err.h contains various nonstandard BSD extensions, but they are
@@ -50,6 +51,9 @@ int main(int argc, char * const *argv) {
   char const *needle = argv[1];
   char * const *paths = &argv[2];
 
+  struct timeval start_time;
+  gettimeofday(&start_time, NULL);
+
   // FTS_LOGICAL = follow symbolic links
   // FTS_NOCHDIR = do not change the working directory of the process
   //
@@ -77,6 +81,11 @@ int main(int argc, char * const *argv) {
   }
 
   fts_close(ftsp);
+
+  struct timeval end_time;
+  gettimeofday(&end_time, NULL);
+  printf("total time: %ld\n", (end_time.tv_sec * 1000000 + end_time.tv_usec) -
+                              (start_time.tv_sec * 1000000 + start_time.tv_usec));
 
   return 0;
 }
