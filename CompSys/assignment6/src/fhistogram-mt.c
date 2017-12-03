@@ -10,9 +10,19 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <fts.h>
 
 #include "job_queue.h"
+
+// counter for bytes and files
+unsigned long long file_counter = 0;
+unsigned long long byte_counter = 0;
+
+
+double latency_glob;
+unsigned long print_count_glob;
+long jobcount_glob;
 
 pthread_mutex_t stdout_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -38,26 +48,39 @@ int fhistogram(char const *path) {
 
   int i = 0;
 
+
+  struct timeval start_time;
+  struct timeval end_time;
+
+  double latency = 0.0;
+  unsigned long print_count = 0;
   char c;
   while (fread(&c, sizeof(c), 1, f) == 1) {
     i++;
     update_histogram(local_histogram, c);
     int locked;
     if (((i % 100000) == 0 && (locked = pthread_mutex_trylock(&hist_mutex)) == 0) || (i % 1000000) == 0) {
+      gettimeofday(&start_time, NULL);
       if (locked != 0) {
         pthread_mutex_lock(&hist_mutex);
       }
-      else {
-        // nothing
-        int two =2;
-        (void)two;
-      }
+      gettimeofday(&end_time, NULL);
+
+      latency += ((end_time.tv_sec * 1000000 + end_time.tv_usec) - (start_time.tv_sec * 1000000 + start_time.tv_usec))/1000000.0;
+      print_count++;
+
       merge_histogram(local_histogram, global_histogram);
       print_histogram(global_histogram);
       pthread_mutex_unlock(&hist_mutex);
     }
   }
 
+  latency_glob += latency;
+  print_count_glob += print_count;
+  jobcount_glob++;
+  byte_counter += ftell(f);
+  file_counter++;
+  
   fclose(f);
 
   pthread_mutex_lock(&hist_mutex);
@@ -112,6 +135,9 @@ int main(int argc, char * const *argv) {
 
   //assert(0); // Initialise the job queue and some worker threads here.
 
+  struct timeval start_time;
+  gettimeofday(&start_time, NULL);
+
   struct job_queue jq;
   job_queue_init(&jq, 64);
 
@@ -152,7 +178,7 @@ int main(int argc, char * const *argv) {
   fts_close(ftsp);
 
   //assert(0); // Shut down the job queue and the worker threads here.
-  
+
   job_queue_destroy(&jq);
 
   for (int i=0; i < num_threads; i++) {
@@ -164,6 +190,31 @@ int main(int argc, char * const *argv) {
   free(threads);
 
   move_lines(9);
+
+  struct timeval end_time;
+  gettimeofday(&end_time, NULL);
+
+  double total_time = ((end_time.tv_sec * 1000000 + end_time.tv_usec) - (start_time.tv_sec * 1000000 + start_time.tv_usec)) / 1000000.0;
+
+  printf("\nTotal time: %f\n", total_time); 
+  printf("Files per second: %f\n", (file_counter / total_time));
+  printf("Bytes per second: %f\n", (byte_counter / total_time)); 
+
+  double total_latency;
+
+  if (print_count_glob > 0) {
+
+    if (num_threads < jobcount_glob) {
+      total_latency = (latency_glob / num_threads);
+    }
+    else {
+      total_latency = (latency_glob / jobcount_glob);
+    }
+
+    printf("Update mean latency per histogram update: %f\n", (total_latency/print_count_glob));
+    printf("Total time spent updating histogram: %f\n", total_latency);
+    printf("Spent %f%% of the time printing.", (total_latency / total_time) * 100 );
+  }
 
   return 0;
 }

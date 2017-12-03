@@ -21,13 +21,20 @@
 
 #include "job_queue.h"
 
+// counter for bytes and files
+unsigned long long file_counter = 0;
+unsigned long long byte_counter = 0;
+double latency_glob;
+unsigned long linecount_glob;
+long jobcount_glob;
+
 // statically allocate and initialize mutex for printing
 pthread_mutex_t stdout_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 // global constant needle argument
 char const *needle;
 
-int fauxgrep_file(char const *needle, char const *path) {
+int fauxgrep_file(char const *path) {
   FILE *f = fopen(path, "r");
 
   if (f == NULL) {
@@ -39,15 +46,31 @@ int fauxgrep_file(char const *needle, char const *path) {
   size_t linelen = 0;
   int lineno = 1;
 
+  double latency = 0.0;
+  unsigned long linecount = 0;
+
+  struct timeval start_time;
+  struct timeval end_time;
   while (getline(&line, &linelen, f) != -1) {
     if (strstr(line, needle) != NULL) {
+      gettimeofday(&start_time, NULL);
       pthread_mutex_lock(&stdout_mutex);
       printf("%s:%d: %s", path, lineno, line);
       pthread_mutex_unlock(&stdout_mutex);
+      gettimeofday(&end_time, NULL);
+      latency += ((end_time.tv_sec * 1000000 + end_time.tv_usec) - (start_time.tv_sec * 1000000 + start_time.tv_usec))/1000000.0;
+      linecount++;
     }
-
     lineno++;
   }
+  file_counter++;
+  byte_counter += ftell(f);
+
+  pthread_mutex_lock(&stdout_mutex);
+  latency_glob += latency;
+  linecount_glob += linecount;
+  jobcount_glob++;
+  pthread_mutex_unlock(&stdout_mutex);
 
   free(line);
   fclose(f);
@@ -61,7 +84,7 @@ void* worker(void *arg) {
   while (1) {
     char* path;
     if (job_queue_pop(jq, (void**)&path) == 0) {
-      fauxgrep_file(needle, path);
+      fauxgrep_file(path);
       free(path);
     } else {
       break;
@@ -156,10 +179,26 @@ int main(int argc, char * const *argv) {
   free(threads);
 
   struct timeval end_time;
+  double total_latency;
   gettimeofday(&end_time, NULL);
-  printf("total time: %ld\n", (end_time.tv_sec * 1000000 + end_time.tv_usec) -
-                              (start_time.tv_sec * 1000000 + start_time.tv_usec));
-  
+
+  double total_time = ((end_time.tv_sec * 1000000 + end_time.tv_usec) - (start_time.tv_sec * 1000000 + start_time.tv_usec)) / 1000000.0;
+
+  printf("\nTotal time: %f\n", total_time);
+  printf("Files per second: %f\n", (file_counter / total_time));
+  printf("Bytes per second: %f\n", (byte_counter / total_time)); 
+  if (linecount_glob > 0) {
+
+    if (num_threads < jobcount_glob) {
+      total_latency = (latency_glob / num_threads);
+    }
+    else {
+      total_latency = (latency_glob / jobcount_glob);
+    }
+    printf("Print mean latency per line: %f\n", total_latency/linecount_glob);
+    printf("Total time spent printing: %f\n", total_latency);
+    printf("Spent %f%% of the time printing.", (total_latency / total_time) * 100 );
+  }
 
   return 0;
 }

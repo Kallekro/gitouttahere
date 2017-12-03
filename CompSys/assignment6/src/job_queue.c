@@ -10,7 +10,7 @@ int job_queue_init(struct job_queue *job_queue, int capacity) {
   job_queue->num_used = 0;
   job_queue->buffer = malloc(sizeof(void*) * capacity);
   job_queue->dead = 0;
-  
+
   // the mutex is initialized as a normal fast mutex
   pthread_mutex_init(&(job_queue->mutex), NULL);
   // condition is also initialized with default values
@@ -22,7 +22,6 @@ int job_queue_init(struct job_queue *job_queue, int capacity) {
 int job_queue_destroy(struct job_queue *job_queue) {
   pthread_mutex_lock(&(job_queue->mutex));
 
-  job_queue->dead = 1;
   // wait until the job queue is empty
   while (job_queue->num_used > 0) {
     // note that the mutex is unlocked while waiting so other threads can use the queue
@@ -30,12 +29,13 @@ int job_queue_destroy(struct job_queue *job_queue) {
   }
 
   // set dead to true. this will cause every thread waiting to pop() to return -1 after the broadcast
-  
-  pthread_mutex_unlock(&(job_queue->mutex));
+  job_queue->dead = 1;
+
   pthread_cond_broadcast(&(job_queue->cond));
-  
+  pthread_mutex_unlock(&(job_queue->mutex));
+
   free(job_queue->buffer);
-  
+
   pthread_mutex_destroy(&(job_queue->mutex));
   pthread_cond_destroy(&(job_queue->cond));
 
@@ -44,7 +44,7 @@ int job_queue_destroy(struct job_queue *job_queue) {
 
 int job_queue_push(struct job_queue *job_queue, void *data) {
   pthread_mutex_lock(&(job_queue->mutex));
-  
+
   // wait until there is room in the job queue if it is filled
   while (job_queue->num_used >= job_queue->capacity) {
     pthread_cond_wait(&(job_queue->cond), &(job_queue->mutex));
@@ -63,15 +63,15 @@ int job_queue_push(struct job_queue *job_queue, void *data) {
   job_queue->buffer[index] = data;
 
   // unlock mutex and broadcast condition
-  pthread_mutex_unlock(&(job_queue->mutex));
   pthread_cond_broadcast(&(job_queue->cond));
+  pthread_mutex_unlock(&(job_queue->mutex));
 
   return 0;
 }
 
 int job_queue_pop(struct job_queue *job_queue, void **data) {
   pthread_mutex_lock(&(job_queue->mutex));
-  
+
   // wait until there is a job in the queue
   while (job_queue->num_used == 0) {
     // return -1 if the job queue has been killed
@@ -83,7 +83,7 @@ int job_queue_pop(struct job_queue *job_queue, void **data) {
   }
   // after decrementing we should broadcast to let waiting threads check their condition
   job_queue->num_used--;
-  
+
   // copy the data to the output
   *data = job_queue->buffer[job_queue->first];
   // increment first element to next one in the queue (possibly wrap around buffer)
@@ -93,8 +93,8 @@ int job_queue_pop(struct job_queue *job_queue, void **data) {
   }
 
   // unlock mutex and broadcast condition
-  pthread_mutex_unlock(&(job_queue->mutex));
   pthread_cond_broadcast(&(job_queue->cond));
-  
+  pthread_mutex_unlock(&(job_queue->mutex));
+
   return 0;
 }
