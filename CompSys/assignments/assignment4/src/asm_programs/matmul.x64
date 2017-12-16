@@ -1,0 +1,85 @@
+    .pos 0x0
+    movq $0, %r14        // %r14 = 0
+    movq $8, %r15        // %r15 = 8
+    movq dim, %rsp       // Stack starting at adress 'dim'
+    subq %r15, %rsp      // Subtracting 8 from stackpointer, so it can be written to
+
+    movq dim(%r14), %rdi // %rdi = n
+    movq mat1, %rsi      // %rsi = A 
+    movq mat2, %rdx      // %rdx = B
+    movq out, %rcx       // %rcx = out
+    call multiply
+    hlt
+
+//
+// void multiply(int dim, int mat1[dim][dim], int mat2[dim][dim], int out[dim][dim]
+// {
+//     int i, j, k;
+//     for(i=0;i<dim;i++)
+//     {
+//         for(j=0,j<dim;j++)
+//         {
+//             out[i][j] = 0;
+//             for (k=0; k<dim; k++)
+//             {
+//                 out[i][j] += mat1[i][k] * mat2[k][j]
+//             }
+//         }
+//     }
+// }
+
+
+//    %r8 = i, %r9 = j, %r10 = k
+multiply:
+    movq $0, %r8
+    movq %rdi, %rbx
+    mulq %r15, %rbx
+i_loop:
+    movq $0, %r9
+j_loop:
+    movq %r8, %r11
+    mulq %rdi, %r11
+    addq %r9, %r11
+    addq %rcx, %r11
+    movq %r14, (%r11)
+    movq $0, %r10
+k_loop:
+    movq %r8, %rbp
+    mulq %rdi, %rbp
+    addq %r10, %rbp 
+    addq %rsi, %rbp
+    movq (%rbp), %r12
+    //
+    movq %r10, %rbp
+    mulq %rdi, %rbp
+    addq %r9, %rbp
+    addq %rdx, %rbp
+    movq (%rbp), %r13
+    //
+    mulq %r12, %r13
+    movq (%r11), %r12
+    addq %r12, %r13
+    movq %r13, (%r11)
+    //
+    addq %r15, %r10
+    cmpq %r10, %rbx
+    jne k_loop
+    //
+    addq %r15, %r9
+    cmpq %r9, %rbx
+    jne j_loop
+    //
+    addq %r15, %r8
+    cmpq %r8, %rbx
+    jne i_loop
+    ret
+
+    .pos 0x600
+dim:
+    .quad 50
+mat1:
+    .rand 1337 50
+
+mat2:
+    .rand 1338 50
+out:

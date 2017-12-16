@@ -1,0 +1,65 @@
+//
+//
+//
+
+    .pos 0
+    movq stack, %rsp
+    call test1
+    call test2
+    call test3
+    call test4
+    call test5
+    hlt
+    
+test1:
+    ret
+    
+test2:
+    movq $5, %rax
+    movq $5, %rbx
+    addq %rax, %rbx
+    movq $10, %rcx
+    cmpq %rbx, %rcx
+    jne fail
+    ret
+    
+test3:
+    movq $10, %rax
+    movq $5, %rbx
+    subq %rbx, %rax
+    cmpq %rbx, %rax
+    jne fail
+    ret
+    
+test4:
+    movq $5, %rax
+    movq $10, %rbx
+    pushq %rax
+    pushq %rbx
+    popq %rcx
+    popq %rdx
+    cmpq %rbx, %rcx
+    jne fail
+    cmpq %rax, %rdx
+    jne fail
+    
+test5:
+    movq $5, %rax
+    movq $5, %rbx
+    movq $10, %rcx
+    movq %rax, %rdx
+    cmpq %rax, %rbx
+    cmove %rcx, %rdx
+    cmpq %rdx, %rcx
+    jne fail
+    ret
+    
+test6:
+    
+    
+    .pos 0x200
+fail:
+    .quad 0xFFFFFFFF
+    
+    .pos 0x400
+stack:

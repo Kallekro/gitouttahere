@@ -1,0 +1,7 @@
+  movq $1024, %rsp
+  call main
+  hlt
+
+main:
+  movq $10, %rax
+  ret

@@ -1,0 +1,43 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<errno.h>
+#include<bool.h>
+
+
+int main (int argc, char* argv[]) {
+    
+  // Check correct number of arguments      
+  if (argc <= 1 || argc >= 3) {
+    fprintf(stderr, "usage: %s path\n", argv[0]);
+    exit(EXIT_FAILURE);
+  }
+  // Open file
+  FILE* somefile = fopen(argv[1], "r");
+  if (!somefile) {
+    // If file opening failed      
+    fprintf(stderr, "%s\n", strerror(errno));
+    exit(EXIT_FAILURE);
+  }
+
+  char c;
+  
+  bool is_empty = true;
+  
+  while(!feof(somefile)) {
+    
+    if (is_empty) is_empty = false;
+    
+    fread(&c, 1, 1, somefile);
+    if ( !((0x07 <= c &&  c <= 0x0D) || (0x1B == c) || (0x20 <= c && c <= 0x7E))) {
+      printf("%s: data", argv[0]);                  
+    }
+    
+    
+  }
+
+  
+
+
+}
+

@@ -1,0 +1,5 @@
+movq $5, %rax
+movq $5, %rcx
+subq %rcx, %rax
+cmove %rcx, %rdx
+hlt

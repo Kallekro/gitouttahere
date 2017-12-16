@@ -1,0 +1,153 @@
+.pos 0x0
+start:
+    movq data_size, %rsp        // set stack pointer
+    movq $8, %r15
+    subq %r15, %rsp
+    call main
+    hlt
+
+main:
+    movq data, %rdi
+    movq results, %rsi
+    movq data_size, %rbp
+    movq 0(%rbp),%rbp
+    call merge_sort
+    ret
+
+merge_sort:
+    // %rdi = source, %rsi = dest, %rbp = length
+    // reg allocation:
+    // %rbx = run_size
+    // %rdx = swapped
+    // %rcx = t, limit
+    movq $8, %rbx               // run_size = sizeof(quad)
+    addq %rbp, %rbp             // length = length * sizeof(quad)
+    addq %rbp, %rbp
+    addq %rbp, %rbp
+    movq $1, %rdx               // swapped = 1
+    jmp merge_sort_l1_entry     // while (run_size < length) {
+merge_sort_l1_reentry:
+    pushq %rdi                  //     merge_run(source,dest,add_offset(source,length),run_size)
+    pushq %rsi
+    pushq %rbp
+    pushq %rbx
+    pushq %rdx
+    addq %rdi, %rbp
+    call merge_run
+    popq %rdx
+    popq %rbx
+    popq %rbp
+    popq %rsi
+    popq %rdi
+    movq %rdi, %rcx             //     swap(source,dest)
+    movq %rsi, %rdi
+    movq %rcx, %rsi
+    addq %rbx, %rbx             //     run_size += run_size
+    movq %rdx, %rcx             //     swapped = !swapped
+    movq $1, %rdx
+    subq %rcx, %rdx
+merge_sort_l1_entry:
+    cmpq %rbp,%rbx
+    jl merge_sort_l1_reentry    // }
+    andq %rdx, %rdx             // if (swapped) {
+    je merge_sort_end
+    movq %rdi, %rcx             //     limit = add_offset(source,length)
+    addq %rbp, %rcx
+    jmp merge_sort_l2_entry     //     while (source < limit) {
+merge_sort_l2_reentry:
+    movq (%rdi), %rax           //         *dest++ = *source++;
+    movq $8, %r15
+    addq %r15, %rdi
+    movq %rax, (%rsi)
+    addq %r15, %rsi
+merge_sort_l2_entry:
+    cmpq %rdi, %rcx
+    jg merge_sort_l2_reentry    //     }
+merge_sort_end:                 // }
+    ret
+
+merge_run:
+    // %rdi = source, %rsi = dest, %rbp = limit, %rbx = run_size
+    // reg allocation
+    // %rdi = s_a (=source)     // s_a = source
+    // %rsi = d (=dest)         // d = dest
+    // %rdx = s_b
+    // %rcx = s_b_limit
+merge_run_l1_reentry:           // while (1) {
+    movq %rdi, %rdx             //     s_b = add_offset(s_a,run_size)
+    addq %rbx, %rdx
+    cmpq %rbp, %rdi             //     if (s_a >= limit) break
+    jge merge_run_l1_exit
+    cmpq %rdx, %rbp             //     if(s_b >= limit)
+    cmovl %rbp, %rdx            //         s_b = limit
+    movq %rdx, %rcx             //     s_b_limit = add_offset(s_b, run_size)
+    addq %rbx, %rcx
+    cmpq %rcx, %rbp             //     if (s_b_limit >= limit)
+    cmovl %rbp, %rcx            //     s_b_limit = limit
+    movq %rdi, %r8              //     merge2(s_a,s_b,d,s_b,s_b_limit)
+    movq %rdx, %r9
+    movq %rsi, %r10
+    movq %rdx, %r11
+    movq %rcx, %r12
+    call merge2
+    movq %rcx, %rdi             //     s_a = s_b_limit
+    movq %rbx, %rax             //     d = add_offset(d,run_size+run_size)
+    addq %rax, %rax
+    addq %rax, %rsi
+    jmp merge_run_l1_reentry
+merge_run_l1_exit:              // }
+    ret
+
+merge2:
+    // leaf optimized reg allocation:
+    // %r8 = a, %r9 = b, %r10 = dest, %r11 = limit_a, %r12 = limit_b
+    // reg allocation:
+    // %r14, %rax: temporary
+merge2_l1_reentry:              // while (1) {
+    cmpq %r8, %r11              //     if (a >= limit_a) break
+    jle merge2_l1_exit
+    cmpq %r9, %r12              //     if (b >= limit_b) break
+    jle merge2_l1_exit
+    movq (%r8), %r14            //     if (*a < *b)
+    movq (%r9), %rax
+    cmpq %r14, %rax
+    jle merge_l1_else
+    movq %r14, (%r10)           //         *dest++ = *a++;
+    movq $8, %r15
+    addq %r15, %r8
+    addq %r15, %r10
+    jmp merge_l1_fi
+merge_l1_else:                  //     else
+    movq %rax,(%r10)            //         *dest++ = *b++;
+    addq %r15, %r9
+    addq %r15, %r10
+merge_l1_fi:
+    jmp merge2_l1_reentry       //     }
+merge2_l1_exit:                 // }
+    jmp merge2_l2_entry         // while (a < limit_a)
+merge2_l2_reentry:
+    movq (%r8), %rax            //     *dest++ = *a++;
+    addq %r15, %r8
+    movq %rax, (%r10)
+    addq %r15, %r10
+merge2_l2_entry:
+    cmpq %r8, %r11              // }
+    jg merge2_l2_reentry
+    jmp merge2_l3_entry         // while (b < limit_b)
+merge2_l3_reentry:
+    movq (%r9), %rax            //     *dest++ = *b++
+    addq %r15, %r9
+    movq %rax, (%r10)
+    addq %r15, %r10
+merge2_l3_entry:
+    cmpq %r9, %r12
+    jg merge2_l3_reentry        // }
+    ret
+
+.pos 0x300
+data_size:
+    .quad 10000
+data:
+    .rand 1234 10000
+.pos 0x18000
+results:

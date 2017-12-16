@@ -1,0 +1,4 @@
+movq $5,%rax
+movq $-2,%rcx
+// rax should be 3.
+addq %rcx,%rax

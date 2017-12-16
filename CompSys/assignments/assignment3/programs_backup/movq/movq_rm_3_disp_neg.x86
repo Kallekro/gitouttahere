@@ -1,0 +1,4 @@
+movq $50, %rax
+movq $256, %rbx
+// moving from register to memory. 
+movq %rax, -16(%rbx)

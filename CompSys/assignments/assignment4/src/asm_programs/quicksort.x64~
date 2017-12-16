@@ -1,0 +1,110 @@
+.pos 0x0
+start:
+    movq dim, %rsp // init stack pointer
+    movq $8, %r15
+    subq %r15, %rsp
+    //movq $1, %r15
+    call main
+    hlt
+    
+main:
+    movq data, %rdi // %rdi = start address of array
+    movq $0, %rdx   // %rdx = low index
+    movq $0, %r13
+    movq dim(%r13), %rcx  // %rcx = high index
+    call quicksort
+    ret
+
+quicksort:
+    cmpq %rcx, %rdx // (lo < hi)
+    jge qs_ret
+    call partition
+    movq %rax, %r9  // %r9 = p  (p = partition(arr, lo, hi))
+
+    movq %r9, %r10  
+    subq %r15, %r10 // %r10 = p - 1
+    movq %rcx, %r11 // %r11 = hi
+    movq %r10, %rcx // %rcx = p-1 
+    call quicksort
+
+    movq %r9, %r10  
+    addq %r15, %r10 // %r10 = p + 1
+    movq %r11, %rcx
+    movq %rdx, %r11
+    movq %r10, %rdx
+    call quicksort
+    movq %r11, %rdx
+qs_ret:
+    ret
+
+partition:
+    movq %rdi, %rbx
+    addq %rcx, %rbx
+    mulq %r15, %rbx
+    movq (%rbx), %r8       // %r8 = pivot  (=arr[hi])
+    movq %rdx, %r9       
+    subq %r15, %r9         // %r9 = lo - 1 (= i)
+    movq %r9, %r10         // %r10 = lo -1    (= j)
+
+part_loop:
+    addq %r15, %r10        //  (j++)
+    cmpq %rcx, %r10        //  (j<hi)
+    jl part_ret
+    movq %rdi, %rbx
+    addq %r10, %rbx
+    movq (%rbx),%rbp 
+    cmpq %r8, %rbp         //   arr[j] < pivot
+    jge part_loop
+    addq %r15, %r9         //   (i++)
+    // swapping
+    movq %rdi, %rbx
+    addq %r10, %rbx
+    movq (%rbx), %r11      // %r11 = tmp   (arr[j])
+    movq %rdi, %rbx
+    addq %r9, %rbx
+    movq (%rbx), %r14
+    movq %rdi, %rbx
+    addq %r10, %rbx
+    movq %r14, (%rbx)      //            (arr[j] = arr[i])         
+    movq %rdi, %rbx
+    addq %r9, %rbx
+    movq %r11, (%rbx)      //            (arr[i] = tmp)     
+    jmp part_loop 
+
+part_end:
+    addq %r15, %r9         //  (i++)
+    movq %rdi, %rbx
+    addq %r9, %rbx
+    movq (%rbx),%rbp
+    cmpq %rbp, %r8       //  (pivot < arr[i+1])
+    
+    jge part_ret
+    movq %rdi, %rbx
+    addq %rcx, %rbx
+    mulq %r15, %rbx
+    movq (%rbx),%rbp
+    movq %rbp, %r11     //  (tmp = arr[hi])
+
+    movq %rdi, %rbx
+    addq %r9, %rbx
+    movq (%rbx),%rbp
+    movq %rbp, %r14
+
+    movq %rdi, %rbx
+    addq %rcx, %rbx
+    mulq %r15, %rbx
+    movq %r14, (%rbx)     //  (arr[hi] = arr[i+1])
+    
+    movq %rdi, %rbx
+    addq %r9, %rbx
+    movq %r11, (%rbx)     //  (arr[i] = tmp)
+
+part_ret:         
+    movq %r9, %rax       //  (return i+1)
+    ret
+
+    .pos 0x1000	
+dim:	 
+    .quad 10
+data:
+    .rand 14325345345 10

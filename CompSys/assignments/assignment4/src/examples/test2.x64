@@ -1,0 +1,9 @@
+    .pos 0x0
+    movq stack, %rsp
+    call test
+    hlt
+test:
+    ret
+
+    .pos 0x200
+stack:

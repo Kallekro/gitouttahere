@@ -1,0 +1,90 @@
+//
+// Nis Wegmann, 2017
+//
+// test.x64
+//
+
+    .pos 0
+    movq stack, %rsp            // Set up the stack pointer.
+    movq $1, %r8                // %r8 = 1
+    movq $0, %r14               // %r14 = 0
+    movq $8, %r15               // %r15 = 8
+    movq dim(%r14), %rax        // Load dimension into RAX.
+    call multiply
+    hlt
+
+//
+// void multiply(int dim, int mat1[dim][dim], int mat2[dim][dim], int out[dim][dim])
+// {
+//     int i, j, k;                                     <--- %rbx, %rcx, %rdx
+//
+//     for (i = 0; i < dim; i++)                        <--- l1:
+//     {
+//         for (j = 0; j < dim; j++)                    <--- l2:
+//         {
+//             out[i][j] = 0;
+//
+//             for (k = 0; k < dim; k++)                <--- l3:
+//             {
+//                 out[i][j] += mat1[i][k] * mat2[k][j];
+//             }
+//         }
+//     }
+// }
+//
+
+multiply:
+    movq $0, %rbx
+l1:                             // for (i = 0; ...) {
+    movq $0, %rcx
+l2:                             //     for (j = 0; ...) {
+    movq %rbx, %r10
+    mulq %rax, %r10
+    addq %rcx, %r10
+    mulq %r15, %r10
+    movq %r14, out(%r10)        //         out[i][j] = 0;
+    //
+    movq $0, %rdx
+l3:                             //         for (k = 0; ...) {
+    movq %rbx, %r11
+    mulq %rax, %r11
+    addq %rdx, %r11
+    mulq %r15, %r11
+    movq mat1(%r11), %r12       //             %r12 = mat1[i][k];
+    //
+    movq %rdx, %r11
+    mulq %rax, %r11
+    addq %rcx, %r11
+    mulq %r15, %r11
+    movq mat2(%r11), %r13       //             %r13 = mat2[k][j];
+    //
+    mulq %r12, %r13
+    movq out(%r10), %r12
+    addq %r12, %r13
+    movq %r13, out(%r10)        //             out[i][j] += mat1[i][k] * mat1[k][j]
+    //
+    addq %r8, %rdx              //             k += 1;
+    cmpq %rdx, %rax
+    jne l3                      //         }
+    //
+    addq %r8, %rcx              //         j += 1;
+    cmpq %rcx, %rax
+    jne l2                      //     }
+    //
+    addq %r8, %rbx              //     i += 1;
+    cmpq %rbx, %rax
+    jne l1                      // }
+    ret
+
+    .pos 0x400
+stack:
+dim:
+    .quad 50 
+
+mat1:
+    .rand 1337 2500
+
+mat2:
+    .rand 1338 2500
+
+out:
