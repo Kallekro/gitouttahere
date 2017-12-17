@@ -30,11 +30,9 @@ int job_queue_destroy(struct job_queue *job_queue) {
 
   // set dead to true. this will cause every thread waiting to pop() to return -1 after the broadcast
   job_queue->dead = 1;
-
+  free(job_queue->buffer);
   pthread_cond_broadcast(&(job_queue->cond));
   pthread_mutex_unlock(&(job_queue->mutex));
-
-  free(job_queue->buffer);
 
   pthread_mutex_destroy(&(job_queue->mutex));
   pthread_cond_destroy(&(job_queue->cond));
@@ -47,6 +45,10 @@ int job_queue_push(struct job_queue *job_queue, void *data) {
 
   // wait until there is room in the job queue if it is filled
   while (job_queue->num_used >= job_queue->capacity) {
+    if (job_queue->dead) {
+      pthread_mutex_unlock(&(job_queue->mutex));
+      return -1;
+    }
     pthread_cond_wait(&(job_queue->cond), &(job_queue->mutex));
   }
 
