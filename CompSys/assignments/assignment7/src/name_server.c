@@ -12,6 +12,8 @@
 #define PORT "50000"
 
 pthread_mutex_t master_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t conn_info_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 //struct socket_struct* conn_array;
 
 fd_set master_set;
@@ -48,7 +50,7 @@ int main(int argc, char**argv) {
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_flags = AI_PASSIVE;
 
-  int addr_err, sock_flag;
+  int addr_err, sock_flag = 1;
   if ((addr_err = getaddrinfo(NULL, PORT, &hints, &addri_res)) != 0) {
     fprintf(stderr, "server: %s\n", gai_strerror(addr_err));
     exit(1);
@@ -62,6 +64,7 @@ int main(int argc, char**argv) {
     }
 
     setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &sock_flag, sizeof(int));
+    //setsockopt(listener, SOL_SOCKET, SO_REUSEPORT, &sock_flag, sizeof(int));
 
     if (bind(listener, tmp_addr->ai_addr, tmp_addr->ai_addrlen) < 0)  {
       close(listener);
@@ -72,6 +75,7 @@ int main(int argc, char**argv) {
 
   if (tmp_addr == NULL) {
     fprintf(stderr, "Failed to bind to socket\n");
+    
     exit(5);
   }
 
@@ -94,7 +98,12 @@ int main(int argc, char**argv) {
   //conn_array = malloc(conn_array_len * sizeof(struct socket_struct));
   int conn_array_len = 100; 
   conn_info_array = malloc(conn_array_len * sizeof(struct connection_info));
-  conn_count = 1; 
+  conn_count = 0; 
+
+  for (int i=0; i<100; i++) {
+    set_connection_info(&conn_info_array[i], NULL , NULL, NULL, NULL);
+  }
+
   //for (int i = 0; i < conn_array_len; i++) {
   //  reset_socket(&(conn_array[i]));
   //}
@@ -117,6 +126,7 @@ int main(int argc, char**argv) {
     pthread_mutex_lock(&master_mutex);
     tmp_set = master_set;
     pthread_mutex_unlock(&master_mutex);
+
     if (select(max_fd+1, &tmp_set, NULL, NULL, NULL) == -1) {
       perror("select");
       exit(1);
@@ -127,11 +137,13 @@ int main(int argc, char**argv) {
         if (i == listener) { // new connection
           unsigned int addr_len = sizeof(client_addr);
           new_sock = accept(listener, &client_addr, &addr_len);
+          printf("accepted new connection\n");
           if (new_sock == -1) {
             perror("accept");
           }
         } else { // existing connection
           pthread_mutex_lock(&master_mutex);
+          new_sock = i;
           FD_CLR(i, &master_set);  
           pthread_mutex_unlock(&master_mutex);
         }
@@ -161,6 +173,7 @@ int main(int argc, char**argv) {
     }
   }
   free(threads);
+  close(listener);
 
   //for (int i = 0; i < conn_array_len; i++) {
   //  if (conn_array[i].sockfd != -1) {
@@ -177,19 +190,37 @@ void* worker(void * arg) {
 
   char data_buf[512];  // client data buffer
   int data_size;       // size of client data in bytes
-  
-  int* sock; 
+
+  int* sock;
   while(1) {
     if (job_queue_pop(jq, (void**)&sock) == 0) { // pop a job
-      send(*sock, "HELLO!", 10, 0);
-      // IF FD > MAX_FD THEN NEW SOCKET
-      if (*sock > max_fd) {
-        // NEW CONNECTION
-      }
-      pthread_mutex_lock(&master_mutex);
-      FD_SET(*sock, master_set);
-      pthread_mutex_unlock(&master_mutex);
 
+      pthread_mutex_lock(&conn_info_mutex);
+
+      if (!conn_info_array[*sock].nick) {
+        // A new connection
+
+        data_size = recv(*sock, data_buf, sizeof(data_buf), 0);
+        data_buf[data_size] = '\0';
+        // TODO: CHECK IF CORRECT LOGIN
+        char loginmsg[100];
+        if (handle_login(&(conn_info_array[*sock]), data_buf) == 0) {
+          sprintf(loginmsg, "Login succesful. Welcome %s\n", conn_info_array[*sock].nick);
+          send(*sock, "success", 10, 0);
+        } else {
+          sprintf(loginmsg, "Login unsuccesful. Please check you login information and try again\n");
+          send(*sock, "fail", 10, 0);
+          printf("close sock\n");
+          close(*sock);
+          continue;
+        }
+
+      pthread_mutex_unlock(&conn_info_mutex);
+
+      pthread_mutex_lock(&master_mutex);
+      FD_SET(*sock, &master_set);
+      pthread_mutex_unlock(&master_mutex);
+      }
       //if (sock->sockfd == listener) { // If the listener, there is a new connection ready.
       //  unsigned int addr_len = sizeof(client_addr);
       //  int new_sock = accept(listener, &client_addr, &addr_len);
@@ -295,25 +326,28 @@ int parsecmd(char* input) {
 
 int handle_login (struct connection_info* ci, char* input) {
   int spaces[4];
-  int i, spacecount = 0;
-  printf("input: ");
-  while (*input != '\0') {
-    printf("%c", *input);
-    if (*input == ' ') {
+  int i = 0, spacecount = 0;
+  printf("input: %s\n", input);
+  while (input[i] != '\0') {
+    if (input[i] == ' ') {
       spaces[spacecount] = i;
       spacecount++;
     }
-    input++;
     i++;
   }
-  printf("spacecount: %d\n", spacecount);
+
   if (spacecount != 4) {
     return -1;
-  } 
-  strncpy(ci->nick, input + spaces[0]+1, spaces[1] - spaces[0] - 1);
-  strncpy(ci->passwd, input + spaces[1]+1, spaces[2] - spaces[1] - 1);
-  strncpy(ci->ip, input + spaces[2]+1, spaces[3] - spaces[2] - 1);
-  strncpy(ci->port, input + spaces[3]+1, strlen(input) - spaces[3] - 2);
+  }
+  char _nick[256];
+  char _passwd[256];
+  char _ip[256];
+  char _port[256];
+  strncpy(_nick, input + spaces[0]+1, spaces[1] - spaces[0] - 1);
+  strncpy(_passwd, input + spaces[1]+1, spaces[2] - spaces[1] - 1);
+  strncpy(_ip, input + spaces[2]+1, spaces[3] - spaces[2] - 1);
+  strncpy(_port, input + spaces[3]+1, (int)strlen(input) - spaces[3] - 2);
+  set_connection_info(ci, _nick, _passwd, _ip, _port);
   return 0;
 }
 
