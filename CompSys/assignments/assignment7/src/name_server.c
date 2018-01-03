@@ -12,7 +12,10 @@
 #define PORT "50000"
 
 pthread_mutex_t master_mutex = PTHREAD_MUTEX_INITIALIZER;
-struct socket_struct* conn_array;
+//struct socket_struct* conn_array;
+
+fd_set master_set;
+fd_set tmp_set;
 struct connection_info* conn_info_array;
 int conn_count;
 
@@ -78,17 +81,24 @@ int main(int argc, char**argv) {
     exit(3);
   }
 
-  int flags = fcntl(listener, F_GETFL, 0);
-  fcntl(listener, F_SETFL, flags | O_NONBLOCK);
+  // for non-blocking
+  //int flags = fcntl(listener, F_GETFL, 0);
+  //fcntl(listener, F_SETFL, flags | O_NONBLOCK);
 
-  int conn_array_len = 100; //atoi(argv[2]);
-  conn_array = malloc(conn_array_len * sizeof(struct socket_struct));
+  FD_ZERO(&master_set);
+  FD_ZERO(&tmp_set);
+  
+  FD_SET(listener, &master_set);
+  max_fd = listener;
+
+  //conn_array = malloc(conn_array_len * sizeof(struct socket_struct));
+  int conn_array_len = 100; 
   conn_info_array = malloc(conn_array_len * sizeof(struct connection_info));
-  for (int i = 0; i < conn_array_len; i++) {
-    reset_socket(&(conn_array[i]));
-  }
-  set_socket(&conn_array[0], listener, 0);
   conn_count = 1; 
+  //for (int i = 0; i < conn_array_len; i++) {
+  //  reset_socket(&(conn_array[i]));
+  //}
+  //set_socket(&conn_array[0], listener, 0);
 
   struct job_queue jq;
   job_queue_init(&jq, 15);
@@ -100,14 +110,43 @@ int main(int argc, char**argv) {
     }
   }
 
+  struct sockaddr client_addr;
+  int new_sock;
   // main loop
   while (1) {
-    for (int i=0; i<conn_count; i++) {
-      if (!conn_array[i].busy && conn_array[i].sockfd != -1) {
-        conn_array[i].busy = 1;
-        job_queue_push(&jq, &(conn_array[i]));
+    pthread_mutex_lock(&master_mutex);
+    tmp_set = master_set;
+    pthread_mutex_unlock(&master_mutex);
+    if (select(max_fd+1, &tmp_set, NULL, NULL, NULL) == -1) {
+      perror("select");
+      exit(1);
+    }
+
+    for (int i=0; i <= max_fd; i++) {
+      if (FD_ISSET(i, &tmp_set)) {
+        if (i == listener) { // new connection
+          unsigned int addr_len = sizeof(client_addr);
+          new_sock = accept(listener, &client_addr, &addr_len);
+          if (new_sock == -1) {
+            perror("accept");
+          }
+        } else { // existing connection
+          pthread_mutex_lock(&master_mutex);
+          FD_CLR(i, &master_set);  
+          pthread_mutex_unlock(&master_mutex);
+        }
+        // add the readable socket to the job queue
+        job_queue_push(&jq, &new_sock);
       }
     }
+
+
+   // for (int i=0; i<conn_count; i++) {
+   //   if (!conn_array[i].busy && conn_array[i].sockfd != -1) {
+   //     conn_array[i].busy = 1;
+   //     job_queue_push(&jq, &(conn_array[i]));
+   //   }
+   // }
   }
 
 
@@ -123,108 +162,117 @@ int main(int argc, char**argv) {
   }
   free(threads);
 
-  for (int i = 0; i < conn_array_len; i++) {
-    if (conn_array[i].sockfd != -1) {
-      close(conn_array[i].sockfd);
-    }
-  }
-  free(conn_array);
+  //for (int i = 0; i < conn_array_len; i++) {
+  //  if (conn_array[i].sockfd != -1) {
+  //    close(conn_array[i].sockfd);
+  //  }
+  //}
+  //free(conn_array);
 
   return 0;
 }
 
 void* worker(void * arg) {
   struct job_queue *jq = arg;
-  struct sockaddr client_addr;
 
   char data_buf[512];  // client data buffer
   int data_size;       // size of client data in bytes
   
-  struct socket_struct* sock; 
+  int* sock; 
   while(1) {
     if (job_queue_pop(jq, (void**)&sock) == 0) { // pop a job
-      if (sock->sockfd == listener) { // If the listener, there is a new connection ready.
-        unsigned int addr_len = sizeof(client_addr);
-        int new_sock = accept(listener, &client_addr, &addr_len);
-        if (new_sock == -1) {
-          if (errno != EAGAIN && errno != EWOULDBLOCK) {
-            perror("accept error\n");
-          }
-        } else { 
-          //int flags = fcntl(new_sock, F_GETFL, 0);
-          //fcntl(new_sock, F_SETFL, flags | O_NONBLOCK);
-
-          pthread_mutex_lock(&master_mutex); // lock the mutex
-
-          data_size = recv(new_sock, data_buf, sizeof(data_buf), 0);
-          // TODO: CHECK IF CORRECT LOGIN
-          char loginmsg[100];
-          if (handle_login(&(conn_info_array[conn_count]), data_buf) == 0) {
-            sprintf(loginmsg, "Login succesful. Welcome %s\n", conn_info_array[conn_count].nick);
-            send(new_sock, "success", 10, 0);
-          } else {
-            sprintf(loginmsg, "Login unsuccesful. Please check you login information and try again\n");
-            send(new_sock, "fail", 10, 0);
-            printf("close sock\n");
-            close(new_sock);
-            pthread_mutex_unlock(&master_mutex );
-            sock->busy = 0;
-            continue;
-          }
-
-          set_socket(&(conn_array[conn_count]), new_sock, 0); 
-          conn_count++;
-
-          printf("Listener accepted new connection with socket %d. \n", new_sock);
-          pthread_mutex_unlock(&master_mutex); // unlock the mutex
-        }
-      } else { // If existing connection with client
-        data_size = recv(sock->sockfd, data_buf, sizeof(data_buf), MSG_PEEK); // recieve bytes from client and store in buffer
-        if (data_size != -1) {
-          printf("data size: %d", data_size);
-        }
-        if (data_size == 0) { // If we didn't recieve any data or error
-          printf("server: socket %d hung up\n", sock->sockfd);
-          close(sock->sockfd); // close socket
-          pthread_mutex_lock(&master_mutex); // lock the mutex 
-          for (int i = 0; i < conn_count; i++) {
-            if (sock->sockfd == conn_array[i].sockfd) {
-              if (i == conn_count-1) {
-                reset_socket(&(conn_array[i]));
-              } else {
-                conn_array[i] = conn_array[conn_count-1];
-              }
-              break;
-            }
-          }
-          conn_count--;
-
-          pthread_mutex_unlock(&master_mutex); // unlock mutex
-        } else { // Data is received:w
-
-          if (data_size > 0) {
-            data_buf[data_size] = '\0';
-            printf ("Recieved data: \n %s", (char*)data_buf);
-            switch (parsecmd(data_buf)) {
-              case 0:
-                printf("LOGIN\n");
-                break;
-              case 1:
-                printf("LOGOUT\n");
-                break;
-              case 2:
-                printf("EXIT\n");
-                break;
-              case 3:
-                printf("LOOKUP\n");
-                break;
-            }
-            send(sock->sockfd, "LOL", 3, 0);
-          }
-        }
+      send(*sock, "HELLO!", 10, 0);
+      // IF FD > MAX_FD THEN NEW SOCKET
+      if (*sock > max_fd) {
+        // NEW CONNECTION
       }
-      sock->busy = 0;
+      pthread_mutex_lock(&master_mutex);
+      FD_SET(*sock, master_set);
+      pthread_mutex_unlock(&master_mutex);
+
+      //if (sock->sockfd == listener) { // If the listener, there is a new connection ready.
+      //  unsigned int addr_len = sizeof(client_addr);
+      //  int new_sock = accept(listener, &client_addr, &addr_len);
+      //  if (new_sock == -1) {
+      //    if (errno != EAGAIN && errno != EWOULDBLOCK) {
+      //      perror("accept error\n");
+      //    }
+      //  } else { 
+      //    //int flags = fcntl(new_sock, F_GETFL, 0);
+      //    //fcntl(new_sock, F_SETFL, flags | O_NONBLOCK);
+
+      //    pthread_mutex_lock(&master_mutex); // lock the mutex
+
+      //    data_size = recv(new_sock, data_buf, sizeof(data_buf), 0);
+      //    // TODO: CHECK IF CORRECT LOGIN
+      //    char loginmsg[100];
+      //    if (handle_login(&(conn_info_array[conn_count]), data_buf) == 0) {
+      //      sprintf(loginmsg, "Login succesful. Welcome %s\n", conn_info_array[conn_count].nick);
+      //      send(new_sock, "success", 10, 0);
+      //    } else {
+      //      sprintf(loginmsg, "Login unsuccesful. Please check you login information and try again\n");
+      //      send(new_sock, "fail", 10, 0);
+      //      printf("close sock\n");
+      //      close(new_sock);
+      //      pthread_mutex_unlock(&master_mutex );
+      //      sock->busy = 0;
+      //      continue;
+      //    }
+
+      //    set_socket(&(conn_array[conn_count]), new_sock, 0); 
+      //    conn_count++;
+
+      //    printf("Listener accepted new connection with socket %d. \n", new_sock);
+      //    pthread_mutex_unlock(&master_mutex); // unlock the mutex
+      //  }
+      //} else { // If existing connection with client
+      //  data_size = recv(sock->sockfd, data_buf, sizeof(data_buf), MSG_PEEK); // recieve bytes from client and store in buffer
+      //  if (data_size != -1) {
+      //    printf("data size: %d", data_size);
+      //  }
+      //  if (data_size == 0) { // If we didn't recieve any data or error
+      //    printf("server: socket %d hung up\n", sock->sockfd);
+      //    close(sock->sockfd); // close socket
+      //    pthread_mutex_lock(&master_mutex); // lock the mutex 
+      //    for (int i = 0; i < conn_count; i++) {
+      //      if (sock->sockfd == conn_array[i].sockfd) {
+      //        if (i == conn_count-1) {
+      //          reset_socket(&(conn_array[i]));
+      //        } else {
+      //          conn_array[i] = conn_array[conn_count-1];
+      //        }
+      //        break;
+      //      }
+      //    }
+      //    conn_count--;
+
+      //    pthread_mutex_unlock(&master_mutex); // unlock mutex
+      //  } else { // Data is received:w
+
+      //    if (data_size > 0) {
+      //      data_buf[data_size] = '\0';
+      //      printf ("Recieved data: \n %s", (char*)data_buf);
+      //      switch (parsecmd(data_buf)) {
+      //        case 0:
+      //          printf("LOGIN\n");
+      //          break;
+      //        case 1:
+      //          printf("LOGOUT\n");
+      //          break;
+      //        case 2:
+      //          printf("EXIT\n");
+      //          break;
+      //        case 3:
+      //          printf("LOOKUP\n");
+      //          break;
+      //      }
+      //      send(sock->sockfd, "LOL", 3, 0);
+      //    }
+      //  }
+      //}
+      //sock->busy = 0;
     } else {
+      printf("wat\n");
       break;
     }
   } // end while
@@ -262,7 +310,6 @@ int handle_login (struct connection_info* ci, char* input) {
   if (spacecount != 4) {
     return -1;
   } 
-  printf("%ull\n", strlen(input) -spaces[3]-1);
   strncpy(ci->nick, input + spaces[0]+1, spaces[1] - spaces[0] - 1);
   strncpy(ci->passwd, input + spaces[1]+1, spaces[2] - spaces[1] - 1);
   strncpy(ci->ip, input + spaces[2]+1, spaces[3] - spaces[2] - 1);

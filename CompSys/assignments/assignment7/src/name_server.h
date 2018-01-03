@@ -16,6 +16,7 @@ void set_socket(struct socket_struct* ss, int fd, int busy) {
 }
 
 struct connection_info {
+  int sockfd;
   char* nick;
   char* passwd;
   char* ip;
