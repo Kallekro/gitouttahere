@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include "peer.h"
 #include <string.h>
+#include "socklib.h"
 
 #define ARGNUM 2 // TODO: Put the number of you want to take
 
 #define DEFAULT_NAME "localhost"
 #define DEFAULT_PORT "50000"
-
 
 const char* cmdlist[4] = { "/login", "/logout", "/exit", "/lookup" };
 const int cmdlen = 4;
@@ -20,6 +20,7 @@ int main(int argc, char**argv) {
   
   char inbuf[256];
   char recbuf[256];
+  char msgsize[4];
   int sockfd;
   struct addrinfo hints, *addri_res, *tmp_addr;
   int addr_err;
@@ -59,36 +60,36 @@ int main(int argc, char**argv) {
     }
     freeaddrinfo(addri_res);
 
-    send(sockfd, inbuf, strlen(inbuf), 0);
+    int flags = fcntl(sockfd, F_GETFL, 0);
+    fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
+    sprintf(msgsize, "%04lu", strlen(inbuf));
+    send_all(sockfd, msgsize, 4);
+    send_all(sockfd, inbuf, strlen(inbuf));
     
-    recv(sockfd, recbuf, sizeof(recbuf), 0);
-    if (*recbuf == '0') {
-      printf("%s\n", recbuf+1);
+    recv_all(sockfd, recbuf, sizeof(recbuf)); //recv(sockfd, recbuf, sizeof(recbuf), 0);
+    if (*(recbuf+4) == '0') {
+      printf("%s\n", recbuf+5);
+      memset(recbuf, '\0', sizeof(recbuf));
       close(sockfd);
       continue;
     }
-    printf("%s\n", recbuf+1);
+    printf("%s\n", recbuf+5);
+    memset(recbuf, '\0', sizeof(recbuf));
     break;
   }
   
   while (1) {
     printf("HEEEY\n");
     if (fgets(inbuf, sizeof(inbuf), stdin) != NULL) {
-      printf("input: %s", inbuf);
-      if (send(sockfd, inbuf, strlen(inbuf), 0) != (ssize_t)strlen(inbuf)) {
-        fprintf(stderr, "Didn't send every byte\n");
-      }
+      sprintf(msgsize, "%04lu", strlen(inbuf));
+      send_all(sockfd, msgsize, 4);
+      int sent = send_all(sockfd, inbuf, strlen(inbuf));
+      printf("%d\n", sent);
       int rec_return;
-      if ( (rec_return = recv(sockfd, recbuf, sizeof(recbuf), 0)) <= 0) {
-        if (rec_return == 0) {
-          printf("Server hung up");
-          break;
-        }
-        else {
-          perror("client: receive");
-        }
+      if ((rec_return = recv_all(sockfd, recbuf, sizeof(recbuf))) == -1) {
+        printf("Server hung up");
       }
-      printf("Received from server: %s\n", recbuf);
+      printf("Received from server: %s\n", recbuf+4);
       
     }
     else {
@@ -98,6 +99,7 @@ int main(int argc, char**argv) {
   return 0;
 }
 
+// Parse which command is in input
 int parsecmd(char* input) {
   char cmpbuf[24];
   for (int i = 0; i < cmdlen; i++) {
@@ -110,5 +112,4 @@ int parsecmd(char* input) {
   } 
   return -1;
 }
-
 
