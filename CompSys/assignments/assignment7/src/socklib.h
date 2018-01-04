@@ -1,11 +1,20 @@
 #ifndef SOCK_LIB
 #define SOCK_LIB
+#include <sys/time.h>
 
 // Function to receive all data on a non-blocking socket
 int recv_all(int sock, char* buf, int buflen) {
+  struct timeval begin, now;
+  gettimeofday(&begin, NULL);
+  begin.tv_sec += 5;
   int bytesreceived = 0;
   int initbytes = 4;
   while (bytesreceived < initbytes) {
+    gettimeofday(&now, NULL);
+    if (now.tv_sec * 1000000 + now.tv_usec > begin.tv_sec * 1000000 + begin.tv_usec) {
+      printf("receive timed out\n");
+      return 2;
+    }
     int received = recv(sock, buf+bytesreceived, buflen, 0);
     if (received > 0) {
       bytesreceived += received;
@@ -18,6 +27,11 @@ int recv_all(int sock, char* buf, int buflen) {
   strncpy(size, buf, 4);
   int bytesremain = atoi(size) - (bytesreceived - 4);
   while (bytesremain > 0) {
+    gettimeofday(&now, NULL);
+    if (now.tv_sec * 1000000 + now.tv_usec > begin.tv_sec * 1000000 + begin.tv_usec) {
+      printf("receive timed out\n");
+      return 2;
+    }
     int received = recv(sock, buf+bytesreceived, buflen, 0);
     if (received > 0) {
       bytesremain -= received;

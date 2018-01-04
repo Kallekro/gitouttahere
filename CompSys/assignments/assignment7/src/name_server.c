@@ -22,6 +22,7 @@ fd_set master_set;
 fd_set tmp_set;
 struct connection_info* conn_info_array;
 int conn_count;
+int max_conns = 100;
 
 int listener;
 bool listening = false;
@@ -33,6 +34,7 @@ int parsecmd(char* input);
 
 void* worker(void* arg);
 int handle_login(struct connection_info* conn_info, char* input);
+int handle_lookup(int sock, char* input);
 
 int main(int argc, char**argv) {
   if (argc != ARGNUM + 1) {
@@ -66,7 +68,6 @@ int main(int argc, char**argv) {
     }
 
     setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &sock_flag, sizeof(int));
-    //setsockopt(listener, SOL_SOCKET, SO_REUSEPORT, &sock_flag, sizeof(int));
 
     if (bind(listener, tmp_addr->ai_addr, tmp_addr->ai_addrlen) < 0)  {
       close(listener);
@@ -98,12 +99,12 @@ int main(int argc, char**argv) {
   max_fd = listener;
 
   //conn_array = malloc(conn_array_len * sizeof(struct socket_struct));
-  int conn_array_len = 100; 
+  int conn_array_len = max_conns; 
   conn_info_array = malloc(conn_array_len * sizeof(struct connection_info));
   conn_count = 0; 
 
-  for (int i=0; i<100; i++) {
-    set_connection_info(&conn_info_array[i], NULL , NULL, NULL, NULL);
+  for (int i=0; i<max_conns; i++) {
+    set_connection_info(&conn_info_array[i], NULL, NULL, NULL, NULL);
   }
 
   //for (int i = 0; i < conn_array_len; i++) {
@@ -129,8 +130,8 @@ int main(int argc, char**argv) {
     tmp_set = master_set;
     pthread_mutex_unlock(&master_mutex);
     struct timeval timeout;
-    timeout.tv_usec = 0;
-    timeout.tv_sec = 1;
+    timeout.tv_usec = 100;
+    timeout.tv_sec = 0;
     if (select(max_fd+1, &tmp_set, NULL, NULL, &timeout) == -1) {
       perror("select");
       exit(1);
@@ -210,18 +211,22 @@ void* worker(void * arg) {
         data_buf[data_size] = '\0';
         // TODO: CHECK IF CORRECT LOGIN
         char loginmsg[100];
+        printf("%d\n", *sock);
         if (handle_login(&(conn_info_array[*sock]), data_buf+4) == 0) {
+          printf("lol: %s\n", conn_info_array[*sock].nick);
           strncpy(loginmsg, "1Login succesful. Welcome \0", 30);
           strncpy(loginmsg + strlen(loginmsg), conn_info_array[*sock].nick, 50);
           sprintf(msgsize, "%04lu", strlen(loginmsg));
           send_all(*sock, msgsize, 4);
           send_all(*sock, loginmsg, (int)strlen(loginmsg));
+          conn_count += 1;
         } else {
           sprintf(loginmsg, "0Login unsuccesful. Please check you login information and try again\n");
           sprintf(msgsize, "%04lu", strlen(loginmsg));
           send_all(*sock, msgsize, 4);
           send_all(*sock, loginmsg, strlen(loginmsg));
           close(*sock);
+          printf("closed connection\n");
           pthread_mutex_unlock(&conn_info_mutex);
           continue;
         }
@@ -241,27 +246,37 @@ void* worker(void * arg) {
         if (recv_all(*sock, data_buf, sizeof(data_buf)) == -1) {
           conn_info_array[*sock].nick = NULL;
           close(*sock);
+          conn_count--;
+          printf("closed connection\n");
           continue;
         }
         char msg[100];
-        printf("RECEIVED\n");
+        int remove_sock = 0;
         switch (parsecmd(data_buf+4)) {
-          case 0:
-            //printf("LOGIN\n");
-            printf("LOL\n");
+          case 0: // Login
             sprintf(msg, "You are already logged in.");
             sprintf(msgsize, "%04lu", strlen(msg));
             send_all(*sock, msgsize, 4);
             send_all(*sock, msg, sizeof(msg));
             break;
-          case 1:
-            printf("LOGOUT\n");
+          case 1: // Logout
+            conn_info_array[*sock].nick = NULL;
+            close(*sock);
+            conn_count--;
+            printf("closed connection\n");
+            remove_sock = 1;
             break;
-          case 2:
-            printf("EXIT\n");
+          case 2: // Exit
+            conn_info_array[*sock].nick = NULL;
+            close(*sock);
+            conn_count--;
+            printf("closed connection\n");
+            remove_sock = 1;
             break;
-          case 3:
-            printf("LOOKUP\n");
+          case 3: // Lookup
+            pthread_mutex_lock(&conn_info_mutex);
+            handle_lookup(*sock, data_buf+4);
+            pthread_mutex_unlock(&conn_info_mutex);
             break;
           default:
             sprintf(msg, "Unknown command.");
@@ -270,92 +285,12 @@ void* worker(void * arg) {
             send_all(*sock, msg, sizeof(msg));
             break;
         }
-
-        pthread_mutex_lock(&master_mutex);
-        FD_SET(*sock, &master_set);
-        pthread_mutex_unlock(&master_mutex);
+        if (!remove_sock) {
+          pthread_mutex_lock(&master_mutex);
+          FD_SET(*sock, &master_set);
+          pthread_mutex_unlock(&master_mutex);
+        }
       }
-      //if (sock->sockfd == listener) { // If the listener, there is a new connection ready.
-      //  unsigned int addr_len = sizeof(client_addr);
-      //  int new_sock = accept(listener, &client_addr, &addr_len);
-      //  if (new_sock == -1) {
-      //    if (errno != EAGAIN && errno != EWOULDBLOCK) {
-      //      perror("accept error\n");
-      //    }
-      //  } else { 
-      //    //int flags = fcntl(new_sock, F_GETFL, 0);
-      //    //fcntl(new_sock, F_SETFL, flags | O_NONBLOCK);
-
-      //    pthread_mutex_lock(&master_mutex); // lock the mutex
-
-      //    data_size = recv(new_sock, data_buf, sizeof(data_buf), 0);
-      //    // TODO: CHECK IF CORRECT LOGIN
-      //    char loginmsg[100];
-      //    if (handle_login(&(conn_info_array[conn_count]), data_buf) == 0) {
-      //      sprintf(loginmsg, "Login succesful. Welcome %s\n", conn_info_array[conn_count].nick);
-      //      send(new_sock, "success", 10, 0);
-      //    } else {
-      //      sprintf(loginmsg, "Login unsuccesful. Please check you login information and try again\n");
-      //      send(new_sock, "fail", 10, 0);
-      //      printf("close sock\n");
-      //      close(new_sock);
-      //      pthread_mutex_unlock(&master_mutex );
-      //      sock->busy = 0;
-      //      continue;
-      //    }
-
-      //    set_socket(&(conn_array[conn_count]), new_sock, 0); 
-      //    conn_count++;
-
-      //    printf("Listener accepted new connection with socket %d. \n", new_sock);
-      //    pthread_mutex_unlock(&master_mutex); // unlock the mutex
-      //  }
-      //} else { // If existing connection with client
-      //  data_size = recv(sock->sockfd, data_buf, sizeof(data_buf), MSG_PEEK); // recieve bytes from client and store in buffer
-      //  if (data_size != -1) {
-      //    printf("data size: %d", data_size);
-      //  }
-      //  if (data_size == 0) { // If we didn't recieve any data or error
-      //    printf("server: socket %d hung up\n", sock->sockfd);
-      //    close(sock->sockfd); // close socket
-      //    pthread_mutex_lock(&master_mutex); // lock the mutex 
-      //    for (int i = 0; i < conn_count; i++) {
-      //      if (sock->sockfd == conn_array[i].sockfd) {
-      //        if (i == conn_count-1) {
-      //          reset_socket(&(conn_array[i]));
-      //        } else {
-      //          conn_array[i] = conn_array[conn_count-1];
-      //        }
-      //        break;
-      //      }
-      //    }
-      //    conn_count--;
-
-      //    pthread_mutex_unlock(&master_mutex); // unlock mutex
-      //  } else { // Data is received:w
-
-      //    if (data_size > 0) {
-      //      data_buf[data_size] = '\0';
-      //      printf ("Recieved data: \n %s", (char*)data_buf);
-      //      switch (parsecmd(data_buf)) {
-      //        case 0:
-      //          printf("LOGIN\n");
-      //          break;
-      //        case 1:
-      //          printf("LOGOUT\n");
-      //          break;
-      //        case 2:
-      //          printf("EXIT\n");
-      //          break;
-      //        case 3:
-      //          printf("LOOKUP\n");
-      //          break;
-      //      }
-      //      send(sock->sockfd, "LOL", 3, 0);
-      //    }
-      //  }
-      //}
-      //sock->busy = 0;
     } else {
       printf("wat\n");
       break;
@@ -378,19 +313,25 @@ int parsecmd(char* input) {
   return -1;
 }
 
-int handle_login (struct connection_info* ci, char* input) {
-  int spaces[4];
+int find_spaces (char* input, int* spaces, int maxspaces) {
   int i = 0, spacecount = 0;
-  printf("input: %s\n", input);
   while (input[i] != '\0') {
     if (input[i] == ' ') {
       spaces[spacecount] = i;
       spacecount++;
+      if (spacecount > maxspaces-1) {
+        return spacecount;
+      }
     }
     i++;
   }
+  return spacecount;
+}
 
-  if (spacecount != 4) {
+int handle_login (struct connection_info* ci, char* input) {
+  int spaces[4];
+
+  if (find_spaces(input, spaces, 4) < 4) {
     return -1;
   }
   char _nick[256];
@@ -409,12 +350,57 @@ int handle_login (struct connection_info* ci, char* input) {
   strncpy(_port, input + spaces[3]+1, (int)strlen(input) - spaces[3] - 2);
   _port[(int)strlen(input) - spaces[3] - 2] = '\0';
 
-  ci->nick = _nick;
-  ci->passwd = _passwd;
-  ci->ip = _ip;
-  ci->port = _port;
+  if (strlen(_nick) < 1 ||
+      strlen(_passwd) < 1 ||
+      strlen(_ip) < 1 ||
+      strlen(_port) < 1) {
+    return -1;
+  }
+
+  ci->nick = strdup(_nick);
+  ci->passwd = strdup(_passwd);
+  ci->ip = strdup(_ip);
+  ci->port = strdup(_port);
   
   //set_connection_info(ci, _nick, _passwd, _ip, _port);
   return 0;
 }
 
+int insert_string(char* dst, char* src, int offset) {
+  strcpy(dst+offset, src);
+  return strlen(src);
+}
+
+int handle_lookup(int sock, char* input) {
+  int spaces[1];
+  char msgsize[4];
+  if (find_spaces(input, spaces, 1) < 1) {
+    char conn_count_str[4];
+    sprintf(conn_count_str, "%d", conn_count);
+    printf("conn count: %d\n", conn_count);
+    send_all(sock, "0004", 4);
+    send_all(sock, conn_count_str, 4);
+    for (int i=0; i < max_conns; i++) {
+      if (conn_info_array[i].nick != NULL) {
+        char msg[512];
+        int offset = 0;
+        strcpy(msg, "Nick: ");
+        offset += 6;
+        offset += insert_string(msg, conn_info_array[i].nick, offset);
+        strcpy(msg+offset, "\nIP: ");
+        offset += 5;
+        offset += insert_string(msg, conn_info_array[i].ip, offset);
+        strcpy(msg+offset, "\nPORT: ");
+        offset += 7;
+        insert_string(msg, conn_info_array[i].port, offset);
+        msg[offset+1] = '\0';
+        sprintf(msgsize, "%04lu", strlen(msg));
+        send_all(sock, msgsize, 4);
+        send_all(sock, msg, strlen(msg));
+      }
+    } 
+  } else {
+
+  }
+  return 0;
+}
