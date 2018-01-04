@@ -20,6 +20,7 @@ int main(int argc, char**argv) {
   
   char inbuf[256];
   char recbuf[256];
+  int recvbytes;
   memset(recbuf, '\0', sizeof(recbuf));
   char msgsize[4];
   int sockfd;
@@ -68,12 +69,13 @@ int main(int argc, char**argv) {
   
       int flags = fcntl(sockfd, F_GETFL, 0);
       fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
+
   
       sprintf(msgsize, "%04lu", strlen(inbuf));
       send_all(sockfd, msgsize, 4);
       send_all(sockfd, inbuf, strlen(inbuf));
       
-      recv_all(sockfd, recbuf, sizeof(recbuf)); //recv(sockfd, recbuf, sizeof(recbuf), 0);
+      recv_all(sockfd, recbuf, sizeof(recbuf), &recvbytes, "", 0); //recv(sockfd, recbuf, sizeof(recbuf), 0);
       if (*(recbuf+4) == '0') {
         printf("%s\n", recbuf+5);
         memset(recbuf, '\0', sizeof(recbuf));
@@ -109,9 +111,9 @@ int main(int argc, char**argv) {
         sprintf(msgsize, "%04lu", strlen(inbuf));
         send_all(sockfd, msgsize, 4);
         send_all(sockfd, inbuf, strlen(inbuf));
-        
+
         if (!loopflag && !lookup) {
-          if (recv_all(sockfd, recbuf, sizeof(recbuf)) == -1) {
+          if (recv_all(sockfd, recbuf, sizeof(recbuf), &recvbytes, "", 0) == -1) {
             printf("Server hung up");
           }
           printf("Received from server: %s\n", recbuf+4);
@@ -119,11 +121,20 @@ int main(int argc, char**argv) {
         if (loopflag == 2) {
           return 0;
         }
+
+        int extra_received;
+        char extra_bytes[256];
+        char without_extra[256];
         if (lookup == 1) {
           lookup = 0;
 
-          recv_all(sockfd, recbuf, sizeof(recbuf));
-          int conn_count = atoi(recbuf+4);
+          extra_received = recv_all(sockfd, recbuf, sizeof(recbuf), &recvbytes, "", 0);
+          if (extra_received < 0) { // extra bytes is -1 for each extra byte
+            strcpy(extra_bytes, recbuf + 4 + recvbytes);
+          }
+          strncpy(without_extra, recbuf + 4, recvbytes);
+          //printf("without: %s\n", without_extra);
+          int conn_count = atoi(without_extra);
           if (conn_count == 0) {
             printf("atoi error\n");
             continue;
@@ -131,8 +142,17 @@ int main(int argc, char**argv) {
           printf("%d users online. The list follows\n", conn_count);
           for (int i=0; i<conn_count; i++) {
             memset(recbuf, '\0', sizeof(recbuf));
-            recv_all(sockfd, recbuf, sizeof(recbuf));
-            printf("%s\n\n", recbuf+4);
+            memset(without_extra, '\0', sizeof(without_extra));
+            extra_received = recv_all(sockfd, recbuf, sizeof(recbuf), &recvbytes, extra_bytes, -1*extra_received);
+            memset(extra_bytes, '\0', sizeof(extra_bytes));
+            if (extra_received < 0) { // extra bytes is -1 for each extra byte
+              strcpy(extra_bytes, recbuf + 4 + recvbytes);
+              //printf("recvbytes: %d\n", recvbytes);
+              //printf("extra: %d\n", extra_received);
+              //printf("bytes: %s\n", extra_bytes);
+            }
+            strncpy(without_extra, recbuf + 4, recvbytes);
+            printf("%s\n\n", without_extra);
           }
         }
       }

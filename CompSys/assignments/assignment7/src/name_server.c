@@ -194,7 +194,7 @@ void* worker(void * arg) {
   struct job_queue *jq = arg;
 
   char data_buf[512];  
-  int data_size;      
+  int recvbytes;      
   
   char msgsize[4]; // size of message to send
 
@@ -207,8 +207,9 @@ void* worker(void * arg) {
         // A new connection
         int flags = fcntl(*sock, F_GETFL, 0);
         fcntl(*sock, F_SETFL, flags | O_NONBLOCK);
-        data_size = recv_all(*sock, data_buf, sizeof(data_buf));
-        data_buf[data_size] = '\0';
+
+        recv_all(*sock, data_buf, sizeof(data_buf), &recvbytes, "", 0);
+        //data_buf[recvbytes] = '\0';
         // TODO: CHECK IF CORRECT LOGIN
         char loginmsg[100];
         printf("%d\n", *sock);
@@ -243,7 +244,7 @@ void* worker(void * arg) {
 
       } else {
         pthread_mutex_unlock(&conn_info_mutex);
-        if (recv_all(*sock, data_buf, sizeof(data_buf)) == -1) {
+        if (recv_all(*sock, data_buf, sizeof(data_buf), &recvbytes, "", 0) == -1) {
           conn_info_array[*sock].nick = NULL;
           close(*sock);
           conn_count--;
@@ -361,8 +362,6 @@ int handle_login (struct connection_info* ci, char* input) {
   ci->passwd = strdup(_passwd);
   ci->ip = strdup(_ip);
   ci->port = strdup(_port);
-  
-  //set_connection_info(ci, _nick, _passwd, _ip, _port);
   return 0;
 }
 

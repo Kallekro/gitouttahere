@@ -3,12 +3,16 @@
 #include <sys/time.h>
 
 // Function to receive all data on a non-blocking socket
-int recv_all(int sock, char* buf, int buflen) {
+int recv_all(int sock, char* buf, int buflen, int* recbytes, char* extrabytes, int extra_len) {
   struct timeval begin, now;
   gettimeofday(&begin, NULL);
   begin.tv_sec += 5;
   int bytesreceived = 0;
   int initbytes = 4;
+  if (extra_len > 0) {
+    strcpy(buf, extrabytes);
+    bytesreceived = extra_len;
+  }
   while (bytesreceived < initbytes) {
     gettimeofday(&now, NULL);
     if (now.tv_sec * 1000000 + now.tv_usec > begin.tv_sec * 1000000 + begin.tv_usec) {
@@ -25,7 +29,8 @@ int recv_all(int sock, char* buf, int buflen) {
   }
   char size[4];
   strncpy(size, buf, 4);
-  int bytesremain = atoi(size) - (bytesreceived - 4);
+  int size_int = atoi(size);
+  int bytesremain = size_int - (bytesreceived - 4);
   while (bytesremain > 0) {
     gettimeofday(&now, NULL);
     if (now.tv_sec * 1000000 + now.tv_usec > begin.tv_sec * 1000000 + begin.tv_usec) {
@@ -38,7 +43,8 @@ int recv_all(int sock, char* buf, int buflen) {
       bytesreceived += received;
     }
   }
-  return bytesreceived;
+  *recbytes = size_int;
+  return bytesremain;
 }
 
 // Function to send all data on a non-blocking socket
