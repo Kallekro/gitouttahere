@@ -206,16 +206,13 @@ void* worker(void * arg) {
         char loginmsg[100];
         if (handle_login(&(conn_info_array[*sock]), data_buf) == 0) {
           printf("NICK: %s\n", conn_info_array[*sock].nick);
-          strncpy(loginmsg, "Login succesful. Welcome \0", 30);
+          strncpy(loginmsg, "1Login succesful. Welcome \0", 30);
           strncpy(loginmsg + strlen(loginmsg), conn_info_array[*sock].nick, 50);
           //sprintf(loginmsg, "Login succesful. Welcome %s.\n", conn_info_array[*sock].nick);
-          send(*sock, "success", 8, 0);
-          printf("msg: %s\n", loginmsg);
           send(*sock, loginmsg, strlen(loginmsg), 0);
           printf("yup\n");
         } else {
-          sprintf(loginmsg, "Login unsuccesful. Please check you login information and try again\n");
-          send(*sock, "failure", 8, 0);
+          sprintf(loginmsg, "0Login unsuccesful. Please check you login information and try again\n");
           send(*sock, loginmsg, strlen(loginmsg), 0);
           printf("close sock\n");
           close(*sock);
