@@ -12,7 +12,7 @@ csapp.o : csapp.c csapp.h
 peer : peer.c peer.h csapp.o
 	$(CC) $(CFLAGS) $< *.o -o $@ $(LD_FLAGS)
 
-name_server : name_server.c name_server.h csapp.o job_queue.c job_queue.h
+name_server : name_server.c name_server.h csapp.o job_queue.c job_queue.h socklib.h
 	$(CC) $(CFLAGS) job_queue.c $< *.o -o $@ $(LD_FLAGS)
 
 clean :
