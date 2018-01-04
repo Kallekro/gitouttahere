@@ -62,14 +62,24 @@ int main(int argc, char**argv) {
       send(sockfd, inbuf, strlen(inbuf), 0);
       
       recv(sockfd, recbuf, sizeof(recbuf), 0);
-      printf("received: %s", recbuf);
-      if (strcmp(recbuf, "fail") == 0) {
+      printf("%s\n", recbuf);
+      printf("1\n");
+      if (strcmp(recbuf, "failure") == 0) {
+        recv(sockfd, recbuf, sizeof(recbuf), 0);
+        printf("2\n");
+
+        printf("%s\n", recbuf);
         continue;
       }
+      printf("3\n");
+      recv(sockfd, recbuf, sizeof(recbuf), 0);
+      printf("4\n");
+      printf("%s\n", recbuf);
       break;
     }
   
     while (1) {
+      printf("HEEEY\n");
       if (fgets(inbuf, sizeof(inbuf), stdin) != NULL) {
         printf("input: %s", inbuf);
         if (send(sockfd, inbuf, strlen(inbuf), 0) != (ssize_t)strlen(inbuf)) {

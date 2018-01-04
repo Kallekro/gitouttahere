@@ -205,13 +205,21 @@ void* worker(void * arg) {
         // TODO: CHECK IF CORRECT LOGIN
         char loginmsg[100];
         if (handle_login(&(conn_info_array[*sock]), data_buf) == 0) {
-          sprintf(loginmsg, "Login succesful. Welcome %s\n", conn_info_array[*sock].nick);
-          send(*sock, "success", 10, 0);
+          printf("NICK: %s\n", conn_info_array[*sock].nick);
+          strncpy(loginmsg, "Login succesful. Welcome \0", 30);
+          strncpy(loginmsg + strlen(loginmsg), conn_info_array[*sock].nick, 50);
+          //sprintf(loginmsg, "Login succesful. Welcome %s.\n", conn_info_array[*sock].nick);
+          send(*sock, "success", 8, 0);
+          printf("msg: %s\n", loginmsg);
+          send(*sock, loginmsg, strlen(loginmsg), 0);
+          printf("yup\n");
         } else {
           sprintf(loginmsg, "Login unsuccesful. Please check you login information and try again\n");
-          send(*sock, "fail", 10, 0);
+          send(*sock, "failure", 8, 0);
+          send(*sock, loginmsg, strlen(loginmsg), 0);
           printf("close sock\n");
           close(*sock);
+          pthread_mutex_unlock(&conn_info_mutex);
           continue;
         }
 
@@ -344,10 +352,24 @@ int handle_login (struct connection_info* ci, char* input) {
   char _ip[256];
   char _port[256];
   strncpy(_nick, input + spaces[0]+1, spaces[1] - spaces[0] - 1);
+  _nick[spaces[1] - spaces[0]-1] = '\0';
+
   strncpy(_passwd, input + spaces[1]+1, spaces[2] - spaces[1] - 1);
+  _passwd[spaces[2] - spaces[1]-1] = '\0';
+  
   strncpy(_ip, input + spaces[2]+1, spaces[3] - spaces[2] - 1);
+  _ip[spaces[3] - spaces[2]-1] = '\0';
+  
   strncpy(_port, input + spaces[3]+1, (int)strlen(input) - spaces[3] - 2);
-  set_connection_info(ci, _nick, _passwd, _ip, _port);
+  _port[(int)strlen(input) - spaces[3] - 2] = '\0';
+
+  ci->nick = _nick;
+  printf("NICK: %s\n", _nick);
+  ci->passwd = _passwd;
+  ci->ip = _ip;
+  ci->port = _port;
+  
+  //set_connection_info(ci, _nick, _passwd, _ip, _port);
   return 0;
 }
 
