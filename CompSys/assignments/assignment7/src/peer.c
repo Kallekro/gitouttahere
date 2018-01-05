@@ -8,10 +8,6 @@
 #define DEFAULT_NAME "localhost"
 #define DEFAULT_PORT "50000"
 
-const char* cmdlist[4] = { "/login", "/logout", "/exit", "/lookup" };
-const int cmdlen = 4;
-int parsecmd(char* input);
-
 int main(int argc, char**argv) {
   if (argc != ARGNUM + 1) {
     printf("%s expects %d arguments.\n", (argv[0]+2), ARGNUM);
@@ -116,7 +112,7 @@ int main(int argc, char**argv) {
           if (recv_all(sockfd, recbuf, sizeof(recbuf), &recvbytes, "", 0) == -1) {
             printf("Server hung up");
           }
-          printf("Received from server: %s\n", recbuf+4);
+          printf("SERVER: %s\n", recbuf+4);
         }
         if (loopflag == 2) {
           return 0;
@@ -127,19 +123,35 @@ int main(int argc, char**argv) {
         char without_extra[256];
         if (lookup == 1) {
           lookup = 0;
-
+          int single_lookup = 0;
+          int spaces[1];
+          int spacecount = find_spaces(inbuf, spaces, 1);
+          char target_nick[100];
+          if (spacecount > 0) {
+            strncpy(target_nick, inbuf + spaces[0]+1, (int)strlen(inbuf) - spaces[0]);
+            target_nick[(int)strlen(inbuf) - spaces[0]-2] = '\0';
+            if ((int)strlen(inbuf) - spaces[0] > 0) {
+              single_lookup = 1;
+            }
+          }
+          
           extra_received = recv_all(sockfd, recbuf, sizeof(recbuf), &recvbytes, "", 0);
           if (extra_received < 0) { // extra bytes is -1 for each extra byte
             strcpy(extra_bytes, recbuf + 4 + recvbytes);
           }
           strncpy(without_extra, recbuf + 4, recvbytes);
-          //printf("without: %s\n", without_extra);
+
           int conn_count = atoi(without_extra);
-          if (conn_count == 0) {
+          if (!conn_count && !single_lookup) {
             printf("atoi error\n");
             continue;
+          } else if (!conn_count && single_lookup) {
+            printf("%s is not online\n", target_nick);
+          } else if (conn_count && single_lookup) {
+            printf("%s is online\n", target_nick);
+          } else {
+            printf("%d users online. The list follows\n", conn_count);
           }
-          printf("%d users online. The list follows\n", conn_count);
           for (int i=0; i<conn_count; i++) {
             memset(recbuf, '\0', sizeof(recbuf));
             memset(without_extra, '\0', sizeof(without_extra));
@@ -147,9 +159,6 @@ int main(int argc, char**argv) {
             memset(extra_bytes, '\0', sizeof(extra_bytes));
             if (extra_received < 0) { // extra bytes is -1 for each extra byte
               strcpy(extra_bytes, recbuf + 4 + recvbytes);
-              //printf("recvbytes: %d\n", recvbytes);
-              //printf("extra: %d\n", extra_received);
-              //printf("bytes: %s\n", extra_bytes);
             }
             strncpy(without_extra, recbuf + 4, recvbytes);
             printf("%s\n\n", without_extra);
@@ -163,18 +172,3 @@ int main(int argc, char**argv) {
   }
   return 0;
 }
-
-// Parse which command is in input
-int parsecmd(char* input) {
-  char cmpbuf[24];
-  for (int i = 0; i < cmdlen; i++) {
-    int len = strlen(cmdlist[i]);
-    strncpy(cmpbuf, input, len);
-    cmpbuf[len] = '\0';
-    if (strcmp(cmpbuf, cmdlist[i]) == 0) {
-      return i;
-    }
-  } 
-  return -1;
-}
-

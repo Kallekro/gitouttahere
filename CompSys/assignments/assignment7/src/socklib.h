@@ -3,6 +3,9 @@
 #include <sys/time.h>
 
 // Function to receive all data on a non-blocking socket
+// Can take extra data (extrabytes argument). We need this because
+// we call a receive for each send but one receive could get the data from 2 sends, so the extra
+// data is carried on to the next receive.
 int recv_all(int sock, char* buf, int buflen, int* recbytes, char* extrabytes, int extra_len) {
   struct timeval begin, now;
   gettimeofday(&begin, NULL);
@@ -60,5 +63,47 @@ int send_all(int sock, char* data, int datalen) {
   return total_bytes;
 }
 
+// Function we use to send messages. 
+// It starts by sending the length of the next message in the format XXXX, eg. 0023 = 23 bytes
+// This way the other end knows how much data it needs to read.
+int send_msg(int sock, char* msg, size_t msglen) {
+  char msglen_str[4];
+  sprintf(msglen_str, "%04lu", msglen);
+  send_all(sock, msglen_str, 4);
+  send_all(sock, msg, msglen);
+  return 0;
+}
+
+const char* cmdlist[4] = { "/login", "/logout", "/exit", "/lookup" };
+const int cmdlen = 4;
+
+// Parse which command is in input
+int parsecmd(char* input) {
+  char cmpbuf[24];
+  for (int i = 0; i < cmdlen; i++) {
+    int len = strlen(cmdlist[i]);
+    strncpy(cmpbuf, input, len);
+    cmpbuf[len] = '\0';
+    if (strcmp(cmpbuf, cmdlist[i]) == 0) {
+      return i;
+    }
+  } 
+  return -1;
+}
+
+int find_spaces (char* input, int* spaces, int maxspaces) {
+  int i = 0, spacecount = 0;
+  while (input[i] != '\0') {
+    if (input[i] == ' ') {
+      spaces[spacecount] = i;
+      spacecount++;
+      if (spacecount > maxspaces-1) {
+        return spacecount;
+      }
+    }
+    i++;
+  }
+  return spacecount;
+}
 
 #endif

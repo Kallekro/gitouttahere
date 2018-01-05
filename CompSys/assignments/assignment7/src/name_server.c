@@ -16,10 +16,9 @@
 pthread_mutex_t master_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t conn_info_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-//struct socket_struct* conn_array;
-
 fd_set master_set;
 fd_set tmp_set;
+
 struct connection_info* conn_info_array;
 int conn_count;
 int max_conns = 100;
@@ -28,13 +27,9 @@ int listener;
 bool listening = false;
 int max_fd;
 
-const char* cmdlist[4] = { "/login", "/logout", "/exit", "/lookup" };
-const int cmdlen = 4;
-int parsecmd(char* input);
-
 void* worker(void* arg);
 int handle_login(struct connection_info* conn_info, char* input);
-int handle_lookup(int sock, char* input);
+int handle_lookup(int sock, char* input, int inputlen);
 
 int main(int argc, char**argv) {
   if (argc != ARGNUM + 1) {
@@ -42,10 +37,13 @@ int main(int argc, char**argv) {
     return(0);
   }
 
-  //set_connection_info(&(connection_info[0]), "user1", "pass1", ""
   printf("Starting server..\n");
 
   int num_threads = atoi(argv[1]);
+  if (num_threads == 0) {
+    printf("invalid thread count argument");
+    return 1;
+  }
 
   struct addrinfo hints, *addri_res, *tmp_addr;
   memset(&hints, 0, sizeof(hints));
@@ -88,17 +86,12 @@ int main(int argc, char**argv) {
     exit(3);
   }
 
-  // for non-blocking
-  //int flags = fcntl(listener, F_GETFL, 0);
-  //fcntl(listener, F_SETFL, flags | O_NONBLOCK);
-
   FD_ZERO(&master_set);
   FD_ZERO(&tmp_set);
   
   FD_SET(listener, &master_set);
   max_fd = listener;
 
-  //conn_array = malloc(conn_array_len * sizeof(struct socket_struct));
   int conn_array_len = max_conns; 
   conn_info_array = malloc(conn_array_len * sizeof(struct connection_info));
   conn_count = 0; 
@@ -106,11 +99,6 @@ int main(int argc, char**argv) {
   for (int i=0; i<max_conns; i++) {
     set_connection_info(&conn_info_array[i], NULL, NULL, NULL, NULL);
   }
-
-  //for (int i = 0; i < conn_array_len; i++) {
-  //  reset_socket(&(conn_array[i]));
-  //}
-  //set_socket(&conn_array[0], listener, 0);
 
   struct job_queue jq;
   job_queue_init(&jq, 15);
@@ -156,14 +144,6 @@ int main(int argc, char**argv) {
         job_queue_push(&jq, &new_sock);
       }
     }
-
-
-   // for (int i=0; i<conn_count; i++) {
-   //   if (!conn_array[i].busy && conn_array[i].sockfd != -1) {
-   //     conn_array[i].busy = 1;
-   //     job_queue_push(&jq, &(conn_array[i]));
-   //   }
-   // }
   }
 
 
@@ -180,12 +160,12 @@ int main(int argc, char**argv) {
   free(threads);
   close(listener);
 
-  //for (int i = 0; i < conn_array_len; i++) {
-  //  if (conn_array[i].sockfd != -1) {
-  //    close(conn_array[i].sockfd);
-  //  }
-  //}
-  //free(conn_array);
+  for (int i = 0; i < max_conns; i++) {
+    if (conn_info_array[i].nick) {
+      close(i);
+    }
+  }
+  free(conn_info_array);
 
   return 0;
 }
@@ -196,8 +176,6 @@ void* worker(void * arg) {
   char data_buf[512];  
   int recvbytes;      
   
-  char msgsize[4]; // size of message to send
-
   int* sock;
   while(1) {
     if (job_queue_pop(jq, (void**)&sock) == 0) { // pop a job
@@ -209,23 +187,16 @@ void* worker(void * arg) {
         fcntl(*sock, F_SETFL, flags | O_NONBLOCK);
 
         recv_all(*sock, data_buf, sizeof(data_buf), &recvbytes, "", 0);
-        //data_buf[recvbytes] = '\0';
         // TODO: CHECK IF CORRECT LOGIN
         char loginmsg[100];
-        printf("%d\n", *sock);
         if (handle_login(&(conn_info_array[*sock]), data_buf+4) == 0) {
-          printf("lol: %s\n", conn_info_array[*sock].nick);
           strncpy(loginmsg, "1Login succesful. Welcome \0", 30);
           strncpy(loginmsg + strlen(loginmsg), conn_info_array[*sock].nick, 50);
-          sprintf(msgsize, "%04lu", strlen(loginmsg));
-          send_all(*sock, msgsize, 4);
-          send_all(*sock, loginmsg, (int)strlen(loginmsg));
+          send_msg(*sock, loginmsg, strlen(loginmsg));
           conn_count += 1;
         } else {
           sprintf(loginmsg, "0Login unsuccesful. Please check you login information and try again\n");
-          sprintf(msgsize, "%04lu", strlen(loginmsg));
-          send_all(*sock, msgsize, 4);
-          send_all(*sock, loginmsg, strlen(loginmsg));
+          send_msg(*sock, loginmsg, strlen(loginmsg));
           close(*sock);
           printf("closed connection\n");
           pthread_mutex_unlock(&conn_info_mutex);
@@ -256,9 +227,7 @@ void* worker(void * arg) {
         switch (parsecmd(data_buf+4)) {
           case 0: // Login
             sprintf(msg, "You are already logged in.");
-            sprintf(msgsize, "%04lu", strlen(msg));
-            send_all(*sock, msgsize, 4);
-            send_all(*sock, msg, sizeof(msg));
+            send_msg(*sock, msg, strlen(msg));
             break;
           case 1: // Logout
             conn_info_array[*sock].nick = NULL;
@@ -276,14 +245,12 @@ void* worker(void * arg) {
             break;
           case 3: // Lookup
             pthread_mutex_lock(&conn_info_mutex);
-            handle_lookup(*sock, data_buf+4);
+            handle_lookup(*sock, data_buf+4,(int)strlen(data_buf+4));
             pthread_mutex_unlock(&conn_info_mutex);
             break;
           default:
             sprintf(msg, "Unknown command.");
-            sprintf(msgsize, "%04lu", strlen(msg));
-            send_all(*sock, msgsize, 4);
-            send_all(*sock, msg, sizeof(msg));
+            send_msg(*sock, msg, strlen(msg));
             break;
         }
         if (!remove_sock) {
@@ -292,42 +259,13 @@ void* worker(void * arg) {
           pthread_mutex_unlock(&master_mutex);
         }
       }
-    } else {
-      printf("wat\n");
+    } else { // Jobqueue was killed
       break;
     }
-  } // end while
-  printf("End of work\n");
+  } // end worker while
   return NULL;
 }
 
-int parsecmd(char* input) {
-  char cmpbuf[24];
-  for (int i = 0; i < cmdlen; i++) {
-    int len = strlen(cmdlist[i]);
-    strncpy(cmpbuf, input, len);
-    cmpbuf[len] = '\0';
-    if (strcmp(cmpbuf, cmdlist[i]) == 0) {
-      return i;
-    }
-  } 
-  return -1;
-}
-
-int find_spaces (char* input, int* spaces, int maxspaces) {
-  int i = 0, spacecount = 0;
-  while (input[i] != '\0') {
-    if (input[i] == ' ') {
-      spaces[spacecount] = i;
-      spacecount++;
-      if (spacecount > maxspaces-1) {
-        return spacecount;
-      }
-    }
-    i++;
-  }
-  return spacecount;
-}
 
 int handle_login (struct connection_info* ci, char* input) {
   int spaces[4];
@@ -370,36 +308,54 @@ int insert_string(char* dst, char* src, int offset) {
   return strlen(src);
 }
 
-int handle_lookup(int sock, char* input) {
+int construct_lookup_msg(char* msgbuf, char* nick, char* ip, char* port) {
+  int offset = 0;
+  strcpy(msgbuf, "Nick: ");
+  offset += 6;
+  offset += insert_string(msgbuf, nick, offset);
+  strcpy(msgbuf+offset, "\nIP: ");
+  offset += 5;
+  offset += insert_string(msgbuf, ip, offset);
+  strcpy(msgbuf+offset, "\nPORT: ");
+  offset += 7;
+  insert_string(msgbuf, port, offset);
+  msgbuf[offset+1] = '\0';
+  return 0;
+}
+
+int handle_lookup(int sock, char* input, int inputlen) {
   int spaces[1];
-  char msgsize[4];
+  char msg[512];
+  char conn_count_str[4];
   if (find_spaces(input, spaces, 1) < 1) {
-    char conn_count_str[4];
     sprintf(conn_count_str, "%d", conn_count);
-    printf("conn count: %d\n", conn_count);
     send_all(sock, "0004", 4);
     send_all(sock, conn_count_str, 4);
     for (int i=0; i < max_conns; i++) {
       if (conn_info_array[i].nick != NULL) {
-        char msg[512];
-        int offset = 0;
-        strcpy(msg, "Nick: ");
-        offset += 6;
-        offset += insert_string(msg, conn_info_array[i].nick, offset);
-        strcpy(msg+offset, "\nIP: ");
-        offset += 5;
-        offset += insert_string(msg, conn_info_array[i].ip, offset);
-        strcpy(msg+offset, "\nPORT: ");
-        offset += 7;
-        insert_string(msg, conn_info_array[i].port, offset);
-        msg[offset+1] = '\0';
-        sprintf(msgsize, "%04lu", strlen(msg));
-        send_all(sock, msgsize, 4);
-        send_all(sock, msg, strlen(msg));
+        construct_lookup_msg(msg, conn_info_array[i].nick, conn_info_array[i].ip, conn_info_array[i].port);
+        send_msg(sock, msg, strlen(msg));
       }
     } 
   } else {
-
+    char target_nick[100];
+    strncpy(target_nick, input + spaces[0]+1, inputlen - spaces[0]-1);
+    target_nick[inputlen - spaces[0]-2] = '\0';
+    for (int i=0; i < max_conns; i++) {
+      if (!conn_info_array[i].nick) { continue; }
+      if (strcmp(conn_info_array[i].nick, target_nick) == 0) {
+        sprintf(conn_count_str, "%d", conn_count);
+        send_all(sock, "0004", 4);
+        send_all(sock, conn_count_str, 4);
+        construct_lookup_msg(msg, conn_info_array[i].nick, conn_info_array[i].ip, conn_info_array[i].port);
+        send_msg(sock, msg, strlen(msg));
+        return 0;
+      }
+    }
+    // if here target was not online
+    sprintf(conn_count_str, "%d", conn_count);
+    send_all(sock, "0000", 4);
+    send_all(sock, conn_count_str, 4);
   }
   return 0;
 }
