@@ -1,15 +1,15 @@
-#include <pthread.h>
 #include <stdio.h>
 #include <err.h>
+#include <pthread.h>
 #include <sys/socket.h>
 #include <sys/select.h>
 #include <sys/time.h>
-#include <stdio.h>
 #include <unistd.h>
+#include <stdbool.h>
+
 #include "name_server.h"
 #include "job_queue.h"
 #include "socklib.h"
-#include <stdbool.h>
 #define ARGNUM 1
 #define PORT "50000"
 
@@ -28,7 +28,6 @@ bool listening = false;
 int max_fd;
 
 void* worker(void* arg);
-int handle_login(struct connection_info* conn_info, char* input);
 int handle_lookup(int sock, char* input, int inputlen);
 
 int main(int argc, char**argv) {
@@ -45,45 +44,8 @@ int main(int argc, char**argv) {
     return 1;
   }
 
-  struct addrinfo hints, *addri_res, *tmp_addr;
-  memset(&hints, 0, sizeof(hints));
-
-  hints.ai_family = AF_UNSPEC;
-  hints.ai_socktype = SOCK_STREAM;
-  hints.ai_flags = AI_PASSIVE;
-
-  int addr_err, sock_flag = 1;
-  if ((addr_err = getaddrinfo(NULL, PORT, &hints, &addri_res)) != 0) {
-    fprintf(stderr, "server: %s\n", gai_strerror(addr_err));
-    exit(1);
-  }
-
-  for (tmp_addr = addri_res; tmp_addr != NULL; tmp_addr = tmp_addr->ai_next) {
-    listener = socket(tmp_addr->ai_family, tmp_addr->ai_socktype, tmp_addr->ai_protocol);
-
-    if (listener < 0) {
-      continue;
-    }
-
-    setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &sock_flag, sizeof(int));
-
-    if (bind(listener, tmp_addr->ai_addr, tmp_addr->ai_addrlen) < 0)  {
-      close(listener);
-      continue;
-    }
-    break;
-  }
-
-  if (tmp_addr == NULL) {
-    fprintf(stderr, "Failed to bind to socket\n");
-    
-    exit(5);
-  }
-
-  freeaddrinfo(addri_res);
-  if(listen(listener, 15) < 0 ) {
-    fprintf(stderr, "Failed to listen on socket\n");
-    exit(3);
+  if (create_listener(&listener, PORT)) {
+    exit(2);
   }
 
   FD_ZERO(&master_set);
@@ -149,7 +111,6 @@ int main(int argc, char**argv) {
 
   // Destroy jobqueue
   job_queue_destroy(&jq);
-  printf("DESTROYED THE JOBQUEUE!\n");
 
   // reap/join terminated threads.
   for (int i = 0; i<num_threads; i++)  {
@@ -267,42 +228,6 @@ void* worker(void * arg) {
 }
 
 
-int handle_login (struct connection_info* ci, char* input) {
-  int spaces[4];
-
-  if (find_spaces(input, spaces, 4) < 4) {
-    return -1;
-  }
-  char _nick[256];
-  char _passwd[256];
-  char _ip[256];
-  char _port[256];
-  strncpy(_nick, input + spaces[0]+1, spaces[1] - spaces[0] - 1);
-  _nick[spaces[1] - spaces[0]-1] = '\0';
-
-  strncpy(_passwd, input + spaces[1]+1, spaces[2] - spaces[1] - 1);
-  _passwd[spaces[2] - spaces[1]-1] = '\0';
-  
-  strncpy(_ip, input + spaces[2]+1, spaces[3] - spaces[2] - 1);
-  _ip[spaces[3] - spaces[2]-1] = '\0';
-  
-  strncpy(_port, input + spaces[3]+1, (int)strlen(input) - spaces[3] - 2);
-  _port[(int)strlen(input) - spaces[3] - 2] = '\0';
-
-  if (strlen(_nick) < 1 ||
-      strlen(_passwd) < 1 ||
-      strlen(_ip) < 1 ||
-      strlen(_port) < 1) {
-    return -1;
-  }
-
-  ci->nick = strdup(_nick);
-  ci->passwd = strdup(_passwd);
-  ci->ip = strdup(_ip);
-  ci->port = strdup(_port);
-  return 0;
-}
-
 int insert_string(char* dst, char* src, int offset) {
   strcpy(dst+offset, src);
   return strlen(src);
@@ -313,11 +238,11 @@ int construct_lookup_msg(char* msgbuf, char* nick, char* ip, char* port) {
   strcpy(msgbuf, "Nick: ");
   offset += 6;
   offset += insert_string(msgbuf, nick, offset);
-  strcpy(msgbuf+offset, "\nIP: ");
-  offset += 5;
+  strcpy(msgbuf+offset, " \nIP: ");
+  offset += 6;
   offset += insert_string(msgbuf, ip, offset);
-  strcpy(msgbuf+offset, "\nPORT: ");
-  offset += 7;
+  strcpy(msgbuf+offset, " \nPORT: ");
+  offset += 8;
   offset += insert_string(msgbuf, port, offset);
   msgbuf[offset+1] = '\0';
   return 0;
