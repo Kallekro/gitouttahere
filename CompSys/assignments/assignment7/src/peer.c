@@ -6,6 +6,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <poll.h>
 
 #include "peer.h"
 #include "socklib.h"
@@ -97,7 +98,7 @@ int main(int argc, char**argv) {
     }
     // Create thread with listener on login port.
     if (create_listener(&listener, my_conn_info.port)) {
-      fprintf(stderr, "failed to create listener");
+      printf("failed to create listener");
       continue;
     }
 
@@ -188,6 +189,8 @@ int main(int argc, char**argv) {
 
 int establish_connection(int* sock, char* ip, char* port) {
   struct addrinfo hints, *addri_res, *tmp_addr;
+  printf("%s\n", ip);
+  printf("ip %lu, port %lu\n", strlen(ip), strlen(port));
   int addr_err;
   memset(&hints, 0, sizeof(hints));
   hints.ai_family = AF_UNSPEC;
@@ -199,12 +202,12 @@ int establish_connection(int* sock, char* ip, char* port) {
 
   for (tmp_addr = addri_res; tmp_addr != NULL; tmp_addr = tmp_addr->ai_next) {
     if ((*sock = socket(tmp_addr->ai_family, tmp_addr->ai_socktype, tmp_addr->ai_protocol)) == -1) {
-      perror("client: socket");
+      perror("socket");
       continue;
     }
 
     if (connect(*sock, tmp_addr->ai_addr, tmp_addr->ai_addrlen) == -1) {
-      perror("client: connect");
+      perror("connect");
       continue;
     }
     break;
@@ -222,10 +225,15 @@ void* listen_handler(void* arg) {
   int new_sock;
   struct sockaddr peer_addr;
   int* listen_sock = arg;
+  struct pollfd pfd;
+  pfd.fd = *listen_sock;
+  pfd.events = POLLIN;
   while(1) { // listen for incomming peer connections
+    poll(&pfd, 1, -1);
     pthread_mutex_lock(&listen_mutex);
     unsigned int peer_addr_len = sizeof(peer_addr);
-    if ((new_sock = (accept(*listen_sock, &peer_addr, &peer_addr_len)) < 0)) {
+    new_sock = accept(*listen_sock, &peer_addr, &peer_addr_len);
+    if (new_sock < 0) {
       if (errno == EWOULDBLOCK || errno == EAGAIN ) {
         pthread_mutex_unlock(&listen_mutex);
         continue;
@@ -234,8 +242,10 @@ void* listen_handler(void* arg) {
         break;
       }
     }
+
     int flags = fcntl(new_sock, F_GETFL, 0);
     fcntl(new_sock, F_SETFL, flags | O_NONBLOCK);
+    printf("sock: %d\n", new_sock);
 
     job_queue_push(&jq, &new_sock);
     pthread_mutex_unlock(&listen_mutex);
@@ -251,6 +261,7 @@ void* worker(void* arg) {
 
   while (1) {
     if (job_queue_pop(jq, (void**)&sock) == 0 ) {
+      printf("job queue sock: %d\n", *sock);
       memset(recbuf, '\0', sizeof(recbuf));
       recv_all(*sock, recbuf, sizeof(recbuf), &size_int, "", 0);
       printf("Recbuf: %s\n", recbuf);
@@ -329,8 +340,8 @@ int parse_lookup_result (struct connection_info* ci, char* result, int result_le
   strncpy(_ip, result + spaces[2]+1, spaces[3] - spaces[2] - 1);
   _ip[spaces[3] - spaces[2]-1] = '\0';
 
-  strncpy(_port, result + spaces[4]+1, result_len - spaces[4] - 2);
-  _port[result_len - spaces[4] - 2] = '\0';
+  strncpy(_port, result + spaces[4]+1, result_len - spaces[4] - 1);
+  _port[result_len - spaces[4] - 1] = '\0';
 
   ci->nick = strdup(_nick);
   ci->ip = strdup(_ip);
@@ -349,6 +360,7 @@ int handle_msg(int sock, char* buf, int buflen) {
   nick[spaces[1] - spaces[0]] = '\0';
   strcpy(msg, buf+spaces[1]+1);
   msg[buflen - spaces[1] - 2] = '\0';
+  printf("msg: %s\n", msg);
 
   char lookup_query[100];
   sprintf(lookup_query, "/lookup %s%c", nick, '\0');
@@ -375,7 +387,6 @@ int handle_msg(int sock, char* buf, int buflen) {
     strncpy(without_extra, rec_buf + 4, size_int);
     parse_lookup_result(&ci, without_extra, size_int);
     int newsock;
-    printf("%s, %s\n", ci.ip, ci.port);
     establish_connection(&newsock, ci.ip, ci.port);
     send_msg(newsock, msg, strlen(msg));
     close(newsock);
