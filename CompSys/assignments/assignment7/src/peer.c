@@ -130,7 +130,7 @@ int main(int argc, char**argv) {
           if (spacecount > 0) {
             strncpy(target_nick, inbuf + spaces[0]+1, (int)strlen(inbuf) - spaces[0]);
             target_nick[(int)strlen(inbuf) - spaces[0]-2] = '\0';
-            if ((int)strlen(inbuf) - spaces[0] > 0) {
+            if ((int)strlen(inbuf) - spaces[0]-2 > 0) {
               single_lookup = 1;
             }
           }
@@ -147,6 +147,7 @@ int main(int argc, char**argv) {
             continue;
           } else if (!conn_count && single_lookup) {
             printf("%s is not online\n", target_nick);
+            continue;
           } else if (conn_count && single_lookup) {
             printf("%s is online\n", target_nick);
           } else {
@@ -163,6 +164,7 @@ int main(int argc, char**argv) {
             strncpy(without_extra, recbuf + 4, recvbytes);
             printf("%s\n\n", without_extra);
           }
+          memset(recbuf, '\0', sizeof(recbuf));
         }
       }
       else {

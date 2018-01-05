@@ -325,9 +325,11 @@ int construct_lookup_msg(char* msgbuf, char* nick, char* ip, char* port) {
 
 int handle_lookup(int sock, char* input, int inputlen) {
   int spaces[1];
+  spaces[0] = 0;
   char msg[512];
   char conn_count_str[4];
-  if (find_spaces(input, spaces, 1) < 1) {
+  int spacecount = find_spaces(input, spaces, 1);
+  if ( spacecount < 1 || inputlen - spaces[0]-2 < 1) {
     sprintf(conn_count_str, "%d", conn_count);
     send_all(sock, "0004", 4);
     send_all(sock, conn_count_str, 4);
@@ -344,7 +346,7 @@ int handle_lookup(int sock, char* input, int inputlen) {
     for (int i=0; i < max_conns; i++) {
       if (!conn_info_array[i].nick) { continue; }
       if (strcmp(conn_info_array[i].nick, target_nick) == 0) {
-        sprintf(conn_count_str, "%d", conn_count);
+        sprintf(conn_count_str, "%d", 1);
         send_all(sock, "0004", 4);
         send_all(sock, conn_count_str, 4);
         construct_lookup_msg(msg, conn_info_array[i].nick, conn_info_array[i].ip, conn_info_array[i].port);
@@ -353,8 +355,8 @@ int handle_lookup(int sock, char* input, int inputlen) {
       }
     }
     // if here target was not online
-    sprintf(conn_count_str, "%d", conn_count);
-    send_all(sock, "0000", 4);
+    sprintf(conn_count_str, "%d", 0);
+    send_all(sock, "0004", 4);
     send_all(sock, conn_count_str, 4);
   }
   return 0;
