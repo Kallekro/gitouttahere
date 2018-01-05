@@ -6,7 +6,7 @@
 // Can take extra data (extrabytes argument). We need this because
 // we call a receive for each send but one receive could get the data from 2 sends, so the extra
 // data is carried on to the next receive.
-int recv_all(int sock, char* buf, int buflen, int* recbytes, char* extrabytes, int extra_len) {
+int recv_all(int sock, char* buf, int buflen, int* size_int, char* extrabytes, int extra_len) {
   struct timeval begin, now;
   gettimeofday(&begin, NULL);
   begin.tv_sec += 5;
@@ -32,8 +32,8 @@ int recv_all(int sock, char* buf, int buflen, int* recbytes, char* extrabytes, i
   }
   char size[4];
   strncpy(size, buf, 4);
-  int size_int = atoi(size);
-  int bytesremain = size_int - (bytesreceived - 4);
+  *size_int = atoi(size);
+  int bytesremain = *size_int - (bytesreceived - 4);
   while (bytesremain > 0) {
     gettimeofday(&now, NULL);
     if (now.tv_sec * 1000000 + now.tv_usec > begin.tv_sec * 1000000 + begin.tv_usec) {
@@ -46,7 +46,6 @@ int recv_all(int sock, char* buf, int buflen, int* recbytes, char* extrabytes, i
       bytesreceived += received;
     }
   }
-  *recbytes = size_int;
   return bytesremain;
 }
 

@@ -318,7 +318,7 @@ int construct_lookup_msg(char* msgbuf, char* nick, char* ip, char* port) {
   offset += insert_string(msgbuf, ip, offset);
   strcpy(msgbuf+offset, "\nPORT: ");
   offset += 7;
-  insert_string(msgbuf, port, offset);
+  offset += insert_string(msgbuf, port, offset);
   msgbuf[offset+1] = '\0';
   return 0;
 }
