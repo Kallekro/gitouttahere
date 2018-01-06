@@ -69,7 +69,7 @@ int main(int argc, char**argv) {
     memset(recbuf, '\0', sizeof(recbuf));
     while (1) { // before login loop
       while (1) { // input loop
-        printf("Please give input\n");
+        printf("waiting for input..\n");
         if (fgets(inbuf, sizeof(inbuf), stdin) != NULL) {
           int cmd = parsecmd(inbuf);
           if (cmd == 0) { // login
@@ -119,6 +119,7 @@ int main(int argc, char**argv) {
   
     int login_flag = 0, lookupflag = 0, msgflag = 0, showflag = 0;
     while (!login_flag) {
+      printf("waiting for input..\n");
       if (fgets(inbuf, sizeof(inbuf), stdin) != NULL) {
         switch (parsecmd(inbuf)) {
         case 0: // Login
@@ -187,11 +188,11 @@ int main(int argc, char**argv) {
     }
     for (int i = 0; i < msg_array_size; i++) {
       if (!msg_array[i].nick) { continue; }
-      msg_array[i].nick = NULL;
       memset(msg_array[i].nick, '\0', strlen(msg_array[i].nick));
+      msg_array[i].nick = NULL;
       if (!msg_array[i].messages) { continue; }
-      msg_array[i].messages[0] = '\0';  
       memset(msg_array[i].messages, '\0', 10000);
+      msg_array[i].messages[0] = '\0';  
     }  
   }  
   // Destroy jobqueue
@@ -252,7 +253,7 @@ void* listen_handler(void* arg) {
   pfd.fd = *listen_sock;
   pfd.events = POLLIN;
   while(1) { // listen for incomming peer connections
-    poll(&pfd, 1, 100);
+    poll(&pfd, 1, 50);
     pthread_mutex_lock(&listen_mutex);
     unsigned int peer_addr_len = sizeof(peer_addr);
     new_sock = accept(*listen_sock, &peer_addr, &peer_addr_len);
