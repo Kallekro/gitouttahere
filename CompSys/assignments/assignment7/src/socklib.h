@@ -70,7 +70,7 @@ int find_spaces (char* input, int* spaces, int maxspaces) {
     if (input[i] == ' ') {
       spaces[spacecount] = i;
       spacecount++;
-      if (spacecount > maxspaces-1) {
+      if (spacecount >= maxspaces) {
         return spacecount;
       }
     }
@@ -140,7 +140,7 @@ int recv_all(int sock, char* buf, int buflen, int* size_int, char* extrabytes, i
       bytesreceived += received;
     } else if (received == 0) {
       // some error (server hung)
-      return -1;
+      return 1;
     }
   }
   char size[4];

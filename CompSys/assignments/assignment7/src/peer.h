@@ -2,5 +2,6 @@
 
 struct msg_struct {
   char* nick;
-  char* msg;
+  char* messages;
+  int offset;
 };

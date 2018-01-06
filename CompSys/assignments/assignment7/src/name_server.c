@@ -10,8 +10,7 @@
 #include "name_server.h"
 #include "job_queue.h"
 #include "socklib.h"
-#define ARGNUM 1
-#define PORT "50000"
+#define ARGNUM 2
 
 pthread_mutex_t master_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t conn_info_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -36,13 +35,16 @@ int main(int argc, char**argv) {
     return(0);
   }
 
-  printf("Starting server..\n");
 
   int num_threads = atoi(argv[1]);
   if (num_threads == 0) {
     printf("invalid thread count argument");
     return 1;
   }
+    
+  char* PORT = argv[2];
+  
+  printf("Starting server on port %s..\n", PORT);
 
   if (create_listener(&listener, PORT)) {
     exit(2);
@@ -147,7 +149,10 @@ void* worker(void * arg) {
         int flags = fcntl(*sock, F_GETFL, 0);
         fcntl(*sock, F_SETFL, flags | O_NONBLOCK);
 
-        recv_all(*sock, data_buf, sizeof(data_buf), &recvbytes, "", 0);
+        if (recv_all(*sock, data_buf, sizeof(data_buf), &recvbytes, "", 0) > 0) {
+          printf("receive error or timeout\n");
+          continue;
+        }
         // TODO: CHECK IF CORRECT LOGIN
         char loginmsg[100];
         if (handle_login(&(conn_info_array[*sock]), data_buf+4) == 0) {
@@ -176,7 +181,7 @@ void* worker(void * arg) {
 
       } else {
         pthread_mutex_unlock(&conn_info_mutex);
-        if (recv_all(*sock, data_buf, sizeof(data_buf), &recvbytes, "", 0) == -1) {
+        if (recv_all(*sock, data_buf, sizeof(data_buf), &recvbytes, "", 0) > 0) {
           conn_info_array[*sock].nick = NULL;
           close(*sock);
           conn_count--;
