@@ -14,7 +14,6 @@
 
 #define ARGNUM 3 // TODO: Put the number of you want to take
 
- 
 pthread_mutex_t msg_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t listen_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -41,10 +40,8 @@ int main(int argc, char**argv) {
   char inbuf[256];
   char recbuf[256];
   int size_int;
-  memset(recbuf, '\0', sizeof(recbuf));
   int sockfd;
   int listener;
-   
   
   int num_threads = atoi(argv[3]);
   if (num_threads == 0) {
@@ -69,6 +66,7 @@ int main(int argc, char**argv) {
   }  
 
   while (1) { // client super loop
+    memset(recbuf, '\0', sizeof(recbuf));
     while (1) { // before login loop
       while (1) { // input loop
         printf("Please give input\n");
@@ -106,7 +104,7 @@ int main(int argc, char**argv) {
     }
     // Create thread with listener on login port.
     if (create_listener(&listener, my_conn_info.port)) {
-      printf("failed to create listener");
+      printf("failed to create listener\n");
       close(sockfd);
       memset(recbuf, '\0', sizeof(recbuf));
       continue;
@@ -187,6 +185,14 @@ int main(int argc, char**argv) {
     if (pthread_join(listen_thread, NULL) != 0) {
       err(1, "pthread_join error\n");
     }
+    for (int i = 0; i < msg_array_size; i++) {
+      if (!msg_array[i].nick) { continue; }
+      msg_array[i].nick = NULL;
+      memset(msg_array[i].nick, '\0', strlen(msg_array[i].nick));
+      if (!msg_array[i].messages) { continue; }
+      msg_array[i].messages[0] = '\0';  
+      memset(msg_array[i].messages, '\0', 10000);
+    }  
   }  
   // Destroy jobqueue
   job_queue_destroy(&jq);
@@ -246,7 +252,7 @@ void* listen_handler(void* arg) {
   pfd.fd = *listen_sock;
   pfd.events = POLLIN;
   while(1) { // listen for incomming peer connections
-    poll(&pfd, 1, 1);
+    poll(&pfd, 1, 100);
     pthread_mutex_lock(&listen_mutex);
     unsigned int peer_addr_len = sizeof(peer_addr);
     new_sock = accept(*listen_sock, &peer_addr, &peer_addr_len);
@@ -262,13 +268,14 @@ void* listen_handler(void* arg) {
         break;
       }
     }
-  
+
     int flags = fcntl(new_sock, F_GETFL, 0);
     fcntl(new_sock, F_SETFL, flags | O_NONBLOCK);
   
     job_queue_push(&jq, &new_sock);
     pthread_mutex_unlock(&listen_mutex);
   }
+  pthread_mutex_unlock(&listen_mutex);
   return NULL;
 }
 
@@ -309,7 +316,7 @@ void* worker(void* arg) {
         }
       }
       if (!found_flag) {
-        memset(msg_array[first_empty].messages, '\0', strlen(msg_array[first_empty].messages));
+        memset(msg_array[first_empty].messages, '\0', 10000);
         msg_array[first_empty].nick = strdup(peer_nick);
         msg_array[first_empty].offset = 0;
         add_message(&msg_array[first_empty], peer_nick, recbuf+5+spaces[0]);
@@ -494,6 +501,7 @@ int handle_show(char* buf) {
         if (strcmp(msg_array[i].nick, nick) == 0) {
           found_flag = 1;
           printf("%s", msg_array[i].messages); 
+          memset(msg_array[i].nick, '\0', strlen(msg_array[i].nick));
           msg_array[i].nick = NULL;
           break;
         }
@@ -507,6 +515,7 @@ int handle_show(char* buf) {
       if (msg_array[i].nick) {
         found_flag = 1;
         printf("%s", msg_array[i].messages);
+        memset(msg_array[i].nick, '\0', strlen(msg_array[i].nick));
         msg_array[i].nick = NULL;
       }
     }
