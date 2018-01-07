@@ -40,7 +40,7 @@ int handle_lookup(int sock, char* input, int inputlen);
 
 int main(int argc, char**argv) {
   if (argc != ARGNUM + 1) {
-    printf("%s expects %d arguments.\n", (argv[0]+2), ARGNUM);
+    printf("%s expects %d arguments: num_threads, PORT\n", (argv[0]+2), ARGNUM);
     return(0);
   }
 
