@@ -151,6 +151,8 @@ void* worker(void * arg) {
 
         if (recv_all(*sock, data_buf, sizeof(data_buf), &recvbytes, "", 0) > 0) {
           printf("receive error or timeout\n");
+          printf("closed connection.\n");
+          close(*sock);
           continue;
         }
         // TODO: CHECK IF CORRECT LOGIN
