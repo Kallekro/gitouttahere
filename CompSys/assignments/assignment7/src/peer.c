@@ -12,10 +12,7 @@
 #include "socklib.h"
 #include "job_queue.h"
 
-#define ARGNUM 3 // TODO: Put the number of you want to take
-
-pthread_mutex_t msg_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t listen_mutex = PTHREAD_MUTEX_INITIALIZER;
+#define ARGNUM 3
 
 int handle_lookup(int sock, char* rec_buf, int rec_buf_len, char* buf, int buf_len);
 int handle_msg(int sock, char* buf, int buflen);
@@ -24,11 +21,19 @@ int establish_connection(int* sock, char* ip, char* port);
 void* listen_handler(void* arg);
 void* worker(void* arg);
 int add_message(struct msg_struct* m_struct, char* nick, char* buf); 
+
+// mutex for message array
+pthread_mutex_t msg_mutex = PTHREAD_MUTEX_INITIALIZER;
+// mutex for listen thread
+pthread_mutex_t listen_mutex = PTHREAD_MUTEX_INITIALIZER;
  
+// array to hold messages from peers
 struct msg_struct* msg_array;
 int msg_array_size = 100;
- 
+
 struct job_queue jq;
+
+// connection info of this peer
 struct connection_info my_conn_info; 
 
 int main(int argc, char**argv) {
@@ -37,11 +42,11 @@ int main(int argc, char**argv) {
     return(0);
   }
   
-  char inbuf[256];
-  char recbuf[256];
+  char inbuf[256]; // buffer for fgets input
+  char recbuf[256]; // buffer for receive
   int size_int;
-  int sockfd;
-  int listener;
+  int sockfd; // this socket is connection to name server
+  int listener; // this sockets listen for peers
   
   int num_threads = atoi(argv[3]);
   if (num_threads == 0) {
@@ -49,6 +54,7 @@ int main(int argc, char**argv) {
     return 1;
   }
   
+  // initialize job queue and create worker threads
   job_queue_init(&jq, 15);
   pthread_t *threads = calloc(num_threads, sizeof(pthread_t));
   
@@ -57,15 +63,17 @@ int main(int argc, char**argv) {
       err(1, "pthread_create() failed\n");
     }
   }
-  msg_array = malloc(sizeof(struct msg_struct)*msg_array_size);
 
+  // allocate memory and initialize the memory for the message array
+  msg_array = malloc(sizeof(struct msg_struct)*msg_array_size);
   for (int i = 0; i < msg_array_size; i++) {
     msg_array[i].nick = NULL;
     msg_array[i].messages = malloc(10000);    
     msg_array[i].messages[0] = '\0';  
   }  
-
-  while (1) { // client super loop
+  
+  int exit_flag = 0;
+  while (!exit_flag) { // this loop is only exited by using /exit
     memset(recbuf, '\0', sizeof(recbuf));
     while (1) { // before login loop
       while (1) { // input loop
@@ -81,96 +89,99 @@ int main(int argc, char**argv) {
         }
       }
   
-      if (establish_connection(&sockfd, argv[1], argv[2])) {
+      if (establish_connection(&sockfd, argv[1], argv[2]) != 0) { 
+        // if connection failed to be established go back to start of loop 
         continue;
       }
   
+      // set our socket to be non blocking
       int flags = fcntl(sockfd, F_GETFL, 0);
       fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
-  
+      // send the login information from inbuf to the server
       send_msg(sockfd, inbuf, strlen(inbuf));
-  
+      // receive login response
       int ex_rec = recv_all(sockfd, recbuf, sizeof(recbuf), &size_int, "", 0); 
       if (*(recbuf+4) == '0' || ex_rec > 0) {
+        // here if response from server failed. go back to start of loop and retry
         printf("%s\n", recbuf+5);
         memset(recbuf, '\0', sizeof(recbuf));
         close(sockfd);
         continue;
       }
+      // here if succesfull connection
+      // print the login message
       printf("%s\n", recbuf+5);
       memset(recbuf, '\0', sizeof(recbuf));
+      // copy the login information into the struct to save it
       handle_login(&my_conn_info, inbuf);
       break;
     }
-    // Create thread with listener on login port.
+    // Create listener on login port.
     if (create_listener(&listener, my_conn_info.port)) {
       printf("failed to create listener\n");
       close(sockfd);
       memset(recbuf, '\0', sizeof(recbuf));
-      continue;
-      
+      continue; // go back and try again
     }
-  
+    
+    // set the listener to be non blocking
     int flags = fcntl(listener, F_GETFL, 0);
     fcntl(listener, F_SETFL, flags | O_NONBLOCK);
   
+    // create a thread to handle listening for connections
     pthread_t listen_thread;
     pthread_create(&listen_thread, NULL, &listen_handler, &listener);
   
-    int login_flag = 0, lookupflag = 0, msgflag = 0, showflag = 0;
+    // non-binary flag for /logout, /exit and flag for /lookup
+    int login_flag = 0, lookupflag = 0;
+    // after logged in loop
     while (!login_flag) {
-      printf("waiting for input..\n");
       if (fgets(inbuf, sizeof(inbuf), stdin) != NULL) {
         switch (parsecmd(inbuf)) {
-        case 0: // Login
-          printf("You are already logged in.");
-          continue; 
-          case 1: // Logout
+          case 0: // Login - do nothing
+            printf("You are already logged in.");
+            continue; 
+          case 1: // Logout - logout and go to beginning of program
             login_flag = 1;
             close(sockfd);
             printf("You are now logged out\n");
             break;
-          case 2: // Exit
+          case 2: // Exit - exit program
             login_flag = 2;
             close(sockfd);
             break;
           case 3: // Lookup
             lookupflag = 1;
             break;
-          case 4: // MSG
-            msgflag = 1;
-            break;
-          case 5: // SHOW
-            showflag = 1;
-            break;
+          case 4: // Message
+            handle_msg(sockfd, inbuf, strlen(inbuf));
+            continue;
+          case 5: // Show
+            handle_show(inbuf); // to do
+            continue;
           default:
             break;
         }
-        if (msgflag) {
-          msgflag = 0;
-          handle_msg(sockfd, inbuf, strlen(inbuf));
-          continue;
-        } else if (showflag) {
-          showflag = 0;
-          handle_show(inbuf); // to do
-          continue;
-        }
-  
+        // if here some message should be sent to the server
         send_msg(sockfd, inbuf, strlen(inbuf));
   
         if (!login_flag && !lookupflag) {
+          // This is probablby an unknown command being sent to the server
           if (recv_all(sockfd, recbuf, sizeof(recbuf), &size_int, "", 0) > 0) {
             printf("Server hung up");
           }
           printf("SERVER: %s\n", recbuf+4);
         }
         if (login_flag == 2) {
-          return 0;
+          // exit
+          printf("Exiting program.\n");
+          exit_flag = 1;
         }
   
         if (lookupflag == 1) {
+          // lookup
           lookupflag = 0;
-          if (handle_lookup(sockfd, recbuf, sizeof(recbuf), inbuf, strlen(inbuf))) {
+          if (handle_lookup(sockfd, recbuf, sizeof(recbuf), inbuf, strlen(inbuf)) != 0) {
             continue;
           }
         }
@@ -179,13 +190,16 @@ int main(int argc, char**argv) {
         break;
       }
     }
+    // here if logout or exit
+    // lock the listener mutex and close it 
     pthread_mutex_lock(&listen_mutex);
     close(listener);
     pthread_mutex_unlock(&listen_mutex);
-  
+    // join listen thread
     if (pthread_join(listen_thread, NULL) != 0) {
       err(1, "pthread_join error\n");
     }
+    // reset message array
     for (int i = 0; i < msg_array_size; i++) {
       if (!msg_array[i].nick) { continue; }
       memset(msg_array[i].nick, '\0', strlen(msg_array[i].nick));
@@ -193,8 +207,10 @@ int main(int argc, char**argv) {
       if (!msg_array[i].messages) { continue; }
       memset(msg_array[i].messages, '\0', 10000);
       msg_array[i].messages[0] = '\0';  
-    }  
-  }  
+    }   
+    // go to beginning of program 
+  }
+  // here if exit
   // Destroy jobqueue
   job_queue_destroy(&jq);
   
@@ -205,7 +221,7 @@ int main(int argc, char**argv) {
     }
   }
   free(threads);
-  
+  // free the messages and the array
   for(int i = 0; i < msg_array_size; i++) {
     free(msg_array[i].messages);
   }
@@ -213,7 +229,9 @@ int main(int argc, char**argv) {
   return 0;
 }
 
+// Function to establish a connection with a server or peer
 int establish_connection(int* sock, char* ip, char* port) {
+  // create a socket and use it to connect to the desired port and ip
   struct addrinfo hints, *addri_res, *tmp_addr;
   int addr_err;
   memset(&hints, 0, sizeof(hints));
@@ -245,6 +263,7 @@ int establish_connection(int* sock, char* ip, char* port) {
   return 0;
 }
 
+// Function used to by the listen thread to listen for connecting peers
 void* listen_handler(void* arg) {
   int new_sock;
   struct sockaddr peer_addr;
@@ -280,6 +299,7 @@ void* listen_handler(void* arg) {
   return NULL;
 }
 
+// worker in the thread pool
 void* worker(void* arg) {
   struct job_queue *jq = arg;
   int* sock;
@@ -290,7 +310,7 @@ void* worker(void* arg) {
   char peer_nick[100];
   
   while (1) {
-    if (job_queue_pop(jq, (void**)&sock) == 0 ) {
+    if (job_queue_pop(jq, (void**)&sock) == 0) {
       memset(recbuf, '\0', sizeof(recbuf));
       if (recv_all(*sock, recbuf, sizeof(recbuf), &size_int, "", 0) > 0) {
         perror("recieve error");
@@ -323,6 +343,8 @@ void* worker(void* arg) {
         add_message(&msg_array[first_empty], peer_nick, recbuf+5+spaces[0]);
       }
       pthread_mutex_unlock(&msg_mutex);
+    } else {
+      break;
     }
   }  
  
@@ -330,6 +352,7 @@ void* worker(void* arg) {
   return NULL;
 }
 
+// function for adding a new message to a msg_struct using and incrementing it's offset.
 int add_message(struct msg_struct* m_struct, char* nick, char* buf) {
   strncpy(m_struct->messages + m_struct->offset, nick, strlen(nick));
   m_struct->offset += strlen(nick);
@@ -342,6 +365,7 @@ int add_message(struct msg_struct* m_struct, char* nick, char* buf) {
   return 0; 
 }
 
+// handle a lookup command
 int handle_lookup(int sock, char* rec_buf, int rec_buf_len, char* buf, int buf_len) {
   int extra_received;
   char extra_bytes[256];
@@ -400,6 +424,7 @@ int handle_lookup(int sock, char* rec_buf, int rec_buf_len, char* buf, int buf_l
   return 0;
 } 
 
+// parse the result of a lookup request into a connection_info struct
 int parse_lookup_result (struct connection_info* ci, char* result, int result_len) {
   int spaces[5];
   if (find_spaces(result, spaces, 5) != 5) {
@@ -426,6 +451,7 @@ int parse_lookup_result (struct connection_info* ci, char* result, int result_le
   return 0;
 }
 
+// handle message command      
 int handle_msg(int sock, char* buf, int buflen) {
   int spaces[2];
   int space_count = find_spaces(buf, spaces, 2);
@@ -486,8 +512,8 @@ int handle_msg(int sock, char* buf, int buflen) {
   }
   return 0;
 }
-
-
+ 
+// handle show commands
 int handle_show(char* buf) {
   int spaces[1];
   int space_count = find_spaces(buf, spaces, 1);
